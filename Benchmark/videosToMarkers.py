@@ -28,7 +28,7 @@ def process_trial(trial_id, trial_name=None, session_name='', isDocker=False,
                   markerDataFolderNameSuffix=None,
                   imageUpsampleFactor=4, poseDetector='OpenPose',
                   resolutionPoseDetection='default', scaleModel=False, bbox_thr=0.8, 
-                  augmenter_model='v0.3', genericFolderNames=False, offset=False,
+                  augmenter_model='v0.7', genericFolderNames=False, offset=False,
                   benchmark=True, dataDir=None):
     
     # Download videos
@@ -98,7 +98,7 @@ for count, sessionName in enumerate(sessionNames):
                 if "bbox_thr" in data['trials'][trial]:
                     bbox_thr = data['trials'][trial]['bbox_thr']
                     
-                augmenter_model = 'v0.3' # default
+                augmenter_model = 'v0.7' # default
                 if "augmenter_model" in data['trials'][trial]:
                     augmenter_model = data['trials'][trial]['augmenter_model']
                     

@@ -86,8 +86,6 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
         else:
             poseDetector = 'OpenPose'
 
-    poseDetector = 'OpenPose'
-
     # %% Paths to pose detector folder for local testing.
     if poseDetector == 'OpenPose':
         poseDetectorDirectory = getOpenPoseDirectory(isDocker)
