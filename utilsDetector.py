@@ -109,48 +109,51 @@ def runOpenPoseVideo(cameraDirectory,fileName,pathOpenPose, trialName,
     # Run OpenPose if this file doesn't exist in outputs
     ppPklPath = os.path.join(pathOutputPkl, trialPrefix + '_pp.pkl')    
     if not os.path.exists(ppPklPath):
-        c_path = os.getcwd()
-        command = runOpenPoseCMD(
-            pathOpenPose, resolutionPoseDetection, cameraDirectory,
-            fileName, openposeJsonDir, pathOutputVideo, trialPrefix,
-            generateVideo, videoFullPath, pathOutputJsons)
         
-        if not pathOpenPose == "docker":
-            os.chdir(c_path)            
-        # Get number of frames output video. We count the number of jsons, as
-        # videos are not written on server.
-        nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
-                         if f.endswith('.json')])
-        # At high resolution, sometimes OpenPose does not process the full
-        # video, let's check here and try max 5 times. If still bad, then raise
-        # an exception.
-        checknFrames = False
-        if not resolutionPoseDetection == 'default' and checknFrames:
-            countFrames = 0
-            while nFrameIn != nFrameOut:
-                # Need to get command again, as there is os.chdir(pathOpenPose)
-                # in the function.
-                command = runOpenPoseCMD(pathOpenPose, resolutionPoseDetection,
-                                         cameraDirectory, fileName, 
-                                         openposeJsonDir, pathOutputVideo,
-                                         trialPrefix, generateVideo,
-                                         videoFullPath, pathOutputJsons)
+        raise ValueError("Commented out to make sure no overwrite")
+        
+        # c_path = os.getcwd()
+        # command = runOpenPoseCMD(
+        #     pathOpenPose, resolutionPoseDetection, cameraDirectory,
+        #     fileName, openposeJsonDir, pathOutputVideo, trialPrefix,
+        #     generateVideo, videoFullPath, pathOutputJsons)
+        
+        # if not pathOpenPose == "docker":
+        #     os.chdir(c_path)            
+        # # Get number of frames output video. We count the number of jsons, as
+        # # videos are not written on server.
+        # nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
+        #                  if f.endswith('.json')])
+        # # At high resolution, sometimes OpenPose does not process the full
+        # # video, let's check here and try max 5 times. If still bad, then raise
+        # # an exception.
+        # checknFrames = False
+        # if not resolutionPoseDetection == 'default' and checknFrames:
+        #     countFrames = 0
+        #     while nFrameIn != nFrameOut:
+        #         # Need to get command again, as there is os.chdir(pathOpenPose)
+        #         # in the function.
+        #         command = runOpenPoseCMD(pathOpenPose, resolutionPoseDetection,
+        #                                  cameraDirectory, fileName, 
+        #                                  openposeJsonDir, pathOutputVideo,
+        #                                  trialPrefix, generateVideo,
+        #                                  videoFullPath, pathOutputJsons)
 
-                if not pathOpenPose == "docker":
-                    os.chdir(c_path)
-                nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
-                                 if f.endswith('.json')])
-                if countFrames > 4:
-                    print('# frames in {} - # frames out {}'.format(nFrameIn,
-                                                                    nFrameOut))
-                    raise ValueError('OpenPose did not process the full video')
-                countFrames += 1
+        #         if not pathOpenPose == "docker":
+        #             os.chdir(c_path)
+        #         nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
+        #                          if f.endswith('.json')])
+        #         if countFrames > 4:
+        #             print('# frames in {} - # frames out {}'.format(nFrameIn,
+        #                                                             nFrameOut))
+        #             raise ValueError('OpenPose did not process the full video')
+        #         countFrames += 1
             
-        # Gather data from jsons in pkl file.    
-        saveJsonsAsPkl(pathOutputJsons, ppPklPath, trialPrefix)
+        # # Gather data from jsons in pkl file.    
+        # saveJsonsAsPkl(pathOutputJsons, ppPklPath, trialPrefix)
         
-        # Delete jsons
-        shutil.rmtree(pathJsonDir)
+        # # Delete jsons
+        # shutil.rmtree(pathJsonDir)
         
     return
         
