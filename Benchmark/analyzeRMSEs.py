@@ -13,17 +13,27 @@ from utils import getDataDirectory, storage2df
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import matplotlib.pyplot as plt
 import utilsDataman as dm
+import seaborn as sns
+import copy
 
 plots = False
 suffix_files = ''
+saveAndOverwriteResults = False
+overwriteResults = False
+
+scriptDir = os.getcwd()
+repoDir = os.path.dirname(scriptDir)
+mainDir = getDataDirectory(False)
+dataDir = os.path.join(mainDir)
+outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
 
 # %% User inputs.
 subjects = ['subject' + str(i) for i in range(2, 12)]
 
 poseDetectors = ['OpenPose_1x1008_4scales']
 cameraSetups = ['2-cameras', '3-cameras', '5-cameras']
-augmenterTypes = ['v0.7']
-augmenterTypeOffset = 'v0.7'
+augmenterTypes = ['v0.1', 'v0.2', 'v0.7']
+# augmenterTypeOffset = 'v0.7'
 
 # Cases to exclude to make sure we have the same number of trials per subject
 cases_to_exclude_trials = {'subject2': ['walkingTS3'],
@@ -75,33 +85,31 @@ for coordinate in coordinates_lr_tr:
 motions = ['walking', 'DJ', 'squats', 'STS']
 
 # %%
-scriptDir = os.getcwd()
-repoDir = os.path.dirname(scriptDir)
-mainDir = getDataDirectory(False)
-dataDir = os.path.join(mainDir)
-
-if not os.path.exists(os.path.join(dataDir, 'Data', 'RMSEs.npy')): 
+if not os.path.exists(os.path.join(outputDir, 'RMSEs.npy')): 
     RMSEs = {}
 else:  
-    RMSEs = np.load(os.path.join(dataDir, 'Data', 'RMSEs.npy'),
-                    allow_pickle=True).item()    
-if not os.path.exists(os.path.join(dataDir, 'Data', 'MAEs.npy')): 
+    RMSEs = np.load(os.path.join(outputDir, 'RMSEs.npy'), allow_pickle=True).item()    
+if not os.path.exists(os.path.join(outputDir, 'MAEs.npy')): 
     MAEs = {}
 else:  
-    MAEs = np.load(os.path.join(dataDir, 'Data', 'MAEs.npy'),
-                    allow_pickle=True).item()
+    MAEs = np.load(os.path.join(outputDir, 'MAEs.npy'), allow_pickle=True).item()
 
-RMSEs = {}
-RMSEs['all'] = {}
-MAEs = {}
-MAEs['all'] = {}
+if not 'all' in RMSEs:
+    RMSEs['all'] = {}
+if not 'all' in MAEs:
+    MAEs['all'] = {}
+    
 for motion in motions:
-    RMSEs[motion] = {}
-    MAEs[motion] = {}
+    if not motion in RMSEs:
+        RMSEs[motion] = {}
+    if not motion in MAEs:
+        MAEs[motion] = {}
     
 for subjectName in subjects:
-    RMSEs[subjectName] = {}
-    MAEs[subjectName] = {}
+    if not subjectName in RMSEs:
+        RMSEs[subjectName] = {}
+    if not subjectName in MAEs:
+        MAEs[subjectName] = {}
     print('\nProcessing {}'.format(subjectName))
     if fixed_markers:
         osDir = os.path.join(dataDir, 'Data', subjectName, 'OpenSimData_fixed')
@@ -159,6 +167,10 @@ for subjectName in subjects:
                         MAEs[motion][poseDetector][cameraSetup] = {}
                     
                 for augmenterType in augmenterTypes:
+
+                    if augmenterType in RMSEs[subjectName][poseDetector][cameraSetup] and augmenterType in MAEs[subjectName][poseDetector][cameraSetup] and not overwriteResults:
+                        continue
+
                     if not augmenterType in RMSEs[subjectName][poseDetector][cameraSetup]:
                         RMSEs[subjectName][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates, index=trials)
                     if not augmenterType in RMSEs['all'][poseDetector][cameraSetup]:
@@ -205,8 +217,9 @@ for subjectName in subjects:
                     cameraSetupDir = os.path.join(
                         poseDetectorDir, cameraSetup, augmenterType, 'IK', 
                         genericModel4ScalingName[:-5])
+                    # Used to use same augmenter for all for offset, not sure why
                     cameraSetupMarkerDir = os.path.join(
-                        poseDetectorMarkerDir, cameraSetup, augmenterTypeOffset)
+                        poseDetectorMarkerDir, cameraSetup, augmenterType)
                     
                     trial_video = trial[:-4] + '_videoAndMocap.mot'
                     trial_marker = trial[:-4] + '_videoAndMocap.trc'
@@ -285,6 +298,10 @@ for subjectName in subjects:
 
         count += 1
         
+if saveAndOverwriteResults:
+    np.save(os.path.join(outputDir, 'RMSEs.npy'), RMSEs)
+    np.save(os.path.join(outputDir, 'MAEs.npy'), MAEs)    
+        
 # %% Plots per coordinate: RMSEs
 all_motions = ['all'] + motions
 bps, means_RMSEs, medians_RMSEs = {}, {}, {}
@@ -327,7 +344,6 @@ for augmenterType in augmenterTypes:
     for poseDetector in poseDetectors:
         for cameraSetup in cameraSetups:        
             setups.append(poseDetector + '_' + cameraSetup + '_' + augmenterType)
-outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
 
 suffixRMSE = ''
 if fixed_markers:
@@ -988,3 +1004,86 @@ for c_s, setup in enumerate(setups):
 #         bad_values_pose[count,] = summary_sel_pose[i, j]
 #         count += 1
 # range_bad_values_pose = [np.round(np.min(bad_values_pose),1), np.round(np.max(bad_values_pose),1)]
+
+
+# Plots
+# means_RMSEs
+# setups
+
+# %%
+# Get len(cameraSetups) color-blind frienly colors.
+colors = sns.color_palette('colorblind', len(cameraSetups))
+motions = list(means_RMSEs.keys())
+# Create the x-tick labels for all subplots.
+xtick_labels = list(means_RMSEs[motions[0]].keys())
+# Remove pelvis_tx, pelvis_ty and pelivs_tz from xtick_labels.
+xtick_labels = [xtick_label for xtick_label in xtick_labels if xtick_label not in coordinates_tr] + ['mean']
+# remove _l at the end of the xtick_labels if present
+xtick_labels_labels = [xtick_label[:-2] if xtick_label[-2:] == '_l' else xtick_label for xtick_label in xtick_labels]
+
+# Copy means_RMSEs to means_RMSEs_copy.
+means_RMSEs_copy = copy.deepcopy(means_RMSEs)
+# Exclude coordinates_tr from means_RMSEs_copy
+for motion in means_RMSEs_copy:
+    for coordinate in coordinates_tr:
+        means_RMSEs_copy[motion].pop(coordinate)
+
+# Compute mean, this should match means_RMSE_summary_rot
+for motion in means_RMSEs_copy:
+    # Add field mean that contains the mean of the RMSEs for all coordinates.
+    # Stack lists from all fiedls of means_RMSEs_copy[motion] in one numpy array.
+    # Count twice the bilateral coordinates.
+    c_stack = np.zeros((len(coordinates_lr_rot) + len(coordinates_bil), len(setups)))
+    count = 0
+    for i, coordinate in enumerate(coordinates_lr_rot):
+        c_stack[count, :] = means_RMSEs_copy[motion][coordinate]
+        count += 1
+        if coordinate[-2:] == '_l':
+            c_stack[count, :] = means_RMSEs_copy[motion][coordinate]
+            count += 1
+    means_RMSEs_copy[motion]['mean'] = list(np.mean(c_stack, axis=0))
+
+for cameraSetup in cameraSetups:
+
+    # Create a figure with 1 column and as many columns as fields in means_RMSEs.
+    fig, axs = plt.subplots(len(means_RMSEs_copy.keys()), 1, figsize=(10, 5*len(means_RMSEs_copy.keys())))
+    fig.suptitle(cameraSetup)
+
+    # Get indices of setups for the camera setup.
+    idx_setups = [i for i, setup in enumerate(setups) if cameraSetup in setup]
+    bar_width = 0.8/len(idx_setups)
+
+    # Create list of integers with that has as many elements as there are idx_setups. The list has values with
+    # a step of 1 and is centered on 0.
+    x = np.arange(len(idx_setups)) - (len(idx_setups)-1)/2
+
+    # Loop over subplots in axs.
+    for a, ax in enumerate(axs):
+        ax.set_title(motions[a])
+        ax.set_ylabel('RMSE (deg)')
+        ax.set_xticks(np.arange(len(xtick_labels)))
+        if a == len(axs)-1:
+            axs[a].set_xticklabels(xtick_labels)
+        else:
+            axs[a].set_xticklabels([])        
+        
+        # For each field in means_RMSEs['all'], plot bars with the values of the field for each idx_setups.
+        for i, field in enumerate(xtick_labels):
+            for j, idx_setup in enumerate(idx_setups):
+                ax.bar(i+x[j]*bar_width, means_RMSEs_copy[motions[a]][field][idx_setup], bar_width, color=colors[j])
+                # Add text with the value of the bar.
+                if i == len(xtick_labels)-1:
+                    ax.text(i+x[j]*bar_width, means_RMSEs_copy[motions[a]][field][idx_setup], np.round(means_RMSEs_copy[motions[a]][field][idx_setup], 1), ha='center', va='bottom')    
+        # Add legend with idx_setups
+        leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+        # Get what is after the last '_' in leg_t.
+        leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+        ax.legend(leg_t)        
+        plt.show()
+        
+    # Set the x-tick labels for the last subplot only.
+    axs[-1].set_xticks(np.arange(len(xtick_labels)))
+    axs[-1].set_xticklabels(xtick_labels_labels)
+    
+
+
