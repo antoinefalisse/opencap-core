@@ -2473,7 +2473,8 @@ def triangulateMultiviewVideo(CameraParamDict,keypointDict,imageScaleFactor=1,
         endInd = confidence3D.shape[2]
                 
     # Rewrite videos based on sync time and trimmed trc.
-    if CameraDirectories != None and trialName !=None:       
+    writeVideos = False
+    if CameraDirectories != None and trialName !=None and writeVideos:       
         print('Writing synchronized videos')
         outputVideoDir = os.path.abspath(os.path.join(
                         list(CameraDirectories.values())[0],'../../','VisualizerVideos',trialName))

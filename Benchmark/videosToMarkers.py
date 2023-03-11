@@ -15,77 +15,67 @@ from runOsimPipeline_f import runOpenSimPipeline
 
 from scipy.spatial.transform import Rotation as R
 
+# %% Messy helper function
+def get_subject(subjects_to_process):
+    sessionDetails = {        
+        'subject2': {
+            'Session20210813_0001': {},
+            'Session20210813_0002': {}},        
+        'subject3': {
+            'Session20210816_0001': {},
+            'Session20210816_0002': {}},        
+        'subject4': {
+            'Session20210819_0001': {},
+            'Session20210819_0002': {}},        
+        'subject5': {
+            'Session20210820_0001': {},
+            'Session20210820_0002': {}},        
+        'subject6': {
+            'Session20210823_0001': {},
+            'Session20210823_0002': {}},        
+        'subject7': {
+            'Session20210825_0001': {},
+            'Session20210825_0002': {}},        
+        'subject8': {
+            'Session20210827_0001': {},
+            'Session20210827_0002': {}},        
+        'subject9': {
+            'Session20210830_0001': {},
+            'Session20210830_0002': {}},        
+        'subject10': {
+            'Session20210903_0001': {},
+            'Session20210903_0002': {}},        
+        'subject11': {
+            'Session20210910_0001': {},
+            'Session20210910_0002': {}}}
+    sessionDetails_out = {}
+    sessionNames_out = []
+    for subject in subjects_to_process:
+        sessionDetails_out[subject] = {}
+        for session in sessionDetails[subject]:
+            sessionDetails_out[subject][session] = {}   
+            sessionNames_out.append(session)
+    
+    return sessionNames_out, sessionDetails_out    
+
 # %% Validation: please keep here, hack to get all trials at once.
-# sessionNames = [
-#                 'Session20210813_0001', 'Session20210813_0002', 
-#                 'Session20210816_0001', 'Session20210816_0002',
-#                 'Session20210819_0001', 'Session20210819_0002',
-#                 'Session20210820_0001', 'Session20210820_0002', 
-#                 'Session20210823_0001', 'Session20210823_0002',
-#                 'Session20210825_0001', 'Session20210825_0002', 
-#                 'Session20210827_0001', 'Session20210827_0002', 
-#                 'Session20210830_0001', 'Session20210830_0002', 
-#                 'Session20210903_0001', 'Session20210903_0002', 
-#                 'Session20210910_0001', 'Session20210910_0002']
-
-# sessionDetails = {
-    
-#     'subject2': {
-#         'Session20210813_0001': {},
-#         'Session20210813_0002': {}},
-    
-#     'subject3': {
-#         'Session20210816_0001': {},
-#         'Session20210816_0002': {}},
-    
-#     'subject4': {
-#         'Session20210819_0001': {},
-#         'Session20210819_0002': {}},
-    
-#     'subject5': {
-#         'Session20210820_0001': {},
-#         'Session20210820_0002': {}},
-    
-#     'subject6': {
-#         'Session20210823_0001': {},
-#         'Session20210823_0002': {}},
-    
-#     'subject7': {
-#         'Session20210825_0001': {},
-#         'Session20210825_0002': {}},
-    
-#     'subject8': {
-#         'Session20210827_0001': {},
-#         'Session20210827_0002': {}},
-    
-#     'subject9': {
-#         'Session20210830_0001': {},
-#         'Session20210830_0002': {}},
-    
-#     'subject10': {
-#         'Session20210903_0001': {},
-#         'Session20210903_0002': {}},
-    
-#     'subject11': {
-#         'Session20210910_0001': {},
-#         'Session20210910_0002': {}},
-
-#     }
+subjects_to_process = ['subject' + str(i) for i in range(10,12)]
+sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
-syncMocapVideo = False
-gatherData = False
+syncMocapVideo = True
+gatherData = True
 runOpenSim = True
 
-sessionNames = ['Session20210813_0002']
-sessionDetails = {    
-    'subject2': {
-        'Session20210813_0001': {},
-        'Session20210813_0002': {}}}
+# sessionNames = ['Session20210813_0001', 'Session20210813_0002']
+# sessionDetails = {    
+#     'subject2': {
+#         'Session20210813_0001': {},
+#         'Session20210813_0002': {}}}
 poseDetectors = ['OpenPose']
 # cameraSetups = ['2-cameras', '3-cameras', '5-cameras']
 cameraSetups = ['2-cameras']
-augmenter_model = 'v0.8'
+augmenter_model = 'v0.3'
 
 dataDir = getDataDirectory()
 

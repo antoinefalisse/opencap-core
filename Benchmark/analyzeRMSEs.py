@@ -31,8 +31,8 @@ outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
 subjects = ['subject' + str(i) for i in range(2, 12)]
 
 poseDetectors = ['OpenPose_1x1008_4scales']
-cameraSetups = ['2-cameras', '3-cameras', '5-cameras']
-augmenterTypes = ['v0.1', 'v0.2', 'v0.7']
+cameraSetups = ['2-cameras']
+augmenterTypes = ['v0.1', 'v0.2', 'v0.3', 'v0.7']
 # augmenterTypeOffset = 'v0.7'
 
 # Cases to exclude to make sure we have the same number of trials per subject
@@ -1012,7 +1012,7 @@ for c_s, setup in enumerate(setups):
 
 # %%
 # Get len(cameraSetups) color-blind frienly colors.
-colors = sns.color_palette('colorblind', len(cameraSetups))
+colors = sns.color_palette('colorblind', len(idx_setups))
 motions = list(means_RMSEs.keys())
 # Create the x-tick labels for all subplots.
 xtick_labels = list(means_RMSEs[motions[0]].keys())
