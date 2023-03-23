@@ -59,7 +59,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(10,12)]
+subjects_to_process = ['subject' + str(i) for i in range(7,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
@@ -75,7 +75,12 @@ runOpenSim = True
 poseDetectors = ['OpenPose']
 # cameraSetups = ['2-cameras', '3-cameras', '5-cameras']
 cameraSetups = ['2-cameras']
-augmenter_model = 'v0.3'
+augmenter_model = 'v0.18'
+
+if augmenter_model == 'v0.12' or augmenter_model == 'v0.13' or augmenter_model == 'v0.14': # TODO keep adding to this list
+    withTrackingMarkers = False
+else:
+    withTrackingMarkers = True
 
 dataDir = getDataDirectory()
 
@@ -111,6 +116,7 @@ def process_trial(trial_id, trial_name=None, session_name='', isDocker=False,
 if not 'cameraSetups' in locals():
     cameraSetups = ['all-cameras']
 for count, sessionName in enumerate(sessionNames):
+    print('Processing session: ' + sessionName)
     for poseDetector in poseDetectors:
         for cameraSetup in cameraSetups:
             # subjectName = subjectNames[count]
@@ -201,12 +207,16 @@ if syncMocapVideo:
         overwritevideoAndMocap=True, writeMPJE_condition=True, writeMPJE_session=True,
         csv_name='MPJE_fullSession_v0.8')
 
+    print("DONE: syncing to mocap")
+
 
 # %% Gather data from different sessions
 if gatherData:
     for subjectName in sessionDetails:
         c_sessions = sessionDetails[subjectName]
         main_gather(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, [augmenter_model])
+
+    print("DONE: gathering data")
 
 # OpenSim pipeline
 if runOpenSim:
@@ -215,7 +225,9 @@ if runOpenSim:
     opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 
     for subjectName in sessionDetails:
-        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, [augmenter_model], runMocap=False, runVideoAugmenter=True, runVideoPose=False)
+        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, [augmenter_model], runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers)
+
+    print("DONE: OpenSim pipeline")
         
 test=1
 

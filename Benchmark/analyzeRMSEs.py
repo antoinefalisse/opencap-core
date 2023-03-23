@@ -17,8 +17,7 @@ import seaborn as sns
 import copy
 
 plots = False
-suffix_files = ''
-saveAndOverwriteResults = False
+saveAndOverwriteResults = True
 overwriteResults = False
 
 scriptDir = os.getcwd()
@@ -32,7 +31,21 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 
 poseDetectors = ['OpenPose_1x1008_4scales']
 cameraSetups = ['2-cameras']
-augmenterTypes = ['v0.1', 'v0.2', 'v0.3', 'v0.7']
+# augmenterTypes = {'v0.1': {'run': False},
+#                   'v0.2': {'run': False},
+#                   'v0.7': {'run': False},
+#                   'v0.10': {'run': False},
+#                   'v0.12': {'run': False},
+#                   'v0.14': {'run': False},
+#                   'v0.15': {'run': False}}
+
+augmenterTypes = {'v0.2': {'run': True},
+                  'v0.15': {'run': True},
+                  'v0.17': {'run': True},
+                  'v0.18': {'run': True}}
+
+processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
+
 # augmenterTypeOffset = 'v0.7'
 
 # Cases to exclude to make sure we have the same number of trials per subject
@@ -41,7 +54,7 @@ cases_to_exclude_trials = {'subject2': ['walkingTS3'],
 # Cases to exclude because of failed syncing (mocap vs opencap)
 cases_to_exclude_syncing = {}
 cases_to_exclude_syncing = {
-    'subject3': {'OpenPose': {'2-cameras': ['walking1', 'walkingTI1', 'walkingTI2', 'walkingTO1', 'walkingTO2', 'walkingTS3', 'walkingTS4']}}}
+    'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTI1', 'walkingTI2', 'walkingTO1', 'walkingTO2', 'walkingTS3', 'walkingTS4']}}}
 # Cases to exclude because of failed algorithm (opencap)
 cases_to_exclude_algo = {
     'subject2': {'OpenPose_generic': {'3-cameras': ['walkingTS1', 'walkingTS2', 'walkingTS4', 'DJ1', 'DJ2', 'DJ3', 'DJAsym1', 'DJAsym4', 'DJAsym5'],
@@ -52,6 +65,8 @@ cases_to_exclude_algo = {
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
 
 fixed_markers = False # False should be default (better results)
+
+
 
 # %%
 genericModel4ScalingName = 'LaiArnoldModified2017_poly_withArms_weldHand.osim'
@@ -84,7 +99,16 @@ for coordinate in coordinates_lr_tr:
     coordinates_lr_rot.remove(coordinate)
 motions = ['walking', 'DJ', 'squats', 'STS']
 
+addBiomechanicsMocapModel = 'LaiArnold2107_OpenCapMocap'
+addBiomechanicsVideoModel = 'LaiArnold2107_OpenCapVideo'
+
 # %%
+# if addBiomechanicsMocap:
+#     suffix_files = '_addB'
+# else:
+#     suffix_files = ''
+
+
 if not os.path.exists(os.path.join(outputDir, 'RMSEs.npy')): 
     RMSEs = {}
 else:  
@@ -116,20 +140,18 @@ for subjectName in subjects:
     else:
         osDir = os.path.join(dataDir, 'Data', subjectName, 'OpenSimData')
     markerDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData')
-    mocapDir = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])
-    
+        
+    # Hack
+    mocapDirAll = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])    
     trials = []
-    for trial in os.listdir(mocapDir):
+    for trial in os.listdir(mocapDirAll):
         if not trial[-3:] == 'mot':
             continue
         trials.append(trial[:-4])
     count = 0
-    for trial in os.listdir(mocapDir):
+    for trial in os.listdir(mocapDirAll):
         if not trial[-3:] == 'mot':
-            continue
-        pathTrial = os.path.join(mocapDir, trial)
-        trial_mocap_df = storage2df(pathTrial, coordinates)
-        
+            continue        
         for poseDetector in poseDetectors:
             if not poseDetector in RMSEs[subjectName]:
                 RMSEs[subjectName][poseDetector] = {}
@@ -167,134 +189,220 @@ for subjectName in subjects:
                         MAEs[motion][poseDetector][cameraSetup] = {}
                     
                 for augmenterType in augmenterTypes:
-
-                    if augmenterType in RMSEs[subjectName][poseDetector][cameraSetup] and augmenterType in MAEs[subjectName][poseDetector][cameraSetup] and not overwriteResults:
-                        continue
-
+                    
                     if not augmenterType in RMSEs[subjectName][poseDetector][cameraSetup]:
-                        RMSEs[subjectName][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates, index=trials)
+                        RMSEs[subjectName][poseDetector][cameraSetup][augmenterType] = {}
                     if not augmenterType in RMSEs['all'][poseDetector][cameraSetup]:
-                        RMSEs['all'][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates)
+                        RMSEs['all'][poseDetector][cameraSetup][augmenterType] = {}
                     for motion in motions:
                         if not augmenterType in RMSEs[motion][poseDetector][cameraSetup]:
-                            RMSEs[motion][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates)
+                            RMSEs[motion][poseDetector][cameraSetup][augmenterType] = {}
                             
                     if not augmenterType in MAEs[subjectName][poseDetector][cameraSetup]:
-                        MAEs[subjectName][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates, index=trials)
+                        MAEs[subjectName][poseDetector][cameraSetup][augmenterType] = {}
                     if not augmenterType in MAEs['all'][poseDetector][cameraSetup]:
-                        MAEs['all'][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates)
+                        MAEs['all'][poseDetector][cameraSetup][augmenterType] = {}
                     for motion in motions:
                         if not augmenterType in MAEs[motion][poseDetector][cameraSetup]:
-                            MAEs[motion][poseDetector][cameraSetup][augmenterType] = pd.DataFrame(columns=coordinates)
-                    
-                    if (subjectName in cases_to_exclude_trials and
-                        trial[:-4] in cases_to_exclude_trials[subjectName]):
-                        print('Exclude {} - {}'.format(subjectName, trial[:-4]))
-                        continue
-                    
-                    if (subjectName in cases_to_exclude_syncing and 
-                        poseDetector in cases_to_exclude_syncing[subjectName] and 
-                        cameraSetup in cases_to_exclude_syncing[subjectName][poseDetector] and 
-                        trial[:-4] in cases_to_exclude_syncing[subjectName][poseDetector][cameraSetup]):
-                        print('Exclude {} - {} - {} - {}'.format(subjectName, poseDetector, cameraSetup, trial[:-4]))
-                        continue
-                    
-                    if (subjectName in cases_to_exclude_algo and 
-                        poseDetector in cases_to_exclude_algo[subjectName] and 
-                        cameraSetup in cases_to_exclude_algo[subjectName][poseDetector] and 
-                        trial[:-4] in cases_to_exclude_algo[subjectName][poseDetector][cameraSetup]):
-                        print('Exclude {} - {} - {} - {}'.format(subjectName, poseDetector, cameraSetup, trial[:-4]))
-                        continue
-                    
-                    in_vec = False
-                    for case_to_exclude_paper in cases_to_exclude_paper:                                
-                        if case_to_exclude_paper in trial[:-4].lower():
-                            print('Exclude {}'.format(trial))  
-                            in_vec = True
-                    if in_vec:
-                        continue
+                            MAEs[motion][poseDetector][cameraSetup][augmenterType] = {}
+                            
+                    for processingType in processingTypes:  
                         
-                    cameraSetupDir = os.path.join(
-                        poseDetectorDir, cameraSetup, augmenterType, 'IK', 
-                        genericModel4ScalingName[:-5])
-                    # Used to use same augmenter for all for offset, not sure why
-                    cameraSetupMarkerDir = os.path.join(
-                        poseDetectorMarkerDir, cameraSetup, augmenterType)
+                        if processingType == 'IK_IK' or processingType == 'IK_addB':
+                            addBiomechanicsMocap = False
+                        else:
+                            addBiomechanicsMocap = True
+                            
+                            
+                        if processingType == 'IK_IK' or processingType == 'addB_IK':
+                            addBiomechanicsVideo = False
+                        else:
+                            addBiomechanicsVideo = True                    
+
+                        # if augmenterType in RMSEs[subjectName][poseDetector][cameraSetup] and augmenterType in MAEs[subjectName][poseDetector][cameraSetup] and not overwriteResults:
+                        #     continue
                     
-                    trial_video = trial[:-4] + '_videoAndMocap.mot'
-                    trial_marker = trial[:-4] + '_videoAndMocap.trc'
-                    pathTrial_video = os.path.join(cameraSetupDir, trial_video)
-                    pathTrial_marker = os.path.join(cameraSetupMarkerDir, trial_marker)
-                    
-                    if not os.path.exists(pathTrial_video):
-                        continue
-                    
-                    trial_video_df = storage2df(pathTrial_video, coordinates)
-                    
-                    # Convert to numpy
-                    trial_mocap_np = trial_mocap_df.to_numpy()
-                    trial_video_np = trial_video_df.to_numpy()
-                    
-                    # Extract start and end time from video
-                    time_start = trial_video_np[0, 0]
-                    time_end = trial_video_np[-1, 0]
-                    # Find corresponding indices in mocap data
-                    idx_start = np.argwhere(trial_mocap_np[:, 0] == time_start)[0][0]
-                    idx_end = np.argwhere(trial_mocap_np[:, 0] == time_end)[0][0]
-                    # Select mocap data based on video-based time vector
-                    trial_mocap_np_adj = trial_mocap_np[idx_start:idx_end+1, :]                
-                    
-                    # Compute RMSEs and MAEs
-                    y_true = trial_mocap_np_adj[:, 1:]
-                    y_pred = trial_video_np[:, 1:]
-                    
-                    c_rmse = []
-                    c_mae = []
-                    
-                    # If translational degree of freedom, adjust for offset
-                    # Compute offset from trc file.
-                    c_trc = dm.TRCFile(pathTrial_marker)
-                    c_trc_m1 = c_trc.marker('Neck')
-                    c_trc_m1_offsetRemoved = c_trc.marker('Neck_offsetRemoved')
-                    # Verify same offset for different markers.
-                    c_trc_m2 = c_trc.marker('L_knee_study')
-                    c_trc_m2_offsetRemoved = c_trc.marker('L_knee_study_offsetRemoved')                    
-                    c_trc_m1_offset = np.mean(c_trc_m1-c_trc_m1_offsetRemoved, axis=0)
-                    c_trc_m2_offset = np.mean(c_trc_m2-c_trc_m2_offsetRemoved, axis=0)
-                    assert (np.all(np.round(c_trc_m1_offset,2)==np.round(c_trc_m2_offset,2))), 'Problem offset'
-                    
-                    for count1 in range(y_true.shape[1]):
-                        c_coord = coordinates[count1]
+                        # TODO
+                        if not augmenterTypes[augmenterType]['run'] and not overwriteResults:
+                            continue
+    
+                        if not processingType in RMSEs[subjectName][poseDetector][cameraSetup][augmenterType]:
+                            RMSEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates, index=trials)
+                        if not processingType in RMSEs['all'][poseDetector][cameraSetup][augmenterType]:
+                            RMSEs['all'][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+                        for motion in motions:
+                            if not processingType in RMSEs[motion][poseDetector][cameraSetup][augmenterType]:
+                                RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+                                
+                        if not processingType in MAEs[subjectName][poseDetector][cameraSetup][augmenterType]:
+                            MAEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates, index=trials)
+                        if not processingType in MAEs['all'][poseDetector][cameraSetup][augmenterType]:
+                            MAEs['all'][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+                        for motion in motions:
+                            if not processingType in MAEs[motion][poseDetector][cameraSetup][augmenterType]:
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+                        
+                        if (subjectName in cases_to_exclude_trials and
+                            trial[:-4] in cases_to_exclude_trials[subjectName]):
+                            print('Exclude {} - {}'.format(subjectName, trial[:-4]))
+                            continue
+                        
+                        if (subjectName in cases_to_exclude_syncing and 
+                            poseDetector in cases_to_exclude_syncing[subjectName] and 
+                            cameraSetup in cases_to_exclude_syncing[subjectName][poseDetector] and 
+                            trial[:-4] in cases_to_exclude_syncing[subjectName][poseDetector][cameraSetup]):
+                            print('Exclude {} - {} - {} - {}'.format(subjectName, poseDetector, cameraSetup, trial[:-4]))
+                            continue
+                        
+                        if (subjectName in cases_to_exclude_algo and 
+                            poseDetector in cases_to_exclude_algo[subjectName] and 
+                            cameraSetup in cases_to_exclude_algo[subjectName][poseDetector] and 
+                            trial[:-4] in cases_to_exclude_algo[subjectName][poseDetector][cameraSetup]):
+                            print('Exclude {} - {} - {} - {}'.format(subjectName, poseDetector, cameraSetup, trial[:-4]))
+                            continue
+                        
+                        in_vec = False
+                        for case_to_exclude_paper in cases_to_exclude_paper:                                
+                            if case_to_exclude_paper in trial[:-4].lower():
+                                print('Exclude {}'.format(trial))  
+                                in_vec = True
+                        if in_vec:
+                            continue
+                        
+                        
+                        if addBiomechanicsMocap:
+                            mocapDir = os.path.join(osDir, 'Mocap', 'AddBiomechanics', 'IK', addBiomechanicsMocapModel)                              
+                        else:
+                            mocapDir = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])                              
+                            
+                        pathTrial = os.path.join(mocapDir, trial)
+                        trial_mocap_df = storage2df(pathTrial, coordinates)
+                            
+                        if addBiomechanicsVideo:
+                            cameraSetupDir = os.path.join(
+                                poseDetectorDir, cameraSetup, augmenterType, 'AddBiomechanics', 'IK', 
+                                addBiomechanicsVideoModel)
+                        else:
+                            cameraSetupDir = os.path.join(
+                                poseDetectorDir, cameraSetup, augmenterType, 'IK', 
+                                genericModel4ScalingName[:-5])                            
+                            
+                        # Used to use same augmenter for all for offset, not sure why
+                        cameraSetupMarkerDir = os.path.join(
+                            poseDetectorMarkerDir, cameraSetup, augmenterType)
+                        
+                        trial_video = trial[:-4] + '_videoAndMocap.mot'
+                        trial_marker = trial[:-4] + '_videoAndMocap.trc'
+                        pathTrial_video = os.path.join(cameraSetupDir, trial_video)
+                        pathTrial_marker = os.path.join(cameraSetupMarkerDir, trial_marker)
+                        
+                        if not os.path.exists(pathTrial_video):
+                            continue
+                        
+                        trial_video_df = storage2df(pathTrial_video, coordinates)
+                        
+                        # Convert to numpy
+                        trial_mocap_np = trial_mocap_df.to_numpy()
+                        trial_video_np = trial_video_df.to_numpy()
+                        
+                        # Extract start and end time from video
+                        time_start_video = trial_video_np[0, 0]
+                        time_end_video = trial_video_np[-1, 0]
+
+                        # Extract start and end time from moca[]
+                        time_start_mocap = trial_mocap_np[0, 0]
+                        time_end_mocap = trial_mocap_np[-1, 0]
+                        
+                        # Pick the time vector that is the most restrictive
+                        time_start = max(time_start_video, time_start_mocap)
+                        time_end = min(time_end_video, time_end_mocap)
+                        
+                        # For DJ trials, we trimmed the OpenSim IK ones, but not the addb ones
+                        # Let's load a reference OpenSim IK one to get the same time vector
+                        if addBiomechanicsMocap and addBiomechanicsVideo and 'DJ' in trial:
+                            mocapDir_temp = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])
+                            pathTrial_temp = os.path.join(mocapDir_temp, trial)
+                            trial_mocap_df_temp = storage2df(pathTrial_temp, coordinates)
+                            trial_mocap_np_temp = trial_mocap_df_temp.to_numpy()
+                            time_start_mocap_temp = trial_mocap_np_temp[0, 0]
+                            time_end_mocap_temp = trial_mocap_np_temp[-1, 0]
+                            time_start = max(time_start, time_start_mocap_temp)
+                            time_end = min(time_end, time_end_mocap_temp)
+                        
+                        # Find corresponding indices in mocap data
+                        idx_start_mocap = np.argwhere(trial_mocap_np[:, 0] == time_start)[0][0]
+                        idx_end_mocap = np.argwhere(trial_mocap_np[:, 0] == time_end)[0][0]
+                        # Select mocap data based on video-based time vector
+                        trial_mocap_np_adj = trial_mocap_np[idx_start_mocap:idx_end_mocap+1, :]
+
+                        # Find corresponding indices in video data
+                        idx_start_video = np.argwhere(trial_video_np[:, 0] == time_start)[0][0]
+                        idx_end_video = np.argwhere(trial_video_np[:, 0] == time_end)[0][0]
+                        # Select video data based on video-based time vector
+                        trial_video_np_adj = trial_video_np[idx_start_video:idx_end_video+1, :]               
+                        
+                        # Compute RMSEs and MAEs
+                        y_true = trial_mocap_np_adj[:, 1:]
+                        y_pred = trial_video_np_adj[:, 1:]
+                        
+                        c_rmse = []
+                        c_mae = []
+                        
                         # If translational degree of freedom, adjust for offset
-                        if c_coord in coordinates_tr:
-                            if c_coord == 'pelvis_tx':
-                                y_pred[:, count1] -= c_trc_m1_offset[0]/1000
-                            elif c_coord == 'pelvis_ty':
-                                y_pred[:, count1] -= c_trc_m1_offset[1]/1000
-                            elif c_coord == 'pelvis_tz':
-                                y_pred[:, count1] -= c_trc_m1_offset[2]/1000
-                        # RMSE
-                        value = mean_squared_error(
-                            y_true[:, count1], y_pred[:, count1], squared=False)
-                        RMSEs[subjectName][poseDetector][cameraSetup][augmenterType].loc[trials[count], c_coord] = value
-                        c_rmse.append(value)
-                        # MAE                        
-                        value2 = mean_absolute_error(
-                            y_true[:, count1], y_pred[:, count1])
-                        MAEs[subjectName][poseDetector][cameraSetup][augmenterType].loc[trials[count], c_coord] = value2
-                        c_mae.append(value2)
+                        # Compute offset from trc file.
+                        c_trc = dm.TRCFile(pathTrial_marker)
+                        c_trc_m1 = c_trc.marker('Neck')
+                        c_trc_m1_offsetRemoved = c_trc.marker('Neck_offsetRemoved')
+                        # Verify same offset for different markers.
+                        c_trc_m2 = c_trc.marker('L_knee_study')
+                        c_trc_m2_offsetRemoved = c_trc.marker('L_knee_study_offsetRemoved')                    
+                        c_trc_m1_offset = np.mean(c_trc_m1-c_trc_m1_offsetRemoved, axis=0)
+                        c_trc_m2_offset = np.mean(c_trc_m2-c_trc_m2_offsetRemoved, axis=0)
+                        assert (np.all(np.round(c_trc_m1_offset,2)==np.round(c_trc_m2_offset,2))), 'Problem offset'
                         
-                        if value > 20:
-                            print('{} - {} - {} - {} - {} - {} had RMSE of {}'.format(subjectName, poseDetector, cameraSetup, augmenterType, trial[:-4], c_coord, value))
+                        for count1 in range(y_true.shape[1]):
+                            c_coord = coordinates[count1]
+                            # If translational degree of freedom, adjust for offset
+                            if c_coord in coordinates_tr:
+                                if c_coord == 'pelvis_tx':
+                                    y_pred[:, count1] -= c_trc_m1_offset[0]/1000
+                                elif c_coord == 'pelvis_ty':
+                                    y_pred[:, count1] -= c_trc_m1_offset[1]/1000
+                                elif c_coord == 'pelvis_tz':
+                                    y_pred[:, count1] -= c_trc_m1_offset[2]/1000
+                            else:
+                                # Convert to degrees if addBiomechanics
+                                if addBiomechanicsMocap:
+                                    y_true_adj = np.rad2deg(y_true[:, count1])
+                                else:
+                                    y_true_adj = y_true[:, count1]
+                                if addBiomechanicsVideo:
+                                    y_pred_adj = np.rad2deg(y_pred[:, count1])
+                                else:
+                                    y_pred_adj = y_pred[:, count1]
+                                    
+                            # RMSE
+                            value = mean_squared_error(
+                                y_true_adj, y_pred_adj, squared=False)
+                            RMSEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType].loc[trials[count], c_coord] = value
+                            c_rmse.append(value)
+                            # MAE                        
+                            value2 = mean_absolute_error(
+                                y_true_adj, y_pred_adj)
+                            MAEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType].loc[trials[count], c_coord] = value2
+                            c_mae.append(value2)
+                            
+                            if value > 20:
+                                print('{} - {} - {} - {} - {} - {} - {} had RMSE of {}'.format(subjectName, poseDetector, cameraSetup, augmenterType, processingType, trial[:-4], c_coord, value))
+                            
+                        c_name = subjectName + '_' +  trial[:-4]
+                        RMSEs['all'][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_rmse
+                        MAEs['all'][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_mae
                         
-                    c_name = subjectName + '_' +  trial[:-4]
-                    RMSEs['all'][poseDetector][cameraSetup][augmenterType].loc[c_name] = c_rmse
-                    MAEs['all'][poseDetector][cameraSetup][augmenterType].loc[c_name] = c_mae
-                    
-                    for motion in motions:
-                        if motion in trial:
-                            RMSEs[motion][poseDetector][cameraSetup][augmenterType].loc[c_name] = c_rmse
-                            MAEs[motion][poseDetector][cameraSetup][augmenterType].loc[c_name] = c_mae  
+                        for motion in motions:
+                            if motion in trial:
+                                RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_rmse
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_mae  
 
         count += 1
         
@@ -312,23 +420,24 @@ for motion in all_motions:
         fig.suptitle(motion)    
     for count, coordinate in enumerate(coordinates_lr):
         c_data = {}
-        for augmenterType in augmenterTypes:
-            for poseDetector in poseDetectors:
-                for cameraSetup in cameraSetups:                
-                    if coordinate[-2:] == '_l':
-                        c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType] = (                    
-                            RMSEs[motion][poseDetector][cameraSetup][augmenterType][coordinate].tolist() +                     
-                            RMSEs[motion][poseDetector][cameraSetup][augmenterType][coordinate[:-2] + '_r'].tolist())
-                        coordinate_title = coordinate[:-2]
-                    else:
-                        c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType] = (
-                            RMSEs[motion][poseDetector][cameraSetup][augmenterType][coordinate].tolist())
-                        coordinate_title = coordinate                    
+        for processingType in processingTypes:
+            for augmenterType in augmenterTypes:
+                for poseDetector in poseDetectors:
+                    for cameraSetup in cameraSetups:                
+                        if coordinate[-2:] == '_l':
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType + '_' + processingType] = (                    
+                                RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist() +                     
+                                RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate[:-2] + '_r'].tolist())
+                            coordinate_title = coordinate[:-2]
+                        else:
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType+ '_' + processingType] = (
+                                RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist())
+                            coordinate_title = coordinate                    
         if plots:
             ax = axs.flat[count]
             bps[motion][coordinate] = ax.boxplot(c_data.values())
             ax.set_title(coordinate_title)
-            xticks = list(range(1, len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)+1))
+            xticks = list(range(1, len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes)+1))
             ax.set_xticks(xticks)
             ax.set_xticklabels(c_data.keys(), rotation = 90)
             ax.set_ylim(0, 20)
@@ -340,16 +449,17 @@ for motion in all_motions:
         
 # %% Print out csv files with results: median RMSEs
 setups = []
-for augmenterType in augmenterTypes:
-    for poseDetector in poseDetectors:
-        for cameraSetup in cameraSetups:        
-            setups.append(poseDetector + '_' + cameraSetup + '_' + augmenterType)
+for processingType in processingTypes:
+    for augmenterType in augmenterTypes:
+        for poseDetector in poseDetectors:
+            for cameraSetup in cameraSetups:        
+                setups.append(poseDetector + '_' + cameraSetup + '_' + augmenterType + '_' + processingType)
 
 suffixRMSE = ''
 if fixed_markers:
     suffixRMSE = '_fixed'    
         
-with open(os.path.join(outputDir,'RMSEs{}_medians{}.csv'.format(suffixRMSE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'RMSEs{}_medians.csv'.format(suffixRMSE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['motion-type', '', 'setup']
     for label in coordinates_lr:
@@ -410,7 +520,7 @@ suffixRMSE = ''
 if fixed_markers:
     suffixRMSE = '_fixed'    
         
-with open(os.path.join(outputDir,'RMSEs{}_means{}.csv'.format(suffixRMSE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'RMSEs{}_means.csv'.format(suffixRMSE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['motion-type', '', 'setup']
     for label in coordinates_lr:
@@ -489,23 +599,24 @@ for motion in all_motions:
         fig.suptitle(motion)    
     for count, coordinate in enumerate(coordinates_lr):
         c_data = {}
-        for augmenterType in augmenterTypes:
-            for poseDetector in poseDetectors:
-                for cameraSetup in cameraSetups:                
-                    if coordinate[-2:] == '_l':
-                        c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType] = (                    
-                            MAEs[motion][poseDetector][cameraSetup][augmenterType][coordinate].tolist() +                     
-                            MAEs[motion][poseDetector][cameraSetup][augmenterType][coordinate[:-2] + '_r'].tolist())
-                        coordinate_title = coordinate[:-2]
-                    else:
-                        c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType] = (
-                            MAEs[motion][poseDetector][cameraSetup][augmenterType][coordinate].tolist())
-                        coordinate_title = coordinate                    
+        for processingType in processingTypes:
+            for augmenterType in augmenterTypes:
+                for poseDetector in poseDetectors:
+                    for cameraSetup in cameraSetups:                
+                        if coordinate[-2:] == '_l':
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType + '_' + processingType] = (                    
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist() +                     
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate[:-2] + '_r'].tolist())
+                            coordinate_title = coordinate[:-2]
+                        else:
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType + '_' + processingType] = (
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist())
+                            coordinate_title = coordinate                    
         if plots:
             ax = axs.flat[count]
             bps[motion][coordinate] = ax.boxplot(c_data.values())        
             ax.set_title(coordinate_title)
-            xticks = list(range(1, len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)+1))
+            xticks = list(range(1, len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes)+1))
             ax.set_xticks(xticks)
             ax.set_xticklabels(c_data.keys(), rotation = 90)
             ax.set_ylim(0, 20)
@@ -519,7 +630,7 @@ suffixMAE = ''
 if fixed_markers:
     suffixMAE = '_fixed'    
         
-with open(os.path.join(outputDir,'MAEs{}_medians{}.csv'.format(suffixMAE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'MAEs{}_medians.csv'.format(suffixMAE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['motion-type', '', 'setup']
     for label in coordinates_lr:
@@ -580,7 +691,7 @@ suffixRMSE = ''
 if fixed_markers:
     suffixRMSE = '_fixed'    
         
-with open(os.path.join(outputDir,'MAEs{}_means{}.csv'.format(suffixRMSE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'MAEs{}_means.csv'.format(suffixRMSE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['motion-type', '', 'setup']
     for label in coordinates_lr:
@@ -696,7 +807,7 @@ if fixed_markers:
     suffixRMSE = '_fixed'    
 
 # MAEs
-with open(os.path.join(outputDir,'MAEs{}_means_paper{}.csv'.format(suffixRMSE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'MAEs{}_means_paper.csv'.format(suffixRMSE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['Activity', 'Markers', 'Pose detector', 'Camera configuration']
     for label in coordinates_lr:
@@ -759,7 +870,7 @@ with open(os.path.join(outputDir,'MAEs{}_means_paper{}.csv'.format(suffixRMSE,su
             _ = csvWriter.writerow(MAErow)
    
 # RMSEs
-with open(os.path.join(outputDir,'RMSEs{}_means_paper{}.csv'.format(suffixRMSE,suffix_files)), 'w', newline='') as csvfile:
+with open(os.path.join(outputDir,'RMSEs{}_means_paper.csv'.format(suffixRMSE)), 'w', newline='') as csvfile:
     csvWriter = csv.writer(csvfile)
     topRow = ['Activity', 'Markers', 'Pose detector', 'Camera configuration']
     for label in coordinates_lr:
@@ -1012,7 +1123,7 @@ for c_s, setup in enumerate(setups):
 
 # %%
 # Get len(cameraSetups) color-blind frienly colors.
-colors = sns.color_palette('colorblind', len(idx_setups))
+colors = sns.color_palette('colorblind', len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes))
 motions = list(means_RMSEs.keys())
 # Create the x-tick labels for all subplots.
 xtick_labels = list(means_RMSEs[motions[0]].keys())
@@ -1077,7 +1188,7 @@ for cameraSetup in cameraSetups:
         # Add legend with idx_setups
         leg_t = [setups[idx_setup] for idx_setup in idx_setups]
         # Get what is after the last '_' in leg_t.
-        leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+        # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
         ax.legend(leg_t)        
         plt.show()
         

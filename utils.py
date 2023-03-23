@@ -1175,6 +1175,54 @@ def getOpenPoseMarkers_lowerExtremity2():
     
     return feature_markers, response_markers
 
+def getOpenPoseMarkers_lowerExtremity3():
+    
+    feature_markers = [
+        "Neck", "RShoulder", "LShoulder", "RHip", "LHip", "RKnee", "LKnee",
+        "RAnkle", "LAnkle", "RHeel", "LHeel", "RSmallToe", "LSmallToe",
+        "RBigToe", "LBigToe"]
+    
+    response_markers = [
+        'r.ASIS_study', 'L.ASIS_study', 'r.PSIS_study',
+        'L.PSIS_study', 'r_knee_study', 'r_mknee_study', 
+        'r_ankle_study', 'r_mankle_study', 'r_toe_study', 
+        'r_5meta_study', 'r_calc_study', 'L_knee_study', 
+        'L_mknee_study', 'L_ankle_study', 'L_mankle_study',
+        'L_toe_study', 'L_calc_study', 'L_5meta_study', 
+        'r_shoulder_study', 'L_shoulder_study', 'C7_study',
+        'RHJC_study', 'LHJC_study']
+    
+    return feature_markers, response_markers
+
+def getOpenPoseMarkers_lowerExtremity4():
+    
+    feature_markers = [
+        "Neck", "RShoulder", "LShoulder", "RHip", "LHip", "RKnee", "LKnee",
+        "RAnkle", "LAnkle", "RHeel", "LHeel", "RSmallToe", "LSmallToe",
+        "RBigToe", "LBigToe"]
+    
+    response_markers = [
+        'r.ASIS_study', 'L.ASIS_study', 'r.PSIS_study',
+        'L.PSIS_study', 'r_knee_study', 'r_mknee_study', 
+        'r_ankle_study', 'r_mankle_study', 'L_knee_study', 
+        'L_mknee_study', 'L_ankle_study', 'L_mankle_study',
+        'r_shoulder_study', 'L_shoulder_study', 'C7_study',
+        'RHJC_study', 'LHJC_study']
+    
+    return feature_markers, response_markers
+
+def getOpenPoseMarkers_feet():
+    
+    feature_markers = [
+        "RAnkle", "LAnkle", "RHeel", "LHeel", "RSmallToe", "LSmallToe",
+        "RBigToe", "LBigToe"]
+    
+    response_markers = [
+        'r_toe_study', 'r_5meta_study', 'r_calc_study', 
+        'L_toe_study', 'L_5meta_study', 'L_calc_study']
+    
+    return feature_markers, response_markers
+
 def getMMposeMarkers_lowerExtremity():
 
     # Here we replace RSmallToe_mmpose and LSmallToe_mmpose by RSmallToe and

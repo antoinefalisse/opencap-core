@@ -29,7 +29,7 @@ from utilsOpenSim import runScaleTool, runIKTool, getScaleTimeRange, runIDTool
 # opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 # for subjectName in subjects:
 
-def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False):
+def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True):
 
     # Filter frequencies for ID.
     filterFrequencies = {'walking': 12, 'default':30}
@@ -44,7 +44,10 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
     genericSetupFile4ScalingNameVideoOpenPose = 'Setup_scaling_RajagopalModified2016_withArms_KA_openpose.xml'
     genericSetupFile4ScalingNameVideoMMpose = 'Setup_scaling_RajagopalModified2016_withArms_KA_mmpose.xml'
     genericSetupFile4IKNameMocap = 'Setup_IK_Mocap.xml'
-    genericSetupFile4IKNameVideo = 'Setup_IK.xml'
+    if withTrackingMarkers:
+        genericSetupFile4IKNameVideo = 'Setup_IK.xml'
+    else:
+        genericSetupFile4IKNameVideo = 'Setup_IK_augmenter_noTracking.xml'
     genericSetupFile4IKNameVideoOpenPose = 'Setup_IK_openpose.xml'
     genericSetupFile4IKNameVideoMMpose = 'Setup_IK_mmpose.xml'
     genericSetupFile4IDName = 'Setup_ID.xml'
@@ -227,7 +230,8 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                                       pathTRCFile4Scaling, timeRange4Scaling, 
                                       outputScaledModelDir,
                                       subjectHeight=sessionMetadata['height_m'],
-                                      fixed_markers=fixed_markers)                    
+                                      fixed_markers=fixed_markers,
+                                      withTrackingMarkers=withTrackingMarkers)                    
                     
                     # IK
                     for TRCFile4IKName in os.listdir(augmenterTypeDir):

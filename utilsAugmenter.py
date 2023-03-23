@@ -33,20 +33,44 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
         augmenterModelType_all = [augmenterModelType_lower, augmenterModelType_upper]
         feature_markers_all = [feature_markers_lower, feature_markers_upper]
         response_markers_all = [response_markers_lower, response_markers_upper]
-    elif augmenter_model == 'v0.3' or augmenter_model == 'v0.4' or augmenter_model == 'v0.5' or augmenter_model == 'v0.6' or augmenter_model == 'v0.7' or augmenter_model == 'v0.8' or augmenter_model == 'v0.9':
-        # Lower body           
-        augmenterModelType_lower = '{}_lower'.format(augmenter_model)
-        from utils import getOpenPoseMarkers_lowerExtremity2
-        feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity2()
-        # Upper body
-        augmenterModelType_upper = '{}_upper'.format(augmenter_model)
-        from utils import getMarkers_upperExtremity_noPelvis2
-        feature_markers_upper, response_markers_upper = getMarkers_upperExtremity_noPelvis2()        
-        augmenterModelType_all = [augmenterModelType_lower, augmenterModelType_upper]
-        feature_markers_all = [feature_markers_lower, feature_markers_upper]
-        response_markers_all = [response_markers_lower, response_markers_upper]
+    # elif augmenter_model == 'v0.3' or augmenter_model == 'v0.4' or augmenter_model == 'v0.5' or augmenter_model == 'v0.6' or augmenter_model == 'v0.7' or augmenter_model == 'v0.8' or augmenter_model == 'v0.9' or augmenter_model == 'v0.10':
     else:
-        raise ValueError('Augmenter model not recognized.')
+        if augmenter_model == 'v0.13':
+            # Lower body           
+            augmenterModelType_lower = '{}_lower'.format(augmenter_model)
+            from utils import getOpenPoseMarkers_lowerExtremity4
+            feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity4()
+            # Feet          
+            augmenterModelType_feet = '{}_feet'.format(augmenter_model)
+            from utils import getOpenPoseMarkers_feet
+            feature_markers_feet, response_markers_feet = getOpenPoseMarkers_feet()
+             # Upper body
+            augmenterModelType_upper = '{}_upper'.format(augmenter_model)
+            from utils import getMarkers_upperExtremity_noPelvis2
+            feature_markers_upper, response_markers_upper = getMarkers_upperExtremity_noPelvis2()        
+            augmenterModelType_all = [augmenterModelType_lower, augmenterModelType_feet, augmenterModelType_upper]
+            feature_markers_all = [feature_markers_lower, feature_markers_feet, feature_markers_upper]
+            response_markers_all = [response_markers_lower, response_markers_feet, response_markers_upper]
+        else:
+            if augmenter_model == 'v0.12' or augmenter_model == 'v0.14':
+                # Lower body           
+                augmenterModelType_lower = '{}_lower'.format(augmenter_model)
+                from utils import getOpenPoseMarkers_lowerExtremity3
+                feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity3()
+            else:
+                # Lower body           
+                augmenterModelType_lower = '{}_lower'.format(augmenter_model)
+                from utils import getOpenPoseMarkers_lowerExtremity2
+                feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity2()
+            # Upper body
+            augmenterModelType_upper = '{}_upper'.format(augmenter_model)
+            from utils import getMarkers_upperExtremity_noPelvis2
+            feature_markers_upper, response_markers_upper = getMarkers_upperExtremity_noPelvis2()        
+            augmenterModelType_all = [augmenterModelType_lower, augmenterModelType_upper]
+            feature_markers_all = [feature_markers_lower, feature_markers_upper]
+            response_markers_all = [response_markers_lower, response_markers_upper]
+    # else:
+    #     raise ValueError('Augmenter model not recognized.')
     
     print('Augmenter model: {}'.format(augmenter_model))
     
@@ -154,7 +178,7 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
                            (len(outputs_all[idx_augm]['response_markers']))*3)
         responses_all_conc[:,idx_acc_res:idx_acc_res_end] = (
             outputs_all[idx_augm]['response_data'])
-        idx_acc_res += idx_acc_res_end
+        idx_acc_res = idx_acc_res_end
     # Minimum y-position across response markers.
     min_y_pos = np.min(responses_all_conc[:,1::3])
         

@@ -1,4 +1,13 @@
 Changelog:
+v0.18: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 44 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - no addbiomechanics data
+v0.17: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 41 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - more data
+v0.16: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 40 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - more data
+v0.15: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 39 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking
+v0.14: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 33 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.018
+v0.13: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 37 (no tuning) and 38 (no tuning)(rom marker-augmenter repository - midHip is ref - walking model feet model
+v0.12: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 36 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009
+v0.11: models trained with new dataset (data rotated "about sphere") -  models 11 (no tuning) and 25 (no tuning) from marker-augmenter repository - midHip is ref.
+v0.10: models trained with new dataset (data rotated "about sphere") -  models 11 (no tuning) and 24 (no tuning) from marker-augmenter repository - midHip is ref.
 v0.9: models trained with new dataset (data rotated "about sphere") -  models 11 (no tuning) and 11 (tuning) from marker-augmenter repository - midHip is ref.
 v0.8: models trained with new dataset (data rotated "about sphere") -  models 11 (no tuning) and 19 (no tuning) from marker-augmenter repository - midHip and RKnee are ref for upper and lower, respectively.
 v0.7: models trained with new dataset (data rotated "about sphere") -  models 11 (no tuning) and 16 (no tuning) from marker-augmenter repository - midHip is ref.
