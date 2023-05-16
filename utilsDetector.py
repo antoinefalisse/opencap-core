@@ -107,52 +107,54 @@ def runOpenPoseVideo(cameraDirectory,fileName,pathOpenPose, trialName,
         os.system(CMD)
 
     # Run OpenPose if this file doesn't exist in outputs
-    ppPklPath = os.path.join(pathOutputPkl, trialPrefix + '_pp.pkl')    
+    ppPklPath = os.path.join(pathOutputPkl, trialPrefix + '_pp.pkl')
     if not os.path.exists(ppPklPath):
         
-        raise ValueError("Commented out to make sure no overwrite")
-        
-        # c_path = os.getcwd()
-        # command = runOpenPoseCMD(
-        #     pathOpenPose, resolutionPoseDetection, cameraDirectory,
-        #     fileName, openposeJsonDir, pathOutputVideo, trialPrefix,
-        #     generateVideo, videoFullPath, pathOutputJsons)
-        
-        # if not pathOpenPose == "docker":
-        #     os.chdir(c_path)            
-        # # Get number of frames output video. We count the number of jsons, as
-        # # videos are not written on server.
-        # nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
-        #                  if f.endswith('.json')])
-        # # At high resolution, sometimes OpenPose does not process the full
-        # # video, let's check here and try max 5 times. If still bad, then raise
-        # # an exception.
-        # checknFrames = False
-        # if not resolutionPoseDetection == 'default' and checknFrames:
-        #     countFrames = 0
-        #     while nFrameIn != nFrameOut:
-        #         # Need to get command again, as there is os.chdir(pathOpenPose)
-        #         # in the function.
-        #         command = runOpenPoseCMD(pathOpenPose, resolutionPoseDetection,
-        #                                  cameraDirectory, fileName, 
-        #                                  openposeJsonDir, pathOutputVideo,
-        #                                  trialPrefix, generateVideo,
-        #                                  videoFullPath, pathOutputJsons)
+        # raise ValueError("Commented out to make sure no overwrite")
 
-        #         if not pathOpenPose == "docker":
-        #             os.chdir(c_path)
-        #         nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
-        #                          if f.endswith('.json')])
-        #         if countFrames > 4:
-        #             print('# frames in {} - # frames out {}'.format(nFrameIn,
-        #                                                             nFrameOut))
-        #             raise ValueError('OpenPose did not process the full video')
-        #         countFrames += 1
-            
-        # # Gather data from jsons in pkl file.    
-        # saveJsonsAsPkl(pathOutputJsons, ppPklPath, trialPrefix)
+        # TODO        
+        c_path = os.getcwd()
+        command = runOpenPoseCMD(
+            pathOpenPose, resolutionPoseDetection, cameraDirectory,
+            fileName, openposeJsonDir, pathOutputVideo, trialPrefix,
+            generateVideo, videoFullPath, pathOutputJsons)
         
-        # # Delete jsons
+        if not pathOpenPose == "docker":
+            os.chdir(c_path)            
+        # Get number of frames output video. We count the number of jsons, as
+        # videos are not written on server.
+        nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
+                         if f.endswith('.json')])
+        # At high resolution, sometimes OpenPose does not process the full
+        # video, let's check here and try max 5 times. If still bad, then raise
+        # an exception.
+        checknFrames = False
+        if not resolutionPoseDetection == 'default' and checknFrames:
+            countFrames = 0
+            while nFrameIn != nFrameOut:
+                # Need to get command again, as there is os.chdir(pathOpenPose)
+                # in the function.
+                command = runOpenPoseCMD(pathOpenPose, resolutionPoseDetection,
+                                         cameraDirectory, fileName, 
+                                         openposeJsonDir, pathOutputVideo,
+                                         trialPrefix, generateVideo,
+                                         videoFullPath, pathOutputJsons)
+
+                if not pathOpenPose == "docker":
+                    os.chdir(c_path)
+                nFrameOut = len([f for f in os.listdir(pathOutputJsons) 
+                                 if f.endswith('.json')])
+                if countFrames > 4:
+                    print('# frames in {} - # frames out {}'.format(nFrameIn,
+                                                                    nFrameOut))
+                    raise ValueError('OpenPose did not process the full video')
+                countFrames += 1
+            
+        # Gather data from jsons in pkl file.    
+        saveJsonsAsPkl(pathOutputJsons, ppPklPath, trialPrefix)
+        
+        # Delete jsons
+        # TODO: uncomment
         # shutil.rmtree(pathJsonDir)
         
     return
@@ -406,13 +408,17 @@ def arrangeMMposePkl(poseInferencePklPath, outputPklPath):
 # %%
 def saveJsonsAsPkl(json_directory, outputPklPath, videoName):
     
-    nFrames = 0
-    for file in os.listdir(json_directory):
-      if videoName + "_000" in file: # not great
-        nFrames += 1
+    # nFrames = 0
+    # for file in os.listdir(json_directory):
+    #   if videoName + "_000" in file: # not great
+    #     nFrames += 1
                 
     data4pkl = []
     for frame in sorted(os.listdir(json_directory)):
+        
+        if '.ini' in frame:
+            continue
+        
         image_json = os.path.join(json_directory,frame)
         
         if not os.path.isfile(image_json):
@@ -421,12 +427,9 @@ def saveJsonsAsPkl(json_directory, outputPklPath, videoName):
             data = json.load(data_file)
         
         data4people = []
-        for person_idx in range(len(data['people'])):
-            
+        for person_idx in range(len(data['people'])):            
             person = data['people'][person_idx]
-            keypoints = person['pose_keypoints_2d']
-            
-            
+            keypoints = person['pose_keypoints_2d']           
             c_dict = {}
             c_dict['person_id'] = [person_idx]
             c_dict['pose_keypoints_2d'] = keypoints

@@ -21,7 +21,7 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
         augmenterModelType_all = [augmenter_model]
         feature_markers_all = [feature_markers_full]
         response_markers_all = [response_markers_full]            
-    elif augmenter_model == 'v0.1' or augmenter_model == 'v0.2':
+    elif augmenter_model == 'v0.1' or augmenter_model == 'v0.2' or augmenter_model == 'v0.20' or augmenter_model == 'v0.21' or augmenter_model == 'v0.22':
         # Lower body           
         augmenterModelType_lower = '{}_lower'.format(augmenter_model)
         from utils import getOpenPoseMarkers_lowerExtremity
@@ -40,6 +40,22 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
             augmenterModelType_lower = '{}_lower'.format(augmenter_model)
             from utils import getOpenPoseMarkers_lowerExtremity4
             feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity4()
+            # Feet          
+            augmenterModelType_feet = '{}_feet'.format(augmenter_model)
+            from utils import getOpenPoseMarkers_feet
+            feature_markers_feet, response_markers_feet = getOpenPoseMarkers_feet()
+             # Upper body
+            augmenterModelType_upper = '{}_upper'.format(augmenter_model)
+            from utils import getMarkers_upperExtremity_noPelvis2
+            feature_markers_upper, response_markers_upper = getMarkers_upperExtremity_noPelvis2()        
+            augmenterModelType_all = [augmenterModelType_lower, augmenterModelType_feet, augmenterModelType_upper]
+            feature_markers_all = [feature_markers_lower, feature_markers_feet, feature_markers_upper]
+            response_markers_all = [response_markers_lower, response_markers_feet, response_markers_upper]
+        elif augmenter_model == 'v0.44':
+            # Lower body           
+            augmenterModelType_lower = '{}_lower'.format(augmenter_model)
+            from utils import getOpenPoseMarkers_lowerExtremity5
+            feature_markers_lower, response_markers_lower = getOpenPoseMarkers_lowerExtremity5()
             # Feet          
             augmenterModelType_feet = '{}_feet'.format(augmenter_model)
             from utils import getOpenPoseMarkers_feet

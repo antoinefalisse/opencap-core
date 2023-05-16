@@ -9,6 +9,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210813_0001']['session_id'] = 'b08c621c-234e-4a6b-bcde-eda784e3bcb4'
     data['Session20210813_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
     data['Session20210813_0001']['trials'] = {}
+    # data['Session20210813_0001']['trials'][0] = {"id": "a57ffaac-bdcc-4786-8acf-c0edd92f7109", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicLargeOverground
     data['Session20210813_0001']['trials'][2] = {"id": "7027b0cb-e290-4bc9-9fbd-d59b3c8c1b81", "intrinsicsFinalFolder": 'Deployed_720_240fps', 'scaleModel': True} # static1
     data['Session20210813_0001']['trials'][3] = {"id": "89c98148-5dbc-41ce-b983-807db01e3392", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STS1
     data['Session20210813_0001']['trials'][5] = {"id": "db011831-5b1e-42e3-bd08-3551d12c3617", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STSweakLegs1
@@ -35,6 +36,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210813_0002']['session_id'] = 'b08c621c-234e-4a6b-bcde-eda784e3bcb4'
     data['Session20210813_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam2', 'Cam3', 'Cam4'], '2-cameras': ['Cam2', 'Cam3']}
     data['Session20210813_0002']['trials'] = {}   
+    # data['Session20210813_0002']['trials'][0] = {"id": "6368b864-254b-4ea4-bdc5-bc22cef34a94", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # estrinsicLargeWalking
     data['Session20210813_0002']['trials'][2] = {"id": "198881de-42b4-4b46-9e84-9c7ec38fc252", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking1
     data['Session20210813_0002']['trials'][3] = {"id": "4c56dcd6-6741-4f5e-bcf2-bf8a778ab7a8", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking2
     data['Session20210813_0002']['trials'][4] = {"id": "7c7e31c2-9e0d-4a23-bded-e8b66049ae1c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking3
@@ -117,6 +119,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210816_0001']['session_id'] = 'af6a837a-f11a-4399-ab06-a3996a6c70ab'
     data['Session20210816_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam1', 'Cam3', 'Cam4'], '2-cameras': ['Cam1', 'Cam4']}
     data['Session20210816_0001']['trials'] = {}  
+    # data['Session20210816_0001']['trials'][0] = {"id": "73346506-e82a-457d-896e-efea2e7d290f", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicLargeOverground
     data['Session20210816_0001']['trials'][2] = {"id": "f7d8a34d-03ff-42cd-8f9d-732e86a02533", "intrinsicsFinalFolder": 'Deployed_720_240fps', 'scaleModel': True} # static1
     data['Session20210816_0001']['trials'][3] = {"id": "28aa71cc-347d-4382-a316-abed6a23f159", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STS1
     data['Session20210816_0001']['trials'][5] = {"id": "43a6c17b-39b4-4de6-ac55-dd65839dc2db", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STSweakLegs1
@@ -143,6 +146,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210816_0002']['session_id'] = 'af6a837a-f11a-4399-ab06-a3996a6c70ab'
     data['Session20210816_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam1', 'Cam2'], '2-cameras': ['Cam1', 'Cam2']}
     data['Session20210816_0002']['trials'] = {}
+    # data['Session20210816_0002']['trials'][0] = {"id": "68af81bf-b635-4213-979f-ab3a51d9ffba", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # estrinsicLargeWalking
     data['Session20210816_0002']['trials'][2] = {"id": "0d9e4b14-1590-4ff6-99cc-6f217639e34e", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking1
     data['Session20210816_0002']['trials'][3] = {"id": "ba7e5aab-b1c6-4590-8ec5-2629f6907e59", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking2
     data['Session20210816_0002']['trials'][4] = {"id": "ea91fa96-14f2-4727-8bd3-bb418938ce09", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking3
@@ -225,6 +229,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210819_0001']['session_id'] = '33b0021f-7032-41bb-bb00-e772a4d6fd1c'
     data['Session20210819_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam3'], '2-cameras': ['Cam2', 'Cam3']}
     data['Session20210819_0001']['trials'] = {}
+    # data['Session20210819_0001']['trials'][0] = {"id": "3b660454-c3c1-48b6-bd2b-b9270f33b20f", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210819_0001']['trials'][2] = {"id": "82355490-67e7-4a7e-9bec-87ee54795719", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210819_0001']['trials'][3] = {"id": "c9588c39-d639-4151-b4bf-782b2124e93a", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210819_0001']['trials'][5] = {"id": "fb9ee3bc-59c1-47df-9837-c92c6ef721f3", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -251,6 +256,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210819_0002']['session_id'] = '33b0021f-7032-41bb-bb00-e772a4d6fd1c'
     data['Session20210819_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam2', 'Cam3', 'Cam4'], '2-cameras': ['Cam2', 'Cam3']}
     data['Session20210819_0002']['trials'] = {}
+    # data['Session20210819_0002']['trials'][0] = {"id": "ac7475ec-2492-4cfb-b14f-45a365e07d96", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210819_0002']['trials'][2] = {"id": "0eaaeb83-dba0-4e52-8a9b-fccb344483fe", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210819_0002']['trials'][3] = {"id": "4dad4c6d-a2c7-49a0-8adf-be6d0cb956c6", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210819_0002']['trials'][5] = {"id": "fda6154f-f408-437d-8c4c-a8bcef0bde44", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking4
@@ -333,6 +339,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210820_0001']['session_id'] = '3a262b91-ff8f-4d1e-8273-cdc16bf54045'
     data['Session20210820_0001']['camera_setup'] = {'5-cameras': ['all'],'3-cameras': ['Cam0', 'Cam3', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
     data['Session20210820_0001']['trials'] = {}
+    # data['Session20210820_0001']['trials'][0] = {"id": "8f14e907-7718-4516-b3e1-d90b3fe4ca19", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210820_0001']['trials'][2] = {"id": "93465dc3-b2d2-435f-bdb1-85b1ba23e563", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210820_0001']['trials'][4] = {"id": "f20b6afe-cc7f-44df-81ac-7a5b735bb2a1", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210820_0001']['trials'][6] = {"id": "e9751325-b38c-47ba-af16-af9effaaf2b4", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -360,6 +367,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210820_0002']['session_id'] = '3a262b91-ff8f-4d1e-8273-cdc16bf54045'
     data['Session20210820_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam1', 'Cam4'], '2-cameras': ['Cam1', 'Cam4']}
     data['Session20210820_0002']['trials'] = {}
+    # data['Session20210820_0002']['trials'][0] = {"id": "614cffd2-41d2-4fd8-9260-a161de5b5246", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210820_0002']['trials'][2] = {"id": "01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210820_0002']['trials'][3] = {"id": "332705f7-a742-4a4a-a699-2479fd292026", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210820_0002']['trials'][4] = {"id": "2b3a6f06-9f1e-429b-a9a5-b4594a89275b", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -456,6 +464,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210823_0001']['session_id'] = '7766f365-9610-41fd-b4d3-3b6e6f7ee41b'
     data['Session20210823_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam3', 'Cam4'], '2-cameras': ['Cam3', 'Cam4']}
     data['Session20210823_0001']['trials'] = {}
+    # data['Session20210823_0001']['trials'][0] = {"id": "cf2608c3-d822-43da-a156-3bee542a6f72", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210823_0001']['trials'][2] = {"id": "184908e0-e730-424c-b22d-0d3867d079a1", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210823_0001']['trials'][4] = {"id": "8bdb5d5c-529f-4806-8490-6800984fef14", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210823_0001']['trials'][6] = {"id": "a03c4cf9-e5bc-46e7-8f07-4cf5d3f6054a", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -491,6 +500,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210823_0002']['session_id'] = '7766f365-9610-41fd-b4d3-3b6e6f7ee41b'
     data['Session20210823_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam1', 'Cam2', 'Cam3'], '2-cameras': ['Cam1', 'Cam2']}
     data['Session20210823_0002']['trials'] = {}
+    # data['Session20210823_0002']['trials'][0] = {"id": "adad95f5-8f86-49bd-bedf-4cfec32fc90d", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210823_0002']['trials'][2] = {"id": "13c35f9a-0970-4b5e-b2a8-49c5db377e54", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210823_0002']['trials'][3] = {"id": "da0bb884-9e09-4315-b231-99b7f62c4e18", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210823_0002']['trials'][4] = {"id": "ac16c071-3e71-43ab-92c9-52fc1be743ea", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -557,6 +567,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210825_0001']['session_id'] = '4d4c7231-9537-498b-a865-9ea6187a47cc'
     data['Session20210825_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam4'], '2-cameras': ['Cam2', 'Cam4']}
     data['Session20210825_0001']['trials'] = {}
+    # data['Session20210825_0001']['trials'][0] = {"id": "b8de62b5-f17b-46bb-a8bd-bcf8d891d1bb", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210825_0001']['trials'][2] = {"id": "31dc42d8-d4f8-4c01-ad07-b3c2ac46ef20", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210825_0001']['trials'][4] = {"id": "5233701f-301f-4763-a7c4-b385ef194a7d", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210825_0001']['trials'][6] = {"id": "bb600434-f93b-4407-a600-9a96b8420372", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -584,6 +595,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210825_0002']['session_id'] = '4d4c7231-9537-498b-a865-9ea6187a47cc'
     data['Session20210825_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam1', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
     data['Session20210825_0002']['trials'] = {}
+    # data['Session20210825_0002']['trials'][0] = {"id": "f766fd16-f5aa-4066-92a5-451ae087b962", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210825_0002']['trials'][2] = {"id": "c37b171e-799c-432e-ae6f-5097b68cc487", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210825_0002']['trials'][3] = {"id": "10ff2d30-1604-4324-8ac7-ecc1795b1f61", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210825_0002']['trials'][4] = {"id": "90503fcb-5de1-4ac0-a06b-98bbfe71ec50", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -667,6 +679,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210827_0001']['session_id'] = 'ce1fb77c-d497-4df0-81b5-c38ec2ee6585'
     data['Session20210827_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam4'], '2-cameras': ['Cam2', 'Cam4']}
     data['Session20210827_0001']['trials'] = {}
+    # data['Session20210827_0001']['trials'][0] = {"id": "0a4c7330-1d93-4495-83db-701479a078ec", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210827_0001']['trials'][2] = {"id": "a5f9a725-072e-4cc9-a057-a4cde308e8fd", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210827_0001']['trials'][4] = {"id": "347a90e8-b49a-408b-935f-e8b593916606", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210827_0001']['trials'][6] = {"id": "c8324066-d4d9-4e4c-9eee-1bedf2db3b55", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -694,6 +707,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210827_0002']['session_id'] = 'ce1fb77c-d497-4df0-81b5-c38ec2ee6585'
     data['Session20210827_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam3'], '2-cameras': ['Cam0', 'Cam2']}
     data['Session20210827_0002']['trials'] = {}
+    # data['Session20210827_0002']['trials'][0] = {"id": "d82e1ac4-3e05-4f1e-a729-3a703b0e5237", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210827_0002']['trials'][2] = {"id": "0a6f62c7-ed09-43d4-b5ff-7fa8f43fcca5", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210827_0002']['trials'][3] = {"id": "2eeaf665-f3c6-4327-ae5d-ffd230c962e7", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210827_0002']['trials'][4] = {"id": "cc0a5e73-b1be-43ca-a9fb-eb6211d21263", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -777,6 +791,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210830_0001']['session_id'] = '8c194b0b-c832-442c-93be-3f3a0006d7dc'
     data['Session20210830_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam1', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
     data['Session20210830_0001']['trials'] = {}
+    # data['Session20210830_0001']['trials'][0] = {"id": "f9d8f305-eff1-4329-b5ed-a1ac5ba18c83", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210830_0001']['trials'][2] = {"id": "c364ee13-5b6b-4cd0-88d8-77c3e64ad74d", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210830_0001']['trials'][4] = {"id": "220d7fd9-8622-4fcf-a38c-df9927c6808c", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210830_0001']['trials'][6] = {"id": "48922cb3-ac64-4147-9cbc-1c63473b6da0", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -803,7 +818,8 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210830_0002'] = {}
     data['Session20210830_0002']['session_id'] = '8c194b0b-c832-442c-93be-3f3a0006d7dc'
     data['Session20210830_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam3', 'Cam4'], '2-cameras': ['Cam0', 'Cam3']}
-    data['Session20210830_0002']['trials'] = {}
+    data['Session20210830_0002']['trials'] = {}        
+    # data['Session20210830_0002']['trials'][0] = {"id": "70ccfe2d-9e95-42e7-8143-80716d793847", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210830_0002']['trials'][2] = {"id": "3fcc68f8-8e29-4b95-a1d1-59e30c44efb0", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210830_0002']['trials'][3] = {"id": "a31315c3-e028-4c4d-a6b5-1d94c60153a4", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210830_0002']['trials'][4] = {"id": "81ea808a-26da-43b3-a6aa-22b44e0b4807", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -888,6 +904,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210903_0001']['session_id'] = '1cecfa11-c3ce-44e7-8bc8-f5f10314a6cc'
     data['Session20210903_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam3'], '2-cameras': ['Cam2', 'Cam3']}
     data['Session20210903_0001']['trials'] = {}
+    # data['Session20210903_0001']['trials'][0] = {"id": "f360afc0-5ac2-47cc-9b31-9a5792429952", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210903_0001']['trials'][2] = {"id": "f3c270c9-8bda-4b5a-a6fe-9dc9c485d0b3", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210903_0001']['trials'][4] = {"id": "cc87bc63-9814-4970-a47e-ab42218a3b52", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210903_0001']['trials'][6] = {"id": "03fe22e4-6975-4e00-9618-f0f47b328d6b", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -915,6 +932,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210903_0002']['session_id'] = '1cecfa11-c3ce-44e7-8bc8-f5f10314a6cc'
     data['Session20210903_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam1', 'Cam2', 'Cam3'], '2-cameras': ['Cam1', 'Cam3']}
     data['Session20210903_0002']['trials'] = {}
+    # data['Session20210903_0002']['trials'][0] = {"id": "e9fc4546-b26a-47e4-b339-6b32f2411236", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210903_0002']['trials'][2] = {"id": "0c57ab46-a84b-4a3c-ba81-4470ccbb86e2", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking1
     data['Session20210903_0002']['trials'][3] = {"id": "90af677b-284c-4091-8f29-8bcceea3b3a7", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210903_0002']['trials'][4] = {"id": "ad3c637c-be1f-4abd-b03b-f9760230a62c", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
@@ -999,6 +1017,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210910_0001']['session_id'] = '8195493a-8eae-4003-87b5-740a64567bb2'
     data['Session20210910_0001']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam1', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
     data['Session20210910_0001']['trials'] = {}
+    # data['Session20210910_0001']['trials'][0] = {"id": "7ee31a3b-47c6-4d7b-a7f4-0867af1ea457", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # extrinsicLargeOverground
     data['Session20210910_0001']['trials'][2] = {"id": "4a8ae9b1-4b1a-43db-899d-1b25ad24f71d", "intrinsicsFinalFolder": 'Deployed_720_60fps', 'scaleModel': True} # static1
     data['Session20210910_0001']['trials'][4] = {"id": "be1ac547-153f-4cd7-86f7-cd472470f8bc", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STS1
     data['Session20210910_0001']['trials'][6] = {"id": "58d7a449-3884-4544-aa40-d0d5a486f9d3", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # STSweakLegs1
@@ -1026,6 +1045,7 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210910_0002']['session_id'] = '8195493a-8eae-4003-87b5-740a64567bb2'
     data['Session20210910_0002']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam1', 'Cam2', 'Cam3'], '2-cameras': ['Cam1', 'Cam3']}
     data['Session20210910_0002']['trials'] = {}
+    # data['Session20210910_0002']['trials'][0] = {"id": "010b31a3-6931-44da-b152-b5f2486be092", "extrinsicsTrial": True, "intrinsicsFinalFolder": 'Deployed_720_60fps'} # estrinsicLargeWalking
     data['Session20210910_0002']['trials'][3] = {"id": "299abc65-00fa-444b-ba93-33d054b68a89", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking2
     data['Session20210910_0002']['trials'][4] = {"id": "3cb77421-2841-41e8-82fc-063edcdb7ad5", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking3
     data['Session20210910_0002']['trials'][5] = {"id": "482885ff-1c48-4ab8-b1bc-c299a6cd90c7", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # walking4

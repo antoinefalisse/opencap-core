@@ -29,7 +29,10 @@ outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
 # %% User inputs.
 subjects = ['subject' + str(i) for i in range(2, 12)]
 
-poseDetectors = ['OpenPose_1x1008_4scales']
+# poseDetectors = ['OpenPose_1x1008_4scales']
+# poseDetectors = ['OpenPose_default']
+# poseDetectors = ['OpenPose_1x736']
+poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 # augmenterTypes = {'v0.1': {'run': False},
 #                   'v0.2': {'run': False},
@@ -39,12 +42,21 @@ cameraSetups = ['2-cameras']
 #                   'v0.14': {'run': False},
 #                   'v0.15': {'run': False}}
 
-augmenterTypes = {'v0.2': {'run': True},
-                  'v0.15': {'run': True},
-                  'v0.17': {'run': True},
-                  'v0.18': {'run': True}}
+# augmenterTypes = {'v0.2': {'run': False},
+#                   'v0.15': {'run': False},
+#                   'v0.18': {'run': False}}
 
-processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
+augmenterTypes = {
+    'v0.1': {'run': False},
+    'v0.2': {'run': False},
+    'v0.45': {'run': False},
+    'v0.55': {'run': False},
+}
+
+setups_t = list(augmenterTypes.keys())
+
+# processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
+processingTypes = ['IK_IK']
 
 # augmenterTypeOffset = 'v0.7'
 
@@ -57,10 +69,10 @@ cases_to_exclude_syncing = {
     'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTI1', 'walkingTI2', 'walkingTO1', 'walkingTO2', 'walkingTS3', 'walkingTS4']}}}
 # Cases to exclude because of failed algorithm (opencap)
 cases_to_exclude_algo = {
-    'subject2': {'OpenPose_generic': {'3-cameras': ['walkingTS1', 'walkingTS2', 'walkingTS4', 'DJ1', 'DJ2', 'DJ3', 'DJAsym1', 'DJAsym4', 'DJAsym5'],
+    'subject2': {'OpenPose_default': {'3-cameras': ['walkingTS1', 'walkingTS2', 'walkingTS4', 'DJ1', 'DJ2', 'DJ3', 'DJAsym1', 'DJAsym4', 'DJAsym5'],
                                       '5-cameras': ['walkingTS2']}},
-    'subject3': {'OpenPose_generic': {'2-cameras': ['walkingTS2', 'walkingTS4']}}}
-
+    'subject3': {'OpenPose_default': {'2-cameras': ['walkingTS2', 'walkingTS4']},
+                 'mmpose_0.8': {'2-cameras': ['STSweakLegs1']}}}
 # Cases to exclude for paper
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
 
@@ -117,23 +129,33 @@ if not os.path.exists(os.path.join(outputDir, 'MAEs.npy')):
     MAEs = {}
 else:  
     MAEs = np.load(os.path.join(outputDir, 'MAEs.npy'), allow_pickle=True).item()
+if not os.path.exists(os.path.join(outputDir, 'MEs.npy')): 
+    MEs = {}
+else:  
+    MEs = np.load(os.path.join(outputDir, 'MEs.npy'), allow_pickle=True).item()
 
 if not 'all' in RMSEs:
     RMSEs['all'] = {}
 if not 'all' in MAEs:
     MAEs['all'] = {}
+if not 'all' in MEs:
+    MEs['all'] = {}
     
 for motion in motions:
     if not motion in RMSEs:
         RMSEs[motion] = {}
     if not motion in MAEs:
         MAEs[motion] = {}
+    if not motion in MEs:
+        MEs[motion] = {}
     
 for subjectName in subjects:
     if not subjectName in RMSEs:
         RMSEs[subjectName] = {}
     if not subjectName in MAEs:
         MAEs[subjectName] = {}
+    if not subjectName in MEs:
+        MEs[subjectName] = {}
     print('\nProcessing {}'.format(subjectName))
     if fixed_markers:
         osDir = os.path.join(dataDir, 'Data', subjectName, 'OpenSimData_fixed')
@@ -167,7 +189,15 @@ for subjectName in subjects:
                 MAEs['all'][poseDetector] = {}                
             for motion in motions:
                 if not poseDetector in MAEs[motion]:
-                    MAEs[motion][poseDetector] = {}  
+                    MAEs[motion][poseDetector] = {} 
+
+            if not poseDetector in MEs[subjectName]:
+                MEs[subjectName][poseDetector] = {}
+            if not poseDetector in MEs['all']:
+                MEs['all'][poseDetector] = {}                
+            for motion in motions:
+                if not poseDetector in MEs[motion]:
+                    MEs[motion][poseDetector] = {}
                 
             poseDetectorDir = os.path.join(osDir, 'Video', poseDetector)
             poseDetectorMarkerDir = os.path.join(markerDir, 'Video', poseDetector)
@@ -187,6 +217,14 @@ for subjectName in subjects:
                 for motion in motions:
                     if not cameraSetup in MAEs[motion][poseDetector]:
                         MAEs[motion][poseDetector][cameraSetup] = {}
+
+                if not cameraSetup in MEs[subjectName][poseDetector]:
+                    MEs[subjectName][poseDetector][cameraSetup] = {}
+                if not cameraSetup in MEs['all'][poseDetector]:
+                    MEs['all'][poseDetector][cameraSetup] = {}
+                for motion in motions:
+                    if not cameraSetup in MEs[motion][poseDetector]:
+                        MEs[motion][poseDetector][cameraSetup] = {}
                     
                 for augmenterType in augmenterTypes:
                     
@@ -205,6 +243,14 @@ for subjectName in subjects:
                     for motion in motions:
                         if not augmenterType in MAEs[motion][poseDetector][cameraSetup]:
                             MAEs[motion][poseDetector][cameraSetup][augmenterType] = {}
+
+                    if not augmenterType in MEs[subjectName][poseDetector][cameraSetup]:
+                        MEs[subjectName][poseDetector][cameraSetup][augmenterType] = {}
+                    if not augmenterType in MEs['all'][poseDetector][cameraSetup]:
+                        MEs['all'][poseDetector][cameraSetup][augmenterType] = {}
+                    for motion in motions:
+                        if not augmenterType in MEs[motion][poseDetector][cameraSetup]:
+                            MEs[motion][poseDetector][cameraSetup][augmenterType] = {}
                             
                     for processingType in processingTypes:  
                         
@@ -219,7 +265,7 @@ for subjectName in subjects:
                         else:
                             addBiomechanicsVideo = True                    
 
-                        # if augmenterType in RMSEs[subjectName][poseDetector][cameraSetup] and augmenterType in MAEs[subjectName][poseDetector][cameraSetup] and not overwriteResults:
+                        # if augmenterType in RMSEs[subjectName][poseDetector][cameraSetup] and augmenterType in MEs[subjectName][poseDetector][cameraSetup] and not overwriteResults:
                         #     continue
                     
                         # TODO
@@ -241,6 +287,14 @@ for subjectName in subjects:
                         for motion in motions:
                             if not processingType in MAEs[motion][poseDetector][cameraSetup][augmenterType]:
                                 MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+
+                        if not processingType in MEs[subjectName][poseDetector][cameraSetup][augmenterType]:
+                            MEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates, index=trials)
+                        if not processingType in MEs['all'][poseDetector][cameraSetup][augmenterType]:
+                            MEs['all'][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
+                        for motion in motions:
+                            if not processingType in MEs[motion][poseDetector][cameraSetup][augmenterType]:
+                                MEs[motion][poseDetector][cameraSetup][augmenterType][processingType] = pd.DataFrame(columns=coordinates)
                         
                         if (subjectName in cases_to_exclude_trials and
                             trial[:-4] in cases_to_exclude_trials[subjectName]):
@@ -341,12 +395,13 @@ for subjectName in subjects:
                         # Select video data based on video-based time vector
                         trial_video_np_adj = trial_video_np[idx_start_video:idx_end_video+1, :]               
                         
-                        # Compute RMSEs and MAEs
+                        # Compute RMSEs and MEs
                         y_true = trial_mocap_np_adj[:, 1:]
                         y_pred = trial_video_np_adj[:, 1:]
                         
                         c_rmse = []
                         c_mae = []
+                        c_me = []
                         
                         # If translational degree of freedom, adjust for offset
                         # Compute offset from trc file.
@@ -391,6 +446,11 @@ for subjectName in subjects:
                                 y_true_adj, y_pred_adj)
                             MAEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType].loc[trials[count], c_coord] = value2
                             c_mae.append(value2)
+                            # ME
+                            # COmpute mean error between y_true_adj and y_pred_adj
+                            value3 = np.mean(y_true_adj - y_pred_adj)
+                            MEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType].loc[trials[count], c_coord] = value3
+                            c_me.append(value3)
                             
                             if value > 20:
                                 print('{} - {} - {} - {} - {} - {} - {} had RMSE of {}'.format(subjectName, poseDetector, cameraSetup, augmenterType, processingType, trial[:-4], c_coord, value))
@@ -398,17 +458,20 @@ for subjectName in subjects:
                         c_name = subjectName + '_' +  trial[:-4]
                         RMSEs['all'][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_rmse
                         MAEs['all'][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_mae
+                        MEs['all'][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_me
                         
                         for motion in motions:
                             if motion in trial:
                                 RMSEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_rmse
-                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_mae  
+                                MAEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_mae
+                                MEs[motion][poseDetector][cameraSetup][augmenterType][processingType].loc[c_name] = c_me 
 
         count += 1
         
 if saveAndOverwriteResults:
     np.save(os.path.join(outputDir, 'RMSEs.npy'), RMSEs)
-    np.save(os.path.join(outputDir, 'MAEs.npy'), MAEs)    
+    np.save(os.path.join(outputDir, 'MAEs.npy'), MAEs)
+    np.save(os.path.join(outputDir, 'MEs.npy'), MEs)   
         
 # %% Plots per coordinate: RMSEs
 all_motions = ['all'] + motions
@@ -765,6 +828,43 @@ with open(os.path.join(outputDir,'MAEs{}_means.csv'.format(suffixRMSE)), 'w', ne
             
             # all_summary[c_all, :] = temp_med_rot
             # c_all += 1
+
+# %% Plots per coordinate: MEs
+all_motions = ['all'] + motions
+bps, means_MEs, medians_MEs = {}, {}, {}
+for motion in all_motions:
+    bps[motion], means_MEs[motion], medians_MEs[motion] = {}, {}, {}
+    if plots:
+        fig, axs = plt.subplots(5, 3, sharex=True)    
+        fig.suptitle(motion)    
+    for count, coordinate in enumerate(coordinates_lr):
+        c_data = {}
+        for processingType in processingTypes:
+            for augmenterType in augmenterTypes:
+                for poseDetector in poseDetectors:
+                    for cameraSetup in cameraSetups:                
+                        if coordinate[-2:] == '_l':
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType + '_' + processingType] = (                    
+                                MEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist() +                     
+                                MEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate[:-2] + '_r'].tolist())
+                            coordinate_title = coordinate[:-2]
+                        else:
+                            c_data[poseDetector + '_' + cameraSetup + '_' + augmenterType+ '_' + processingType] = (
+                                MEs[motion][poseDetector][cameraSetup][augmenterType][processingType][coordinate].tolist())
+                            coordinate_title = coordinate                    
+        if plots:
+            ax = axs.flat[count]
+            bps[motion][coordinate] = ax.boxplot(c_data.values())
+            ax.set_title(coordinate_title)
+            xticks = list(range(1, len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes)+1))
+            ax.set_xticks(xticks)
+            ax.set_xticklabels(c_data.keys(), rotation = 90)
+            ax.set_ylim(0, 20)
+            ax.axhline(y=5, color='r', linestyle='--')
+            ax.axhline(y=10, color='b', linestyle='--')
+        
+        means_MEs[motion][coordinate] = [np.mean(c_data[a]) for a in c_data]
+        medians_MEs[motion][coordinate] = [np.median(c_data[a]) for a in c_data]
             
 # %% Print out csv files with results: mean MAEs and RMSEs - table formatted for paper
 activity_names = {'walking': 'Walking',
@@ -1121,7 +1221,7 @@ for c_s, setup in enumerate(setups):
 # means_RMSEs
 # setups
 
-# %%
+# %% RMSEs
 # Get len(cameraSetups) color-blind frienly colors.
 colors = sns.color_palette('colorblind', len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes))
 motions = list(means_RMSEs.keys())
@@ -1186,15 +1286,134 @@ for cameraSetup in cameraSetups:
                 if i == len(xtick_labels)-1:
                     ax.text(i+x[j]*bar_width, means_RMSEs_copy[motions[a]][field][idx_setup], np.round(means_RMSEs_copy[motions[a]][field][idx_setup], 1), ha='center', va='bottom')    
         # Add legend with idx_setups
-        leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+        # leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+        leg_t = [setups_t[idx_setup] for idx_setup in idx_setups]
         # Get what is after the last '_' in leg_t.
         # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
-        ax.legend(leg_t)        
+        # ax.legend(leg_t)        
         plt.show()
         
     # Set the x-tick labels for the last subplot only.
     axs[-1].set_xticks(np.arange(len(xtick_labels)))
     axs[-1].set_xticklabels(xtick_labels_labels)
+
+    # Same figure as above but with only one subplot corresponding to the motion 'walking'.
+    fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+    ax.set_title(motions[1])
+    ax.set_ylabel('RMSE (deg)')
+    ax.set_xticks(np.arange(len(xtick_labels)))
+    ax.set_xticklabels(xtick_labels_labels)
+    # For each field in means_RMSEs['all'], plot bars with the values of the field for each idx_setups.
+    for i, field in enumerate(xtick_labels):
+        for j, idx_setup in enumerate(idx_setups):
+            ax.bar(i+x[j]*bar_width, means_RMSEs_copy[motions[1]][field][idx_setup], bar_width, color=colors[j])
+            # Add text with the value of the bar.
+            if i == len(xtick_labels)-1:
+                ax.text(i+x[j]*bar_width, means_RMSEs_copy[motions[1]][field][idx_setup], np.round(means_RMSEs_copy[motions[1]][field][idx_setup], 1), ha='center', va='bottom')
+    # Add legend with idx_setups
+    # leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+    leg_t = [setups_t[idx_setup] for idx_setup in idx_setups]
+    # Get what is after the last '_' in leg_t.
+    # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+    ax.legend(leg_t)
+    plt.show()
+    
+# # %% MEs
+# # Get len(cameraSetups) color-blind frienly colors.
+# colors = sns.color_palette('colorblind', len(cameraSetups)*len(poseDetectors)*len(augmenterTypes)*len(processingTypes))
+# motions = list(means_MEs.keys())
+# # Create the x-tick labels for all subplots.
+# xtick_labels = list(means_MEs[motions[0]].keys())
+# # Remove pelvis_tx, pelvis_ty and pelivs_tz from xtick_labels.
+# xtick_labels = [xtick_label for xtick_label in xtick_labels if xtick_label not in coordinates_tr] + ['mean']
+# # remove _l at the end of the xtick_labels if present
+# xtick_labels_labels = [xtick_label[:-2] if xtick_label[-2:] == '_l' else xtick_label for xtick_label in xtick_labels]
+
+# # Copy means_MEs to means_MEs_copy.
+# means_MEs_copy = copy.deepcopy(means_MEs)
+# # Exclude coordinates_tr from means_MEs_copy
+# for motion in means_MEs_copy:
+#     for coordinate in coordinates_tr:
+#         means_MEs_copy[motion].pop(coordinate)
+
+# # Compute mean, this should match means_RMSE_summary_rot
+# for motion in means_MEs_copy:
+#     # Add field mean that contains the mean of the MEs for all coordinates.
+#     # Stack lists from all fiedls of means_MEs_copy[motion] in one numpy array.
+#     # Count twice the bilateral coordinates.
+#     c_stack = np.zeros((len(coordinates_lr_rot) + len(coordinates_bil), len(setups)))
+#     count = 0
+#     for i, coordinate in enumerate(coordinates_lr_rot):
+#         c_stack[count, :] = means_MEs_copy[motion][coordinate]
+#         count += 1
+#         if coordinate[-2:] == '_l':
+#             c_stack[count, :] = means_MEs_copy[motion][coordinate]
+#             count += 1
+#     means_MEs_copy[motion]['mean'] = list(np.mean(c_stack, axis=0))
+
+# for cameraSetup in cameraSetups:
+
+#     # Create a figure with 1 column and as many columns as fields in means_MEs.
+#     fig, axs = plt.subplots(len(means_MEs_copy.keys()), 1, figsize=(10, 5*len(means_MEs_copy.keys())))
+#     fig.suptitle(cameraSetup)
+
+#     # Get indices of setups for the camera setup.
+#     idx_setups = [i for i, setup in enumerate(setups) if cameraSetup in setup]
+#     bar_width = 0.8/len(idx_setups)
+
+#     # Create list of integers with that has as many elements as there are idx_setups. The list has values with
+#     # a step of 1 and is centered on 0.
+#     x = np.arange(len(idx_setups)) - (len(idx_setups)-1)/2
+
+#     # Loop over subplots in axs.
+#     for a, ax in enumerate(axs):
+#         ax.set_title(motions[a])
+#         ax.set_ylabel('RMSE (deg)')
+#         ax.set_xticks(np.arange(len(xtick_labels)))
+#         if a == len(axs)-1:
+#             axs[a].set_xticklabels(xtick_labels)
+#         else:
+#             axs[a].set_xticklabels([])        
+        
+#         # For each field in means_MEs['all'], plot bars with the values of the field for each idx_setups.
+#         for i, field in enumerate(xtick_labels):
+#             for j, idx_setup in enumerate(idx_setups):
+#                 ax.bar(i+x[j]*bar_width, means_MEs_copy[motions[a]][field][idx_setup], bar_width, color=colors[j])
+#                 # Add text with the value of the bar.
+#                 if i == len(xtick_labels)-1:
+#                     ax.text(i+x[j]*bar_width, means_MEs_copy[motions[a]][field][idx_setup], np.round(means_MEs_copy[motions[a]][field][idx_setup], 1), ha='center', va='bottom')    
+#         # Add legend with idx_setups
+#         leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+#         # Get what is after the last '_' in leg_t.
+#         # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+#         ax.legend(leg_t)        
+#         plt.show()
+        
+#     # Set the x-tick labels for the last subplot only.
+#     axs[-1].set_xticks(np.arange(len(xtick_labels)))
+#     axs[-1].set_xticklabels(xtick_labels_labels)
+
+#     # Same figure as above but with only one subplot corresponding to the motion 'walking'.
+#     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+#     ax.set_title(motions[1])
+#     ax.set_ylabel('RMSE (deg)')
+#     ax.set_xticks(np.arange(len(xtick_labels)))
+#     ax.set_xticklabels(xtick_labels_labels)
+#     # For each field in means_MEs['all'], plot bars with the values of the field for each idx_setups.
+#     for i, field in enumerate(xtick_labels):
+#         for j, idx_setup in enumerate(idx_setups):
+#             ax.bar(i+x[j]*bar_width, means_MEs_copy[motions[1]][field][idx_setup], bar_width, color=colors[j])
+#             # Add text with the value of the bar.
+#             if i == len(xtick_labels)-1:
+#                 ax.text(i+x[j]*bar_width, means_MEs_copy[motions[1]][field][idx_setup], np.round(means_MEs_copy[motions[1]][field][idx_setup], 1), ha='center', va='bottom')
+#     # Add legend with idx_setups
+#     leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+#     # Get what is after the last '_' in leg_t.
+#     # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+#     ax.legend(leg_t)
+#     plt.show()
+
+    
     
 
 

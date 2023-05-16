@@ -1,4 +1,40 @@
 Changelog:
+v0.54: upper is 87, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.53: upper is 86, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.52: upper is 82, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.51: upper is 81, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.50: upper is 80, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.49: upper is 79, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.48: upper is 76, lower is 64 - new data and curated, 60 frames, 60Hz, old model (3 uni instead of 4 layers uni)
+v0.47: upper is 75, lower is 64 - new data and curated, 60 frames, 60Hz, old model (2 uni instead of 4 layers uni)
+v0.46: upper is 78, lower is 64 - new data and curated, 60 frames, 60Hz, old model (5 uni instead of 4 layers uni)
+v0.45: upper is 77, lower is 64 - new data and curated, 60 frames, 60Hz, old model (4 uni instead of 4 layers uni)
+v0.44: upper from v0.7, lower is 73, feet is 74 - new data and curated, 60 frames, 60Hz, old model (... instead of 4 layers uni)
+v0.43: upper from v0.7, lower is 69 - new data and curated, 60 frames, 60Hz, old model (2 bi instead of 4 layers uni)
+v0.42: upper from v0.7, lower is 70 - new data and curated, 60 frames, 60Hz, old model (3 bi instead of 4 layers uni)
+v0.41: upper from v0.7, lower is 72 - new data and curated, 30 frames, 60Hz, old model (2 uni instead of 4 layers uni)
+v0.40: upper from v0.7, lower is 68 - new data and curated, 60 frames, 60Hz, old model (1 bi instead of 4 layers uni)
+v0.39: upper from v0.7, lower is 71 - new data and curated, 30 frames, 60Hz, old model (3 uni instead of 4 layers uni)
+v0.38: upper from v0.7, lower is 67 - new data and curated, 60 frames, 60Hz, old model (1 uni instead of 4 layers uni)
+v0.37: upper from v0.7, lower is 66 - new data and curated, 60 frames, 60Hz, old model (2 uni instead of 4 layers uni)
+v0.36: upper from v0.7, lower is 63 - new data and curated, 30 frames, 60Hz, old model (4 bid instead of 4 layers uni)
+v0.35: upper from v0.7, lower is 65 - new data and curated, 60 frames, 60Hz, old model (5 instead of 4 layers)
+v0.34: upper from v0.7, lower is 64 - new data and curated, 60 frames, 60Hz, old model (3 instead of 4 layers)
+v0.33: upper from v0.7, lower is 62 - new data and curated, 60 frames, 60Hz, old model
+v0.32: upper from v0.7, lower is 61 - new data and curated, 30 frames, 60Hz, old model (5 instead of 4 layers)
+v0.31: upper from v0.7, lower is 58 - new data and curated, 30 frames, 60Hz, old model, more rotations than 29
+v0.30: upper from v0.7, lower is 56 - new data and curated, 30 frames, 60Hz, old model w/o noise
+v0.29: upper from v0.7, lower is 55 - new data and curated, 30 frames, 60Hz, old model
+v0.28: upper from v0.7, lower is 53 - new data, 30 frames, 60Hz, old model but bidirectional
+v0.27: upper from v0.7, lower is 52 - new data, 30 frames, 60Hz, old model
+v0.26: upper from v0.7, lower is 50 - new data, 30 frames, 60Hz, 6 layers, 128 units
+v0.25: upper from v0.7, lower is 49 - new data (same datasets as v0.2), 30 frames, 60Hz, new model
+v0.24: upper from v0.7, lower is 48 - new data (same datasets as v0.2), 30 frames, 60Hz, old model
+v0.23: upper from v0.7, lower is 47 - new data (same datasets as v0.2, 60 franes, default sampling frequencies, old model
+v0.22: upper from v0.2, lower is 46 - old dta, trying to reproduce results
+v0.21: upper from v0.2, lower is 100 from openpose-augmenter repo - trying to reproduce results
+v0.20: same as v0.2 - debugging
+v0.19: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 45 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - no adjusted markers
 v0.18: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 44 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - no addbiomechanics data
 v0.17: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 41 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - more data
 v0.16: models trained with new dataset (data rotated "about circle") -  models 11 (no tuning) and 40 (no tuning) from marker-augmenter repository - midHip is ref - walking model - noise = 0.009 - with tracking - more data

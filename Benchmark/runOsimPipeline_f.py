@@ -217,7 +217,10 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         genericSetupFile4ScalingNameVideo)
                     os.makedirs(outputScaledModelDir, exist_ok=True) 
                     
-                    thresholdPosition = 0.007
+                    if poseDetector == 'OpenPose_default' and cameraSetup == '5-cameras' and augmenterType == 'v0.45':
+                        thresholdPosition = 0.008
+                    else:
+                        thresholdPosition = 0.007
                     thresholdTime = 0.1
                     timeRange4Scaling = getScaleTimeRange(
                         pathTRCFile4Scaling, thresholdPosition=thresholdPosition,

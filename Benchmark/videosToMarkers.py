@@ -59,7 +59,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(7,12)]
+subjects_to_process = ['subject' + str(i) for i in range(10,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
@@ -72,15 +72,10 @@ runOpenSim = True
 #     'subject2': {
 #         'Session20210813_0001': {},
 #         'Session20210813_0002': {}}}
-poseDetectors = ['OpenPose']
-# cameraSetups = ['2-cameras', '3-cameras', '5-cameras']
+poseDetectors = ['mmpose']
+# cameraSetups = ['5-cameras']
 cameraSetups = ['2-cameras']
-augmenter_model = 'v0.18'
-
-if augmenter_model == 'v0.12' or augmenter_model == 'v0.13' or augmenter_model == 'v0.14': # TODO keep adding to this list
-    withTrackingMarkers = False
-else:
-    withTrackingMarkers = True
+augmenter_models = ['v0.55', 'v0.45']
 
 dataDir = getDataDirectory()
 
@@ -119,60 +114,76 @@ for count, sessionName in enumerate(sessionNames):
     print('Processing session: ' + sessionName)
     for poseDetector in poseDetectors:
         for cameraSetup in cameraSetups:
-            # subjectName = subjectNames[count]
-            data = getData(sessionName)
-            if 'camera_setup' in data:
-                cam2Use = data['camera_setup'][cameraSetup]
-            else:
-                cam2Use = ['all']                
-            for trial in data['trials']:
-                
-                name = None # default
-                if "name" in data['trials'][trial]:
-                    name = data['trials'][trial]["name"]
+            for augmenter_model in augmenter_models:
+
+                if augmenter_model == 'v0.12' or augmenter_model == 'v0.13' or augmenter_model == 'v0.14': # TODO keep adding to this list
+                    withTrackingMarkers = False
+                else:
+                    withTrackingMarkers = True
+
+                # subjectName = subjectNames[count]
+                data = getData(sessionName)
+                if 'camera_setup' in data:
+                    cam2Use = data['camera_setup'][cameraSetup]
+                else:
+                    cam2Use = ['all']                
+                for trial in data['trials']:
                     
-                intrinsicsFinalFolder = 'Deployed' # default
-                if "intrinsicsFinalFolder" in data['trials'][trial]:
-                    intrinsicsFinalFolder = data['trials'][trial]["intrinsicsFinalFolder"]
+                    name = None # default
+                    if "name" in data['trials'][trial]:
+                        name = data['trials'][trial]["name"]
+                        
+                    intrinsicsFinalFolder = 'Deployed' # default
+                    if "intrinsicsFinalFolder" in data['trials'][trial]:
+                        intrinsicsFinalFolder = data['trials'][trial]["intrinsicsFinalFolder"]
+                        
+                    extrinsicsTrial = False # default
+                    if "extrinsicsTrial" in data['trials'][trial]:
+                        extrinsicsTrial = data['trials'][trial]["extrinsicsTrial"]
                     
-                extrinsicsTrial = False # default
-                if "extrinsicsTrial" in data['trials'][trial]:
-                    extrinsicsTrial = data['trials'][trial]["extrinsicsTrial"]
-                
-                alternateExtrinsics = None # default, otherwise list of camera names
-                if "alternateExtrinsics" in data['trials'][trial]:
-                    alternateExtrinsics = data['trials'][trial]['alternateExtrinsics']        
-                    
-                imageUpsampleFactor = 4 # default
-                if "imageUpsampleFactor" in data['trials'][trial]:
-                    imageUpsampleFactor = data['trials'][trial]['imageUpsampleFactor']
-                    
-                # resolutionPoseDetection = 'default' # default
-                resolutionPoseDetection = '1x1008_4scales'
-                if "resolutionPoseDetection" in data['trials'][trial]:
-                    resolutionPoseDetection = data['trials'][trial]['resolutionPoseDetection']
-                    
-                scaleModel = False # default
-                if "scaleModel" in data['trials'][trial]:
-                    scaleModel = data['trials'][trial]['scaleModel']
-                    
-                bbox_thr = 0.8 # default
-                if "bbox_thr" in data['trials'][trial]:
-                    bbox_thr = data['trials'][trial]['bbox_thr']
-                    
-                if videoToMarkers:
-                    process_trial(data['trials'][trial]["id"], name, session_name=sessionName,
-                                session_id=data['session_id'],
-                                isDocker=False, cam2Use=cam2Use, 
-                                intrinsicsFinalFolder=intrinsicsFinalFolder,
-                                extrinsicsTrial=extrinsicsTrial,
-                                alternateExtrinsics=alternateExtrinsics,
-                                markerDataFolderNameSuffix=cameraSetup,
-                                imageUpsampleFactor=imageUpsampleFactor,
-                                poseDetector=poseDetector,
-                                resolutionPoseDetection=resolutionPoseDetection,
-                                scaleModel=scaleModel, bbox_thr=bbox_thr, 
-                                augmenter_model=augmenter_model)
+                    alternateExtrinsics = None # default, otherwise list of camera names
+                    if "alternateExtrinsics" in data['trials'][trial]:
+                        alternateExtrinsics = data['trials'][trial]['alternateExtrinsics']        
+                        
+                    imageUpsampleFactor = 4 # default
+                    if "imageUpsampleFactor" in data['trials'][trial]:
+                        imageUpsampleFactor = data['trials'][trial]['imageUpsampleFactor']
+                        
+                    resolutionPoseDetection = '1x736' # default_OpenCap
+                    # resolutionPoseDetection = 'default' # default
+                    # resolutionPoseDetection = '1x1008_4scales'
+                    if "resolutionPoseDetection" in data['trials'][trial]:
+                        resolutionPoseDetection = data['trials'][trial]['resolutionPoseDetection']
+                        
+                    scaleModel = False # default
+                    if "scaleModel" in data['trials'][trial]:
+                        scaleModel = data['trials'][trial]['scaleModel']
+                        
+                    bbox_thr = 0.8 # default
+                    if "bbox_thr" in data['trials'][trial]:
+                        bbox_thr = data['trials'][trial]['bbox_thr']
+                        
+                    if videoToMarkers:
+                        try:
+                            process_trial(data['trials'][trial]["id"], name, session_name=sessionName,
+                                        session_id=data['session_id'],
+                                        isDocker=False, cam2Use=cam2Use, 
+                                        intrinsicsFinalFolder=intrinsicsFinalFolder,
+                                        extrinsicsTrial=extrinsicsTrial,
+                                        alternateExtrinsics=alternateExtrinsics,
+                                        markerDataFolderNameSuffix=cameraSetup,
+                                        imageUpsampleFactor=imageUpsampleFactor,
+                                        poseDetector=poseDetector,
+                                        resolutionPoseDetection=resolutionPoseDetection,
+                                        scaleModel=scaleModel, bbox_thr=bbox_thr, 
+                                        augmenter_model=augmenter_model)
+                        except:
+                            # Append name to a file
+                            with open('failedTrials.txt', 'a') as f:
+                                f.write(sessionName + ' ' + data['trials'][trial]["id"] + '\n')
+                            print('Failed trial: ' + sessionName + ' ' + data['trials'][trial]["id"])
+                            continue    
+
 
     print("DONE: video to markers")
 
@@ -202,7 +213,7 @@ if syncMocapVideo:
     MPJEs = {}
     for subjectName in sessionDetails:
         c_sessions = sessionDetails[subjectName]
-        MPJEs[subjectName] = main_sync(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, [augmenter_model], videoParameters, saveProcessedMocapData=False,
+        MPJEs[subjectName] = main_sync(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models, videoParameters, saveProcessedMocapData=False,
         overwriteMarkerDataProcessed=False, overwriteForceDataProcessed=False,
         overwritevideoAndMocap=True, writeMPJE_condition=True, writeMPJE_session=True,
         csv_name='MPJE_fullSession_v0.8')
@@ -214,7 +225,7 @@ if syncMocapVideo:
 if gatherData:
     for subjectName in sessionDetails:
         c_sessions = sessionDetails[subjectName]
-        main_gather(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, [augmenter_model])
+        main_gather(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models)
 
     print("DONE: gathering data")
 
@@ -225,7 +236,7 @@ if runOpenSim:
     opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 
     for subjectName in sessionDetails:
-        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, [augmenter_model], runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers)
+        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers)
 
     print("DONE: OpenSim pipeline")
         
