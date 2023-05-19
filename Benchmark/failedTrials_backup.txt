@@ -1,0 +1,31 @@
+Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db => STSweakLegs1
+Session20210825_0001 503ac3ef-19f7-4f6a-bbfd-10b181a21788 => DJAsym1
+
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 3-cameras v0.55 => walking1
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 5-cameras v0.55 => walking1
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 3-cameras v0.55 => walkingTS2
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 5-cameras v0.55 => walkingTS2
+
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 3-cameras v0.55 => STSweakLegs1
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 5-cameras v0.55 => STSweakLegs1
+
+Failed trial: Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271 mmpose default 5-cameras v0.55 => squats1
+
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 3-cameras v0.55 => walking1
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 5-cameras v0.55 => walking1
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 3-cameras v0.55 => walking2
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 5-cameras v0.55 => walking2
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 3-cameras v0.55 => walkingTS3
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 5-cameras v0.55 => walkingTS3
+
+Failed trial: Session20210825_0002 c37b171e-799c-432e-ae6f-5097b68cc487 mmpose default 5-cameras v0.55 => walking1
+
+Failed trial: Session20210827_0001 398af567-2e7d-4973-8a2b-d0a7f25e22cc mmpose default 5-cameras v0.55 => DJAsym3
+
+Failed trial: Session20210830_0001 220d7fd9-8622-4fcf-a38c-df9927c6808c mmpose default 5-cameras v0.55 => STS1
+
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 3-cameras v0.55 => walkingTS3
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 5-cameras v0.55 => walkingTS3
+
+
+

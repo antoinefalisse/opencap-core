@@ -1,4 +1,6 @@
 Changelog:
+v0.56: upper is 88, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
+v0.55: upper is 85, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
 v0.54: upper is 87, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
 v0.53: upper is 86, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
 v0.52: upper is 82, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)

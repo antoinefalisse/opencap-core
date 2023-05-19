@@ -59,23 +59,29 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(10,12)]
+subjects_to_process = ['subject' + str(i) for i in range(2,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
 syncMocapVideo = True
-gatherData = True
-runOpenSim = True
+gatherData = False
+runOpenSim = False
 
 # sessionNames = ['Session20210813_0001', 'Session20210813_0002']
 # sessionDetails = {    
 #     'subject2': {
 #         'Session20210813_0001': {},
 #         'Session20210813_0002': {}}}
-poseDetectors = ['mmpose']
+
 # cameraSetups = ['5-cameras']
-cameraSetups = ['2-cameras']
-augmenter_models = ['v0.55', 'v0.45']
+cameraSetups = ['3-cameras', '5-cameras']
+# augmenter_models = ['v0.1','v0.56']
+
+poseDetectors = ['mmpose']
+augmenter_models = ['v0.1','v0.2']
+
+# poseDetectors = ['mmpose']
+# augmenter_models = ['v0.1','v0.2','v0.45','v0.54','v0.55','v0.56']
 
 dataDir = getDataDirectory()
 
@@ -149,8 +155,8 @@ for count, sessionName in enumerate(sessionNames):
                     if "imageUpsampleFactor" in data['trials'][trial]:
                         imageUpsampleFactor = data['trials'][trial]['imageUpsampleFactor']
                         
-                    resolutionPoseDetection = '1x736' # default_OpenCap
-                    # resolutionPoseDetection = 'default' # default
+                    # resolutionPoseDetection = '1x736' # default_OpenCap
+                    resolutionPoseDetection = 'default' # default
                     # resolutionPoseDetection = '1x1008_4scales'
                     if "resolutionPoseDetection" in data['trials'][trial]:
                         resolutionPoseDetection = data['trials'][trial]['resolutionPoseDetection']
@@ -180,8 +186,11 @@ for count, sessionName in enumerate(sessionNames):
                         except:
                             # Append name to a file
                             with open('failedTrials.txt', 'a') as f:
-                                f.write(sessionName + ' ' + data['trials'][trial]["id"] + '\n')
-                            print('Failed trial: ' + sessionName + ' ' + data['trials'][trial]["id"])
+                                f.write('Failed trial: {} {} {} {} {} {} \n'.format(sessionName, data['trials'][trial]["id"], poseDetector, resolutionPoseDetection, cameraSetup, augmenter_model))
+                            # print('Failed trial: ' + sessionName + ' ' + data['trials'][trial]["id"] + ' ' + poseDetector + ' ' + resolutionPoseDetection + ' ' + cameraSetup + ' ' + augmenter_model)
+                            print('Failed trial: {} {} {} {} {} {}'.format(sessionName, data['trials'][trial]["id"], poseDetector, resolutionPoseDetection, cameraSetup, augmenter_model))
+
+
                             continue    
 
 
@@ -215,8 +224,8 @@ if syncMocapVideo:
         c_sessions = sessionDetails[subjectName]
         MPJEs[subjectName] = main_sync(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models, videoParameters, saveProcessedMocapData=False,
         overwriteMarkerDataProcessed=False, overwriteForceDataProcessed=False,
-        overwritevideoAndMocap=True, writeMPJE_condition=True, writeMPJE_session=True,
-        csv_name='MPJE_fullSession_v0.8')
+        overwritevideoAndMocap=False, writeMPJE_condition=True, writeMPJE_session=True,
+        csv_name='MPJE_fullSession_do_not_trust')
 
     print("DONE: syncing to mocap")
 

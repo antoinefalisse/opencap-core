@@ -1,1 +1,119 @@
 Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db
+Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252
+Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1
+Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252
+Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1
+Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db
+Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db
+Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271
+Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a
+Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026
+Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad
+Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a
+Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026
+Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad
+Session20210825_0002 c37b171e-799c-432e-ae6f-5097b68cc487
+Session20210827_0001 398af567-2e7d-4973-8a2b-d0a7f25e22cc
+Session20210830_0001 220d7fd9-8622-4fcf-a38c-df9927c6808c
+Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27
+Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27
+Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252
+Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1
+Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252
+Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1
+Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db
+Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db
+Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271
+Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a
+Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026
+Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad
+Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a
+Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026
+Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad
+Session20210825_0001 503ac3ef-19f7-4f6a-bbfd-10b181a21788
+Session20210825_0002 c37b171e-799c-432e-ae6f-5097b68cc487
+Session20210827_0001 398af567-2e7d-4973-8a2b-d0a7f25e22cc
+Session20210830_0001 220d7fd9-8622-4fcf-a38c-df9927c6808c
+Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27
+Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 3-cameras v0.56 
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 3-cameras v0.56 
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 5-cameras v0.55 
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 5-cameras v0.55 
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 5-cameras v0.56 
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 5-cameras v0.56 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 3-cameras v0.56 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 5-cameras v0.55 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 5-cameras v0.56 
+Failed trial: Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271 mmpose default 5-cameras v0.55 
+Failed trial: Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271 mmpose default 5-cameras v0.56 
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 3-cameras v0.55 
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 3-cameras v0.55 
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 3-cameras v0.55 
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 3-cameras v0.56 
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 3-cameras v0.56 
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 3-cameras v0.56 
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 5-cameras v0.55 
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 5-cameras v0.55 
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 5-cameras v0.55 
+Failed trial: Session20210820_0002 01ab1bdc-6c5e-45e6-b8f0-027beb8ca77a mmpose default 5-cameras v0.56 
+Failed trial: Session20210820_0002 332705f7-a742-4a4a-a699-2479fd292026 mmpose default 5-cameras v0.56 
+Failed trial: Session20210820_0002 caacd204-8d79-499b-953a-e2db7ad8a6ad mmpose default 5-cameras v0.56 
+Failed trial: Session20210825_0002 c37b171e-799c-432e-ae6f-5097b68cc487 mmpose default 5-cameras v0.55 
+Failed trial: Session20210825_0002 c37b171e-799c-432e-ae6f-5097b68cc487 mmpose default 5-cameras v0.56 
+Failed trial: Session20210827_0001 398af567-2e7d-4973-8a2b-d0a7f25e22cc mmpose default 5-cameras v0.55 
+Failed trial: Session20210827_0001 398af567-2e7d-4973-8a2b-d0a7f25e22cc mmpose default 5-cameras v0.56 
+Failed trial: Session20210830_0001 220d7fd9-8622-4fcf-a38c-df9927c6808c mmpose default 5-cameras v0.55 
+Failed trial: Session20210830_0001 220d7fd9-8622-4fcf-a38c-df9927c6808c mmpose default 5-cameras v0.56 
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 3-cameras v0.55 
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 3-cameras v0.56 
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 5-cameras v0.55 
+Failed trial: Session20210910_0002 740460ca-f828-42a6-81bf-f9485f78dd27 mmpose default 5-cameras v0.56 
+Failed trial: Session20210813_0001 89c98148-5dbc-41ce-b983-807db01e3392 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 db011831-5b1e-42e3-bd08-3551d12c3617 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 13c7eeaf-8ab6-4214-ac28-148d3579a4b4 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 ba7cfb33-354f-4d68-8ce2-e753e1c10c14 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 d14150de-b9db-430d-85fa-99f1d8d5754c mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 163174f7-9913-4c79-bda3-cb6551349965 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 592067e8-78dc-4e3a-a0dd-b1cb197dfaaa mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 79e3db5c-e433-40c1-b957-45479b510fc9 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 5cadae71-4db0-49f7-a581-bbcf0ca65a17 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0001 f9e95ded-016c-4859-b1eb-84a4706a49e7 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 198881de-42b4-4b46-9e84-9c7ec38fc252 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 4c56dcd6-6741-4f5e-bcf2-bf8a778ab7a8 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 7c7e31c2-9e0d-4a23-bded-e8b66049ae1c mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 8ba0a98f-904c-4138-a8f7-fa1217240aa1 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose default 3-cameras v0.55 
+Failed trial: Session20210813_0002 5ed94c2e-d860-4ec1-991b-59bc5ce31ece mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 f7d8a34d-03ff-42cd-8f9d-732e86a02533 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 28aa71cc-347d-4382-a316-abed6a23f159 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 902c400f-ce9c-4f44-9116-40f54317ace6 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 65466823-f9e2-468a-a2a8-88c05a6b439b mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 75b01f64-4405-4ac8-816d-a3a3f85b3ba5 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 394e3245-cb12-4b4d-a741-ef6032de5b79 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 b0b5ed09-08b7-47d5-9349-8232b56f03c2 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 f242c16b-c4d6-43d0-835b-658e3df989dd mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 c1574ba5-ff49-47a3-9ae5-2f77d13716bb mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0001 260573e1-b099-4d8b-a9d6-1b2058f19fe5 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 0d9e4b14-1590-4ff6-99cc-6f217639e34e mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 ba7e5aab-b1c6-4590-8ec5-2629f6907e59 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 ea91fa96-14f2-4727-8bd3-bb418938ce09 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 60b94a9a-43ea-4636-80fb-72d134a186d6 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 090c8e78-2951-4f4e-b179-7e6b013b43d7 mmpose default 3-cameras v0.55 
+Failed trial: Session20210816_0002 849635d4-32be-4651-9775-59eaabf8ecf6 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 82355490-67e7-4a7e-9bec-87ee54795719 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 c9588c39-d639-4151-b4bf-782b2124e93a mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 fb9ee3bc-59c1-47df-9837-c92c6ef721f3 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 80bd187b-9066-43ae-83b0-70121eb25271 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 0cb1048f-2010-49be-853a-4c509699adac mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 c01ce1f3-cb38-4e54-9204-fa8ab218424f mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 ddb3ddcf-bb59-4ea4-9610-b17db3ff0f0e mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 7c4259f2-3f84-4778-a4cf-734a692661e4 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 e9ba9011-6c69-4fba-a8cb-ff008cab6e40 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 78e2b2d7-3a12-4b1b-bb98-1adadb431506 mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0001 a7ec1965-edf6-43ed-baf7-d3042ea1c61b mmpose default 3-cameras v0.55 
+Failed trial: Session20210819_0002 0eaaeb83-dba0-4e52-8a9b-fccb344483fe mmpose default 3-cameras v0.55 

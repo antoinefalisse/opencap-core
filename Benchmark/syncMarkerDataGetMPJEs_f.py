@@ -195,6 +195,7 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
     pathOutputFile = os.path.join(outputDir,trialName + '_videoAndMocap.trc')
     
     if not os.path.exists(pathOutputFile) or overwritevideoAndMocap:
+        print("In there")
         with open(pathOutputFile,"w") as f:
             ut.numpy2TRC(f, outData, outMkrNames, fc=mocapTRC.camera_rate, units="mm",t_start=syncTimeVec[0])
       
@@ -470,6 +471,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
         analysisNames = []
         MPJE_session = []
         MPJE_offsetRemoved_session = []
+        trial_names = []
         for markerDataFolder in markerDataFolders:         
             temp = markerDataFolder.split('\\')
             # poseDetector = temp[len(temp) - 2]
@@ -588,10 +590,11 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                                   markersMPJE)  
                     poseDetector = os.path.basename(os.path.normpath(markerDataFolder))
                     nCams = os.path.basename(os.path.normpath(camComboFolder))
-                    analysisNames.append(poseDetector + '_' + nCams + '_' +
+                    analysisNames.append(poseDetector + '__' + nCams + '__' +
                                          postAugmentationType)
                     MPJE_session.append(MPJE_mean)
                     MPJE_offsetRemoved_session.append(MPJE_offsetRemoved_mean)
+                    trial_names.append(trialNames)
         
         # Write all MPJE to session file
         markerDataDir = os.path.join(subjectVideoDir, 'MarkerData')
@@ -599,6 +602,26 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
             writeMPJE_perSession(trialNames, markerDataDir, MPJE_session,
                                  MPJE_offsetRemoved_session, analysisNames,
                                  csv_name)
+            
+            # Check if npy file MPJE_all in markerDataDir
+            if os.path.exists(os.path.join(markerDataDir, 'MPJE_all.npy')):
+                MPJE_all = np.load(os.path.join(markerDataDir, 'MPJE_all.npy'), allow_pickle=True).item()
+                # MPJE_all = {}
+            else:
+                MPJE_all = {}
+            for analysisName, MPJE, MPJE_offsetRemoved, trial_name in zip(analysisNames, MPJE_session, MPJE_offsetRemoved_session, trial_names):
+                # Split analysisName based on last three underscores
+                analysisName = analysisName.split('__')[-3:]
+                if not analysisName[0] in list(MPJE_all.keys()):
+                    MPJE_all[analysisName[0]] = {}
+                if not analysisName[1] in list(MPJE_all[analysisName[0]].keys()):
+                    MPJE_all[analysisName[0]][analysisName[1]] = {}
+                if not analysisName[2] in list(MPJE_all[analysisName[0]][analysisName[1]].keys()):
+                    MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]] = {}  
+                MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['MPJE'] = MPJE
+                MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['MPJE_offsetRemoved'] = MPJE_offsetRemoved
+                MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['trials'] = trial_name
+            np.save(os.path.join(markerDataDir, 'MPJE_all.npy'), MPJE_all)
             
     return MPJEs
 
