@@ -1,4 +1,8 @@
 Changelog:
+v0.60: same as 59, testing resampling (120Hz), prior to augmenter
+v0.59: upper is 89, lower is 64 - new data and curated, 120 frames, 120Hz, old model (diff cost function)
+v0.58: same as 54, testing resampling (120Hz) prior to augmenter
+v0.57: same as 54, testing resampling (240Hz) prior to augmenter
 v0.56: upper is 88, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
 v0.55: upper is 85, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
 v0.54: upper is 87, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)

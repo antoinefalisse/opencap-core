@@ -1122,6 +1122,116 @@ def getData(sessionName, benchmarkTrialsOnly=True, trialIdx=[]):
     data['Session20210910_0003']['trials'][12] = {"id": "6773e374-c0bc-4f99-b988-9bcd9ab7108f", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # WalkingClinic3
     data['Session20210910_0003']['trials'][13] = {"id": "2f059873-284d-4822-ad85-a6c6e826a688", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # WalkingClinic4
     data['Session20210910_0003']['trials'][14] = {"id": "2c5f4c36-4f6d-4a58-ad93-c989ad868dec", "intrinsicsFinalFolder": 'Deployed_720_60fps'} # WalkingClinic5
+
+    # %% Sub2_AF_240Hz
+    # 1st session: jumps
+    data['Session20210813_0001_240'] = {}
+    data['Session20210813_0001_240']['session_id'] = 'b08c621c-234e-4a6b-bcde-eda784e3bcb4'
+    data['Session20210813_0001_240']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam0', 'Cam2', 'Cam4'], '2-cameras': ['Cam0', 'Cam4']}
+    data['Session20210813_0001_240']['trials'] = {}
+    # data['Session20210813_0001_240']['trials'][0] = {"id": "a57ffaac-bdcc-4786-8acf-c0edd92f7109", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicLargeOverground
+    data['Session20210813_0001_240']['trials'][2] = {"id": "7027b0cb-e290-4bc9-9fbd-d59b3c8c1b81", "intrinsicsFinalFolder": 'Deployed_720_240fps', 'scaleModel': True} # static1
+    # data['Session20210813_0001_240']['trials'][3] = {"id": "89c98148-5dbc-41ce-b983-807db01e3392", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STS1
+    # data['Session20210813_0001_240']['trials'][5] = {"id": "db011831-5b1e-42e3-bd08-3551d12c3617", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STSweakLegs1
+    # data['Session20210813_0001_240']['trials'][6] = {"id": "13c7eeaf-8ab6-4214-ac28-148d3579a4b4", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # squats1
+    # data['Session20210813_0001_240']['trials'][7] = {"id": "ba7cfb33-354f-4d68-8ce2-e753e1c10c14", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # squatsAsym1
+    data['Session20210813_0001_240']['trials'][8] = {"id": "d14150de-b9db-430d-85fa-99f1d8d5754c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJ1
+    data['Session20210813_0001_240']['trials'][9] = {"id": "163174f7-9913-4c79-bda3-cb6551349965", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJ2
+    data['Session20210813_0001_240']['trials'][10] = {"id": "592067e8-78dc-4e3a-a0dd-b1cb197dfaaa", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJ3
+    data['Session20210813_0001_240']['trials'][13] = {"id": "79e3db5c-e433-40c1-b957-45479b510fc9", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJAsym1
+    data['Session20210813_0001_240']['trials'][16] = {"id": "5cadae71-4db0-49f7-a581-bbcf0ca65a17", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJAsym4
+    data['Session20210813_0001_240']['trials'][17] = {"id": "f9e95ded-016c-4859-b1eb-84a4706a49e7", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJAsym5    
+    if not benchmarkTrialsOnly:
+        data['Session20210813_0001_240']['trials'][0] = {"id": "a57ffaac-bdcc-4786-8acf-c0edd92f7109", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicLargeOverground
+        # data['Session20210813_0001_240']['trials'][1] = {"id": "e1800989-ac81-4912-9302-1ede0107ab28", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicSmallOverground
+        data['Session20210813_0001_240']['trials'][4] = {"id": "946883e9-08ea-4b80-b15e-301f1d659e45", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STSAsym1
+        data['Session20210813_0001_240']['trials'][11] = {"id": "97c7fe00-d356-44f0-8308-c7cbdf4a5635", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJ4
+        data['Session20210813_0001_240']['trials'][12] = {"id": "fff8f2a2-f353-4860-a6f2-8a8500ac42fc", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJ5
+        data['Session20210813_0001_240']['trials'][14] = {"id": "f991ec76-e019-4a4b-9cfe-19bbc2ad7c1a", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJAsym2
+        data['Session20210813_0001_240']['trials'][15] = {"id": "78a6eca8-ee0d-4fb8-826c-bea3464e6ce8", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJAsym3    
+        # data['Session20210813_0001_240']['trials'][18] = {"id": "dad30ff9-0c6c-41d9-902b-dbe84ef90fc3", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLBalanceOpen1
+        # data['Session20210813_0001_240']['trials'][19] = {"id": "ba9139af-f5f2-4624-8213-6e0ef8ea6928", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLBalanceClosed1         
+    # 2nd session: gaits
+    data['Session20210813_0002_240'] = {}
+    data['Session20210813_0002_240']['session_id'] = 'b08c621c-234e-4a6b-bcde-eda784e3bcb4'
+    data['Session20210813_0002_240']['camera_setup'] = {'5-cameras': ['all'], '3-cameras': ['Cam2', 'Cam3', 'Cam4'], '2-cameras': ['Cam2', 'Cam3']}
+    data['Session20210813_0002_240']['trials'] = {}   
+    # data['Session20210813_0002_240']['trials'][0] = {"id": "6368b864-254b-4ea4-bdc5-bc22cef34a94", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # estrinsicLargeWalking
+    data['Session20210813_0002_240']['trials'][2] = {"id": "198881de-42b4-4b46-9e84-9c7ec38fc252", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking1
+    data['Session20210813_0002_240']['trials'][3] = {"id": "4c56dcd6-6741-4f5e-bcf2-bf8a778ab7a8", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking2
+    data['Session20210813_0002_240']['trials'][4] = {"id": "7c7e31c2-9e0d-4a23-bded-e8b66049ae1c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking3
+    data['Session20210813_0002_240']['trials'][7] = {"id": "8ba0a98f-904c-4138-a8f7-fa1217240aa1", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTS1
+    data['Session20210813_0002_240']['trials'][8] = {"id": "4dc52094-3462-40a6-a785-26875ededed1", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTS2
+    data['Session20210813_0002_240']['trials'][10] = {"id": "5ed94c2e-d860-4ec1-991b-59bc5ce31ece", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTS4
+    if not benchmarkTrialsOnly:
+        data['Session20210813_0002_240']['trials'][0] = {"id": "6368b864-254b-4ea4-bdc5-bc22cef34a94", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # estrinsicLargeWalking
+        # data['Session20210813_0002_240']['trials'][1] = {"id": "6c568ff0-ea28-43f1-b5b2-4de139dff965", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # estrinsicSmallWalking 
+        data['Session20210813_0002_240']['trials'][5] = {"id": "23db0006-6928-4d28-a158-8c8f26e616fd", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking4
+        data['Session20210813_0002_240']['trials'][6] = {"id": "84641060-200f-445f-accd-1431751526fe", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walking5
+        data['Session20210813_0002_240']['trials'][9] = {"id": "6b145a4b-9b4b-405f-ad2e-5a3d211f745c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTS3
+        data['Session20210813_0002_240']['trials'][11] = {"id": "a909c019-ac67-488e-984f-1b68413e1efe", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTS5
+        data['Session20210813_0002_240']['trials'][12] = {"id": "b5e0918d-e9ba-4f74-b2a9-8d92b4a0b9a4", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTI1
+        data['Session20210813_0002_240']['trials'][13] = {"id": "1d5a4431-5c90-4e12-9288-917ecb0f46c4", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTI2
+        data['Session20210813_0002_240']['trials'][14] = {"id": "958532fe-832a-4ecb-8e36-dc260a29b44b", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTI3
+        data['Session20210813_0002_240']['trials'][15] = {"id": "e0ca9c6a-576e-4e14-b9ba-b4a62ee1a7f4", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTI4
+        data['Session20210813_0002_240']['trials'][16] = {"id": "5a2c79a6-18ea-4cfd-948b-6471638f7023", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTI5
+        data['Session20210813_0002_240']['trials'][17] = {"id": "51e617f0-d51f-48d8-a609-e38bbd7be2bc", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTO1
+        data['Session20210813_0002_240']['trials'][18] = {"id": "77565884-c2e4-4eda-a706-057d8fa15c0c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTO2
+        data['Session20210813_0002_240']['trials'][19] = {"id": "b3cef4bb-7b60-4b1b-a802-67ac1857071b", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTO3
+        data['Session20210813_0002_240']['trials'][20] = {"id": "71f0bbe9-91b0-47df-8a66-f1bedaaad6af", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTO4
+        data['Session20210813_0002_240']['trials'][21] = {"id": "d84c4616-014b-44aa-8933-58c1cb7b23b0", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingTO5
+        data['Session20210813_0002_240']['trials'][22] = {"id": "9fb6190f-7f22-46b7-a74b-af7132b40599", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingMT1
+        data['Session20210813_0002_240']['trials'][23] = {"id": "67b9f972-ee53-4bd9-a753-932362334d01", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingMT2
+        data['Session20210813_0002_240']['trials'][24] = {"id": "a6f9f892-f401-45e1-8411-e70f834ec62a", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingMT3
+        data['Session20210813_0002_240']['trials'][25] = {"id": "6ef0963b-838c-4e66-8199-b89d82123d57", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingMT4
+        data['Session20210813_0002_240']['trials'][26] = {"id": "b10494d3-d86f-4aa2-9b03-9c30dda2fb43", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # walkingMT5
+        # data['Session20210813_0002_240']['trials'][27] = {"id": "b400b30f-9450-4ed1-a104-c0441ed33489", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningRFS1
+        # data['Session20210813_0002_240']['trials'][28] = {"id": "0fbddd45-4d74-4b7d-82c1-b5f278630c8f", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningRFS2
+        # data['Session20210813_0002_240']['trials'][29] = {"id": "b7dcf4c0-54aa-4370-b81b-4a9001b7f3e7", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningRFS3
+        # data['Session20210813_0002_240']['trials'][30] = {"id": "95365733-0d67-4107-879d-4f58f3e8b1d1", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningRFS4
+        # data['Session20210813_0002_240']['trials'][31] = {"id": "35722c88-4f84-486b-844d-b12dc0159365", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningRFS5
+        # data['Session20210813_0002_240']['trials'][32] = {"id": "e701ebe8-a4a2-4e5f-8405-eb52c5bd955e", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningFFS1
+        # data['Session20210813_0002_240']['trials'][33] = {"id": "897343cc-318e-46ff-b514-df11e87898b3", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningFFS2
+        # data['Session20210813_0002_240']['trials'][34] = {"id": "ed6d2fd6-800c-4692-b49e-a278e6de667d", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningFFS3
+        # data['Session20210813_0002_240']['trials'][35] = {"id": "585bcaed-e65b-4ad2-a1a3-b9a29afef91c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningFFS4
+        # data['Session20210813_0002_240']['trials'][36] = {"id": "b08e0d1b-c563-4f64-bc14-c83276091ee7", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # runningFFS5
+        # data['Session20210813_0002_240']['trials'][37] = {"id": "e7f3c5c3-8812-4346-97ae-3a7866942353", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_R1
+        # data['Session20210813_0002_240']['trials'][38] = {"id": "080aedf0-99d4-492b-a320-356ea4a0fd2f", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_R2
+        # data['Session20210813_0002_240']['trials'][39] = {"id": "9497600e-5557-49fd-afaf-c011d1d062c8", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_R3
+        # data['Session20210813_0002_240']['trials'][40] = {"id": "4736ad60-e491-427c-b43c-c176eb2ce2e6", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_L1
+        # data['Session20210813_0002_240']['trials'][41] = {"id": "b0a90649-3e8b-4afd-9aa8-8b2359a64a50", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_L2
+        # data['Session20210813_0002_240']['trials'][42] = {"id": "35a70535-850b-42f4-882d-8ae180354005", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # SLHop_L3
+        # data['Session20210813_0002_240']['trials'][43] = {"id": "22657c7f-fd67-4802-9314-38e74e080540", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopR_1
+        # data['Session20210813_0002_240']['trials'][44] = {"id": "1ff71bcc-3c4c-4813-ad65-ed5ee8c7a306", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopR_2
+        # data['Session20210813_0002_240']['trials'][45] = {"id": "9f2a6163-1387-405c-a897-2db1799c76e6", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopR_3
+        # data['Session20210813_0002_240']['trials'][46] = {"id": "6532b0bd-70c3-4c40-b825-2bc2833f1ba5", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopL_1
+        # data['Session20210813_0002_240']['trials'][47] = {"id": "d1551a79-3a7a-4bc2-9774-6858620a75cb", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopL_2
+        # data['Session20210813_0002_240']['trials'][48] = {"id": "fde5e05e-23fe-46ff-8939-96ddb351166a", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # TRHopL_3
+        # # data['Session20210813_0002_240']['trials'][49] = {"id": "545a5608-701d-4743-a0bf-e833a0059416", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_R1
+        # # data['Session20210813_0002_240']['trials'][50] = {"id": "52fe0b34-c6b0-4f99-9646-793da0aaa937", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_R2
+        # # data['Session20210813_0002_240']['trials'][51] = {"id": "ad493082-e654-4a06-9fba-fe9786a9ee7c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_R3
+        # # data['Session20210813_0002_240']['trials'][52] = {"id": "741931d6-0e43-47dd-b06a-b340c69240c0", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_L1
+        # # data['Session20210813_0002_240']['trials'][53] = {"id": "54b99867-69d3-4c01-8069-5bca86e5b1f0", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_L2
+        # # data['Session20210813_0002_240']['trials'][54] = {"id": "885db0ec-04de-4f51-88cc-e54c37160fbb", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # CrossHop_L3    
+    # 3nd session: clinic
+    data['Session20210813_0003_240'] = {}
+    data['Session20210813_0003_240']['session_id'] = '6443197e-a674-4738-b68c-0ca556ab6e81'
+    data['Session20210813_0003_240']['camera_setup'] = {'3-cameras': ['all'], '2-cameras': ['Cam1', 'Cam2']}
+    data['Session20210813_0003_240']['trials'] = {}
+    data['Session20210813_0003_240']['trials'][0] = {"id": "c5f3443c-af05-4c44-bb61-357fd51bc36f", "intrinsicsFinalFolder": 'Deployed_720_240fps', "extrinsicsTrial": True} # extrinsicsSmallClinic
+    data['Session20210813_0003_240']['trials'][1] = {"id": "8adfd901-deda-43d7-8b80-4d746e5d793d", "intrinsicsFinalFolder": 'Deployed_720_240fps', 'scaleModel': True} # StaticClinic1
+    data['Session20210813_0003_240']['trials'][2] = {"id": "9e9ee52e-a815-4092-b1c3-4dc26f1744db", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJClinic1
+    data['Session20210813_0003_240']['trials'][3] = {"id": "5e7b35ae-e2d4-4217-b1bd-4710ab770473", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJClinic2
+    data['Session20210813_0003_240']['trials'][4] = {"id": "bf594f5e-8a93-4e16-904e-07601351506c", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJClinic3
+    data['Session20210813_0003_240']['trials'][5] = {"id": "85fe84c6-e635-41c8-a4c9-4afdd4e4b62b", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJClinic4
+    data['Session20210813_0003_240']['trials'][6] = {"id": "2d0d2e5f-bae8-43de-b5d1-17ac6d8b166b", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # DJClinic5
+    data['Session20210813_0003_240']['trials'][7] = {"id": "03b11200-5856-420b-9b37-3b72983965a8", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # STSClinic1
+    data['Session20210813_0003_240']['trials'][8] = {"id": "114d34ea-d738-45c2-8ddc-087ac1d473ba", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # squatsClinic1
+    data['Session20210813_0003_240']['trials'][9] = {"id": "2a752324-d454-4daa-ba41-c3a13f5780f9", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # WalkingClinic1
+    data['Session20210813_0003_240']['trials'][10] = {"id": "4bf19a28-8fc6-4359-b9a1-f84cdc8d5603", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # WalkingClinic2
+    data['Session20210813_0003_240']['trials'][11] = {"id": "fd457bff-cdc0-4777-9dc0-66e85cdb9457", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # WalkingClinic3
+    data['Session20210813_0003_240']['trials'][12] = {"id": "a839ce9c-7144-47d4-93ae-5ce588a83c72", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # WalkingClinic4
+    data['Session20210813_0003_240']['trials'][13] = {"id": "d6f2bf48-035a-4b03-b47f-f04b39033228", "intrinsicsFinalFolder": 'Deployed_720_240fps'} # WalkingClinic
     
     # %% Return data    
     if trialIdx:

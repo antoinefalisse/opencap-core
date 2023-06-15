@@ -39,7 +39,9 @@ def get_subject(subjects_to_process):
             'Session20210903_0002': {}},        
         'subject11': {
             'Session20210910_0001': {},
-            'Session20210910_0002': {}}}
+            'Session20210910_0002': {}},
+        'subject12': {
+            'Session20210813_0001_240': {}}}
     sessionDetails_out = {}
     sessionNames_out = []
     for subject in subjects_to_process:
@@ -51,7 +53,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(10,12)]
+subjects_to_process = ['subject' + str(i) for i in range(12,13)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 pathDrive = 'C:/MyDriveSym/Projects/mobilecap/Data/'
@@ -123,7 +125,7 @@ if part2:
             shutil.rmtree(pathMarkerDataDrive)
 
 # Copy data back to drive
-camera_setups = ['2-cameras', '3-cameras', '5-cameras']
+camera_setups = ['2-cameras']
 if part3:
     for count, sessionName in enumerate(sessionNames):
         print('Processing session: ' + sessionName)
@@ -135,7 +137,7 @@ if part3:
         # Copy video-related content
         pathVideosDrive = pathSessionDrive + 'Videos/'
         pathVideosLocal = pathSessionLocal + 'Videos/'
-        for i in range(5):
+        for i in range(1):
             pathCamDrive  = pathVideosDrive + 'Cam' + str(i) + '/'
             pathCamLocal  = pathVideosLocal + 'Cam' + str(i) + '/'
 
