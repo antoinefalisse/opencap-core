@@ -3,14 +3,14 @@ v0.60: same as 59, testing resampling (120Hz), prior to augmenter
 v0.59: upper is 89, lower is 64 - new data and curated, 120 frames, 120Hz, old model (diff cost function)
 v0.58: same as 54, testing resampling (120Hz) prior to augmenter
 v0.57: same as 54, testing resampling (240Hz) prior to augmenter
-v0.56: upper is 88, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
-v0.55: upper is 85, lower is 84 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
-v0.54: upper is 87, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
-v0.53: upper is 86, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
-v0.52: upper is 82, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
-v0.51: upper is 81, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
-v0.50: upper is 80, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
-v0.49: upper is 79, lower is 64 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.56: upper is 84, lower is 88 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
+v0.55: upper is 84, lower is 85 - new data and curated, 60 frames, 60Hz, old model (diff cost function) - mmpose
+v0.54: upper is 77, lower is 87 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.53: upper is 77, lower is 86 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.52: upper is 77, lower is 82 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.51: upper is 77, lower is 81 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.50: upper is 77, lower is 80 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
+v0.49: upper is 77, lower is 79 - new data and curated, 60 frames, 60Hz, old model (diff cost function)
 v0.48: upper is 76, lower is 64 - new data and curated, 60 frames, 60Hz, old model (3 uni instead of 4 layers uni)
 v0.47: upper is 75, lower is 64 - new data and curated, 60 frames, 60Hz, old model (2 uni instead of 4 layers uni)
 v0.46: upper is 78, lower is 64 - new data and curated, 60 frames, 60Hz, old model (5 uni instead of 4 layers uni)
