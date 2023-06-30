@@ -30,25 +30,25 @@ outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
 # %% User inputs.
 subjects = ['subject' + str(i) for i in range(2, 12)]
 
-# poseDetectors = ['OpenPose_1x1008_4scales']
+poseDetectors = ['OpenPose_1x1008_4scales']
 # poseDetectors = ['OpenPose_default']
 # poseDetectors = ['OpenPose_1x736']
 # poseDetectors = ['OpenPose_1x736', 'OpenPose_1x1008_4scales']
 
 # poseDetectors = ['OpenPose_default', 'OpenPose_1x736', 'OpenPose_1x1008_4scales']
-poseDetectors = ['mmpose_0.8']
+# poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
-    # 'v0.1': {'run': False},
-    # 'v0.2': {'run': False},
+    'v0.1': {'run': False},
+    'v0.2': {'run': False},
     # 'v0.45': {'run': False},
     # 'v0.54': {'run': False},
     # 'v0.57': {'run': True},
     # 'v0.58': {'run': True},
     
     # 'v0.55': {'run': False},
-    'v0.63': {'run': True},
-    'v0.65': {'run': False},
+    'v0.63': {'run': False},
+    # 'v0.65': {'run': False},
     # 'v0.62': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.63': {'run': True},
