@@ -39,19 +39,23 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
-    'v0.1': {'run': False},
-    'v0.2': {'run': False},
+    # 'v0.1': {'run': False},
+    # 'v0.2': {'run': False},
     # 'v0.45': {'run': False},
-    'v0.54': {'run': False},
+    # 'v0.54': {'run': False},
     # 'v0.57': {'run': True},
     # 'v0.58': {'run': True},
     
-    # 'v0.59': {'run': False},
-    # 'v0.60': {'run': False},
+    # 'v0.55': {'run': False},
+    'v0.63': {'run': True},
+    'v0.65': {'run': False},
+    # 'v0.62': {'run': False},
+    # 'v0.63': {'run': False},
+    # 'v0.63': {'run': True},
 }
 
-# setups_t = list(augmenterTypes.keys())
-setups_t = ['Uhlrich et al (2022)', 'OpenCap-Deployed', 'Latest']
+setups_t = list(augmenterTypes.keys())
+# setups_t = ['Uhlrich et al (2022)', 'OpenCap-Deployed', 'Latest']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -103,7 +107,10 @@ cases_to_exclude_algo = {
     'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
                                                             'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
                                                             'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.54': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
+                                                            'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+                                                            'v0.61': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+                                                            'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+                                                            'v0.63': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
                   'OpenPose_1x736': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
                                                    'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
                                                    'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
@@ -165,7 +172,10 @@ cases_to_exclude_algo = {
                                                 'v0.57': ['walkingTS2'],# MPJE
                                                 'v0.58': ['walkingTS2'],# MPJE
                                                 'v0.59': ['walkingTS2'],# MPJE
-                                                'v0.60': ['walkingTS2']}},# MPJE
+                                                'v0.60': ['walkingTS2'],# MPJE
+                                                'v0.63': ['walkingTS2'],# MPJE
+                                                'v0.64': ['walkingTS2'],# MPJE
+                                                'v0.65': ['walkingTS2']}},# MPJE
                  },
     # Subject 9
     'subject9': {'mmpose_0.8': {'5-cameras': {'v0.45': ['STS1'],# algo 
@@ -1414,25 +1424,17 @@ xtick_labels = list(means_RMSEs[motions[0]].keys())
 xtick_labels = [xtick_label for xtick_label in xtick_labels if xtick_label not in coordinates_tr] + ['mean']
 # remove _l at the end of the xtick_labels if present
 xtick_labels_labels = [xtick_label[:-2] if xtick_label[-2:] == '_l' else xtick_label for xtick_label in xtick_labels]
-
 # xtick_values = ['pelvis_tilt', 'hip_flexion_l', 'knee_angle_l', 'ankle_angle_l', 'lumbar_extension', 'mean']
 xtick_values = ['mean']
 
-
 for cameraSetup in cameraSetups:
-
-    # Create a figure with 1 column and as many columns as fields in means_RMSEs.
     fig, axs = plt.subplots(len(means_RMSEs_copy.keys()), 1, figsize=(10, 5))
-    # fig.suptitle(cameraSetup)
-
     # Get indices of setups for the camera setup.
     idx_setups = [i for i, setup in enumerate(setups) if cameraSetup in setup]
     bar_width = 0.8/len(idx_setups)
-
     # Create list of integers with that has as many elements as there are idx_setups. The list has values with
     # a step of 1 and is centered on 0.
     x = np.arange(len(idx_setups)) - (len(idx_setups)-1)/2
-
     # Loop over subplots in axs.
     for a, ax in enumerate(axs):
         ax.set_title(motions[a], y=1.0, pad=-14, fontweight='bold')
@@ -1442,7 +1444,6 @@ for cameraSetup in cameraSetups:
             axs[a].set_xticklabels(xtick_labels)
         else:
             axs[a].set_xticklabels([])        
-        
         # For each field in means_RMSEs['all'], plot bars with the values of the field for each idx_setups.
         for i, field in enumerate(xtick_labels):
             for j, idx_setup in enumerate(idx_setups):
@@ -1461,7 +1462,6 @@ for cameraSetup in cameraSetups:
         if a == 0:
             ax.legend(leg_t, loc='upper left', bbox_to_anchor=(0, 1.2), ncol=len(leg_t), frameon=False)
         plt.show()
-
         # Use same y-limits for all subplots.
         ax.set_ylim([0, 10])
         # Use 3 y-ticks [0, 5, 10]
@@ -1479,51 +1479,107 @@ for cameraSetup in cameraSetups:
     fig.autofmt_xdate(rotation=45)
     # plt.tight_layout()
 
-# %% Further analysis
-# For each coordinate in means_RMSEs_copy[motion][coordinate], report
-# if the best entry is at least 1deg than the second best entry.
-threshold=1.5
-# Loop over motions.
-for motion in motions:
-    # Loop over coordinates.
-    for coordinate in means_RMSEs_copy[motion].keys():
-        # Get the values of the coordinate for each idx_setup.
-        values = [means_RMSEs_copy[motion][coordinate][idx_setup] for idx_setup in idx_setups[1:]]
-        # Get the indices of the sorted values.
-        # idx_sorted = np.argsort(values)
-        # Get the difference between the best and second best values.
-        diff = values[1] - values[0]
-        # If the difference is greater than 1deg, print the coordinate and the setups.
-        if diff < -threshold:
-            print('Better: {} - {}'.format(motion, coordinate))
-        if diff > threshold:
-            print('Worse: {} - {}'.format(motion, coordinate))
+#     # %% Plots only means
+#     # plt.figure(figsize=(10, 5))
+#     barWidth = 0.25
+#     fontsize_labels = 16
+#     fontsize_title = 20
+#     colors = sns.color_palette('colorblind', len(setups))
     
+#     r1 = np.arange(len(motions))
+#     r2 = [x + barWidth for x in r1]
+#     r3 = [x + barWidth for x in r2]
+    
+#     r1_values = [means_RMSEs_copy[motion]['mean'][0] for motion in motions]
+#     r2_values = [means_RMSEs_copy[motion]['mean'][1] for motion in motions]
+#     r3_values = [means_RMSEs_copy[motion]['mean'][2] for motion in motions]
+    
+#     r1_std = [stds_RMSEs_copy[motion]['mean'][0] for motion in motions]
+#     r2_std = [stds_RMSEs_copy[motion]['mean'][1] for motion in motions]
+#     r3_std = [stds_RMSEs_copy[motion]['mean'][2] for motion in motions] 
+    
+#     # Make the plot
+#     plt.figure(figsize=(10, 5))
+#     plt.bar(r1, r1_values, yerr=r1_std, color=colors[0], width=barWidth, edgecolor='white', label=setups_t[0], align='center', alpha=0.5, ecolor='black', capsize=10)
+#     plt.bar(r2, r2_values, yerr=r2_std, color=colors[1], width=barWidth, edgecolor='white', label=setups_t[1], align='center', alpha=0.5, ecolor='black', capsize=10)
+#     plt.bar(r3, r3_values, yerr=r3_std, color=colors[2], width=barWidth, edgecolor='white', label=setups_t[2], align='center', alpha=0.5, ecolor='black', capsize=10)
+    
+#     # Add xticks on the middle of the group bars
+#     plt.xticks([r + barWidth for r in range(len(motions))], motions)
+    
+#     # Add ylabel
+#     plt.ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
+    
+#     # Increase fontsize of labels
+#     plt.tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    
+#     # Add title
+#     plt.title('Joint kinematic errors - Means across coordinates', fontweight='bold', fontsize=fontsize_title)
+    
+#     # Add values on top of bars
+#     for i in range(len(motions)):
+#         plt.text(x=r1[i]-0.1, y=r1_values[i]+0.1, s=str(int(round(r1_values[i], 0))), size=fontsize_labels)
+#         plt.text(x=r2[i]-0.1, y=r2_values[i]+0.1, s=str(int(round(r2_values[i], 0))), size=fontsize_labels)
+#         plt.text(x=r3[i]-0.1, y=r3_values[i]+0.1, s=str(int(round(r3_values[i], 0))), size=fontsize_labels)
+    
+#     # Create legend
+#     plt.legend(loc='upper left', fontsize=fontsize_labels)
+#     # Remove top and right borders
+#     plt.gca().spines['top'].set_visible(False)
+#     plt.gca().spines['right'].set_visible(False)
+#     # Remove box around legend
+#     plt.gca().get_legend().get_frame().set_linewidth(0.0)
+#     plt.tight_layout()
+#     plt.show()
 
 
+# # %% Further analysis
+# # For each coordinate in means_RMSEs_copy[motion][coordinate], report
+# # if the best entry is at least 1deg than the second best entry.
+# threshold=1.5
+# # Loop over motions.
+# for motion in motions:
+#     # Loop over coordinates.
+#     for coordinate in means_RMSEs_copy[motion].keys():
+#         # Get the values of the coordinate for each idx_setup.
+#         values = [means_RMSEs_copy[motion][coordinate][idx_setup] for idx_setup in idx_setups[1:]]
+#         # Get the indices of the sorted values.
+#         # idx_sorted = np.argsort(values)
+#         # Get the difference between the best and second best values.
+#         diff = values[1] - values[0]
+#         # If the difference is greater than 1deg, print the coordinate and the setups.
+#         if diff < -threshold:
+#             print('Better: {} - {}'.format(motion, coordinate))
+#         if diff > threshold:
+#             print('Worse: {} - {}'.format(motion, coordinate))
 
-
-    # # %% Walking only
-    # # Same figure as above but with only one subplot corresponding to the motion 'walking'.
-    # fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    # ax.set_title(motions[1])
-    # ax.set_ylabel('RMSE (deg)')
-    # ax.set_xticks(np.arange(len(xtick_labels)))
-    # ax.set_xticklabels(xtick_labels_labels)
-    # # For each field in means_RMSEs['all'], plot bars with the values of the field for each idx_setups.
-    # for i, field in enumerate(xtick_labels):
-    #     for j, idx_setup in enumerate(idx_setups):
-    #         ax.bar(i+x[j]*bar_width, means_RMSEs_copy[motions[1]][field][idx_setup], bar_width, color=colors[j])
-    #         # Add text with the value of the bar.
-    #         if i == len(xtick_labels)-1:
-    #             ax.text(i+x[j]*bar_width, means_RMSEs_copy[motions[1]][field][idx_setup], np.round(means_RMSEs_copy[motions[1]][field][idx_setup], 1), ha='center', va='bottom')
-    # # Add legend with idx_setups
-    # # leg_t = [setups[idx_setup] for idx_setup in idx_setups]
-    # leg_t = [setups_t[idx_setup] for idx_setup in idx_setups]
-    # # Get what is after the last '_' in leg_t.
-    # # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
-    # ax.legend(leg_t)
-    # plt.show()
+#     # %% Means only
+#     # Same figure as above but with only one subplot corresponding to the motion 'walking'.
+#     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+#     ax.set_title('Joint kinematic errors - Means per coordinate', fontweight='bold', fontsize=fontsize_title)
+#     ax.set_ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
+#     ax.set_xticks(np.arange(len(xtick_labels)))
+#     ax.set_xticklabels(xtick_labels_labels)
+#     # For each field in means_RMSEs['all'], plot bars with the values of the field for each idx_setups.
+#     for i, field in enumerate(xtick_labels):
+#         for j, idx_setup in enumerate(idx_setups):
+#             ax.bar(i+x[j]*bar_width, means_RMSEs_copy['mean'][field][idx_setup], bar_width, yerr=stds_RMSEs_copy['mean'][field][idx_setup], color=colors[j], ecolor='black', alpha=0.5, edgecolor='white', capsize=2)
+#             # Add text with the value of the bar.
+#             if i == len(xtick_labels)-1:
+#                 ax.text(i+x[j]*bar_width-0.08, means_RMSEs_copy['mean'][field][idx_setup], int(np.round(means_RMSEs_copy['mean'][field][idx_setup], 0)), ha='center', va='bottom')
+#     # Add legend with idx_setups
+#     # leg_t = [setups[idx_setup] for idx_setup in idx_setups]
+#     leg_t = [setups_t[idx_setup] for idx_setup in idx_setups]
+#     # Get what is after the last '_' in leg_t.
+#     # leg_t = [leg_t[i].split('_')[-1] for i in range(len(leg_t))]
+#     ax.legend(leg_t, loc='upper left', fontsize=fontsize_labels)
+#     plt.gca().get_legend().get_frame().set_linewidth(0.0)
+#     plt.gca().spines['top'].set_visible(False)
+#     plt.gca().spines['right'].set_visible(False)
+#     plt.tick_params(axis='both', which='major', labelsize=fontsize_labels)
+#     plt.setp(ax.get_xticklabels(), rotation=90, ha="right", rotation_mode="anchor")
+#     plt.tight_layout()
+#     plt.show()
     
 # # %% MEs
 # # Get len(cameraSetups) color-blind frienly colors.

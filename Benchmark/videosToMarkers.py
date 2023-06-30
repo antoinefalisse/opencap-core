@@ -62,7 +62,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(12,13)]
+subjects_to_process = ['subject' + str(i) for i in range(10,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
@@ -80,11 +80,11 @@ runOpenSim = True
 cameraSetups = ['2-cameras']
 # augmenter_models = ['v0.1','v0.56']
 
-poseDetectors = ['OpenPose']
-augmenter_models = ['v0.45']
+# poseDetectors = ['OpenPose']
+# augmenter_models = ['v0.61', 'v0.62', 'v0.63']
 
-# poseDetectors = ['mmpose']
-# augmenter_models = ['v0.1','v0.2','v0.45','v0.54','v0.55','v0.56']
+poseDetectors = ['mmpose']
+augmenter_models = ['v0.63']
 
 dataDir = getDataDirectory()
 
@@ -158,9 +158,9 @@ for count, sessionName in enumerate(sessionNames):
                     if "imageUpsampleFactor" in data['trials'][trial]:
                         imageUpsampleFactor = data['trials'][trial]['imageUpsampleFactor']
                         
-                    resolutionPoseDetection = '1x736' # default_OpenCap
+                    # resolutionPoseDetection = '1x736' # default_OpenCap
                     # resolutionPoseDetection = 'default' # default
-                    # resolutionPoseDetection = '1x1008_4scales'
+                    resolutionPoseDetection = '1x1008_4scales'
                     if "resolutionPoseDetection" in data['trials'][trial]:
                         resolutionPoseDetection = data['trials'][trial]['resolutionPoseDetection']
                         

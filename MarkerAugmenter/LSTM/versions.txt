@@ -1,4 +1,7 @@
 Changelog:
+v0.63: upper is 77, lower is 93
+v0.62: upper is 77, lower is 92
+v0.61: upper is 77, lower is 91
 v0.60: same as 59, testing resampling (120Hz), prior to augmenter
 v0.59: upper is 89, lower is 64 - new data and curated, 120 frames, 120Hz, old model (diff cost function)
 v0.58: same as 54, testing resampling (120Hz) prior to augmenter
