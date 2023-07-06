@@ -34,7 +34,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
          calibrationOptions=None,
          markerDataFolderNameSuffix=None, imageUpsampleFactor=4,
          poseDetector='OpenPose', resolutionPoseDetection='default', 
-         scaleModel=False, bbox_thr=0.8, augmenter_model='v0.2',
+         scaleModel=False, bbox_thr=0.8, augmenter_model='v0.7',
          genericFolderNames=False, offset=True, benchmark=False,
          dataDir=None):
 
@@ -50,9 +50,9 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
     # Marker augmentation.
     runMarkerAugmentation = True
     # OpenSim pipeline.
-    runOpenSimPipeline = True
+    runOpenSimPipeline = False
     # Lowpass filter frequency of 2D keypoints for gait and everything else.
-    filtFreqs = {'gait':12, 'default':500} # defaults to framerate/2
+    filtFreqs = {'gait':12, 'default':30} # defaults to framerate/2
     # High-resolution for OpenPose.
     resolutionPoseDetection = resolutionPoseDetection
     # Set to False to only generate the json files (default is True).
@@ -211,8 +211,9 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
         if not markerDataFolderNameSuffix is None:
             markerDataFolderName = os.path.join(markerDataFolderName,
                                                 markerDataFolderNameSuffix)
+    # Temporary folder for 3D reconstruction.
     preAugmentationDir = os.path.join(sessionDir, markerDataFolderName,
-                                      'PreAugmentation')
+                                      'PreAugmentation_benchmark')
     os.makedirs(preAugmentationDir, exist_ok=True)
     
     # Set output file name.

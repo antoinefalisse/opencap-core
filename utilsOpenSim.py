@@ -10,7 +10,8 @@ from utils import storage2numpy
 def runScaleTool(pathGenericSetupFile, pathGenericModel, subjectMass,
                  pathTRCFile, timeRange, pathOutputFolder, 
                  scaledModelName='not_specified', subjectHeight=0,
-                 createModelWithContacts=False, fixed_markers=False):
+                 createModelWithContacts=False, fixed_markers=False,
+                 withTrackingMarkers=True):
     
     dirGenericModel, scaledModelNameA = os.path.split(pathGenericModel)
     
@@ -39,7 +40,10 @@ def runScaleTool(pathGenericSetupFile, pathGenericModel, subjectMass,
             if fixed_markers:
                 markerSetFileName = 'RajagopalModified2016_markers_augmenter_fixed.xml'
             else:
-                markerSetFileName = 'RajagopalModified2016_markers_augmenter.xml'
+                if withTrackingMarkers:
+                    markerSetFileName = 'RajagopalModified2016_markers_augmenter.xml'
+                else:
+                    markerSetFileName = 'RajagopalModified2016_markers_augmenter_noTracking.xml'
     elif 'gait2392' in scaledModelName:
          if 'Mocap' in setupFileName:  
              markerSetFileName = 'gait2392_markers_mocap.xml'
