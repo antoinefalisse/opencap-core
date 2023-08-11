@@ -200,3 +200,8 @@ Failed trial: Session20210813_0002_240 5ed94c2e-d860-4ec1-991b-59bc5ce31ece Open
 Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.64 
 Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.65 
 Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.63 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.66 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.67 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.68 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.69 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.70 

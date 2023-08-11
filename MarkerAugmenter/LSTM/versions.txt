@@ -1,4 +1,10 @@
 Changelog:
+v0.69: upper is 108, lower is 107
+v0.68: upper is 77, lower is 104
+v0.67: upper is 77, lower is 103
+v0.66: upper is 77, lower is 101
+v0.65: upper is 84, lower is 97
+v0.64: upper is 84, lower is 95
 v0.63: upper is 77, lower is 93
 v0.62: upper is 77, lower is 92
 v0.61: upper is 77, lower is 91
