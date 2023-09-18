@@ -120,7 +120,7 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
     # else:
     #     raise ValueError('Augmenter model not recognized.')
     
-    print('Augmenter model: {}'.format(augmenter_model))
+    print('Augmenter model: {} - {}'.format(augmenterModelName, augmenter_model))
 
     if augmenter_model == 'v0.57' or augmenter_model == 'v0.58' or augmenter_model == 'v0.60':
         upsampling = True
@@ -204,12 +204,20 @@ def augmentTRC(pathInputTRCFile, subject_mass, subject_height,
             inputs = np.reshape(inputs, (1, inputs.shape[0], inputs.shape[1]))
             
         # %% Load model and weights, and predict outputs.
-        json_file = open(os.path.join(augmenterModelDir, "model.json"), 'r')
-        pretrainedModel_json = json_file.read()
-        json_file.close()
-        model = tf.keras.models.model_from_json(pretrainedModel_json)
-        model.load_weights(os.path.join(augmenterModelDir, "weights.h5"))  
-        outputs = model.predict(inputs)
+        if augmenterModelName == "LSTM":
+            json_file = open(os.path.join(augmenterModelDir, "model.json"), 'r')
+            pretrainedModel_json = json_file.read()
+            json_file.close()
+            model = tf.keras.models.model_from_json(pretrainedModel_json)
+            model.load_weights(os.path.join(augmenterModelDir, "weights.h5"))  
+            outputs = model.predict(inputs)
+        elif augmenterModelName == "Transformer":
+            print('Pre-loading {}.'.format(augmenterModelDir))
+            augmenter_instance_reloaded = tf.saved_model.load(augmenterModelDir)
+            print('Predicting outputs.')
+            outputs_temp = augmenter_instance_reloaded(inputs)
+            print('Done predicting outputs.')
+            outputs = outputs_temp.numpy()
         
         # %% Post-process outputs.
         # Step 1: Reshape if necessary (eg, LSTM)

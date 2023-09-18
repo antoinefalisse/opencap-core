@@ -33,7 +33,12 @@ def getDataDirectory(isDocker=False):
         dataDir = 'C:\MyDriveSym/mobilecap/'
     elif computername == 'DESKTOP-0UPR1OH':
         # dataDir = 'C:/Users/antoi/Documents/MyRepositories/mobilecap_data/'
+
+        # Temp
         dataDir = 'C:/MyDriveSym/Projects/mobilecap/'
+
+        # dataDir = '/mnt/g/My Drive/Projects/mobilecap/'
+
     elif computername == 'HPL1':
         dataDir = 'C:/Users/opencap/Documents/MyRepositories/mobilecap_data/'
     elif computername == 'DESKTOP-GUEOBL2':

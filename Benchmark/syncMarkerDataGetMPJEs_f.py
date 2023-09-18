@@ -25,7 +25,8 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
     mocapOriginPath, r_fromMarker_toVideoOrigin_inLab,
     mocapFiltFreq, R_video_opensim, R_opensim_xForward, 
     saveProcessedMocapData=False, overwriteMarkerDataProcessed=False, 
-    overwriteForceDataProcessed=False, overwritevideoAndMocap=False):
+    overwriteForceDataProcessed=False, overwritevideoAndMocap=False,
+    augmenterModelName='LSTM'):
     print(trialName)
 
     # Dict with frequencies for loading appropriate force data.
@@ -80,7 +81,7 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
     forceTime = ut.storage2df(forceMotPath, headers_force).to_numpy()[:,0]
     
     # Video-trc directory
-    videoTrcPath = os.path.join(videoTrcDir,trialName + '_LSTM.trc')
+    videoTrcPath = os.path.join(videoTrcDir,trialName + '_{}.trc'.format(augmenterModelName))
     videoTRC = dm.TRCFile(videoTrcPath)
     videoMkrNames = videoTRC.marker_names
     videoMkrNamesLower = [mkr.lower() for mkr in videoMkrNames]
@@ -435,7 +436,7 @@ def getMPJEs(lag, trialName, videoTime, mocapTime, mocapTRC, mocapData,
 def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, augmenters, videoParameters, saveProcessedMocapData=False,
     overwriteMarkerDataProcessed=False, overwriteForceDataProcessed=False,
     overwritevideoAndMocap=False, writeMPJE_condition=False, writeMPJE_session=False,
-    csv_name='MPJE_fullSession_new'):
+    csv_name='MPJE_fullSession_new', augmenterModelName='LSTM'):
     MPJEs = {}
     print('\n\nProcessing {}'.format(subjectName))
     for sessionName in c_sessions:
@@ -533,7 +534,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                     print('\nProcessing {}'.format(videoTrcDir))
                                 
                     # Get trialnames - hard code, or get all in video directory, as long as in mocap directory
-                    trialNames = [os.path.split(tName.replace('_LSTM',''))[1][0:-4] for tName in glob.glob(videoTrcDir + '/*.trc')]
+                    trialNames = [os.path.split(tName.replace('_{}'.format(augmenterModelName),''))[1][0:-4] for tName in glob.glob(videoTrcDir + '/*.trc')]
                     trialsToRemove = [] ;
                     for tName in trialNames: # check if in mocap directory, if not, delete trial
                         if not os.path.exists(os.path.join(mocapDir,tName + '.trc')):
@@ -565,7 +566,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                         try:
                             MPJE_mean[idxTrial], MPJE_std[idxTrial], MPJE_offsetRemoved_mean[idxTrial], MPJE_offsetRemoved_std[idxTrial], MPJE_markers[idxTrial, :], MPJE_offsetRemoved_markers[idxTrial, :] = computeMarkerDifferences(
                                 trialName,mocapDir,videoTrcDir,markersMPJE,mocapOriginPath, r_fromMarker_toVideoOrigin_inLab, mocapFiltFreq, R_video_opensim, R_opensim_xForward, saveProcessedMocapData, overwriteMarkerDataProcessed, 
-                                overwriteForceDataProcessed, overwritevideoAndMocap)
+                                overwriteForceDataProcessed, overwritevideoAndMocap, augmenterModelName=augmenterModelName)
                             if not 'headers' in MPJEs:
                                 MPJEs_headers = markersMPJE.copy()
                                 MPJEs_headers.append('mean')

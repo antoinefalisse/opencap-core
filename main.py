@@ -36,7 +36,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
          poseDetector='OpenPose', resolutionPoseDetection='default', 
          scaleModel=False, bbox_thr=0.8, augmenter_model='v0.7',
          genericFolderNames=False, offset=True, benchmark=False,
-         dataDir=None):
+         dataDir=None, augmenterModelName='LSTM'):
 
     # %% High-level settings.
     # Camera calibration.
@@ -334,8 +334,10 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
             'PostAugmentation_{}'.format(augmenter_model))
     
     # Get augmenter model.
-    augmenterModel = (
-        sessionMetadata['markerAugmentationSettings']['markerAugmenterModel'])
+    # augmenterModel = (
+    #     sessionMetadata['markerAugmentationSettings']['markerAugmenterModel'])
+    augmenterModel = augmenterModelName
+
     
     # Set output file name.
     pathAugmentedOutputFiles = {}

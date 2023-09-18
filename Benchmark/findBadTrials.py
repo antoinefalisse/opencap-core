@@ -50,7 +50,7 @@ def get_subject(subjects_to_process):
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
 cases_to_exclude_trials = {'Session20210813_0002': ['walkingTS3']}
 pose_detectors_to_exclude = ['OpenPose_default']
-expected_nSensitivities = 76
+expected_nSensitivities = 77
 for i in pose_detectors_to_exclude:
     if 'openpose' in i.lower():
         expected_nSensitivities -= 12

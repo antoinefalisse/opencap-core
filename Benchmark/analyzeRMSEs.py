@@ -49,14 +49,14 @@ augmenterTypes = {
     # 'v0.55': {'run': False},
     'v0.63': {'run': False},
     # 'v0.70': {'run': False},
-    # 'v0.68': {'run': True},
+    'v1.0': {'run': True},
     # 'v0.62': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.63': {'run': True},
 }
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Latest']
+setups_t = ['LSTM', 'Transformer']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -187,7 +187,8 @@ cases_to_exclude_algo = {
                                                 'v0.67': ['walkingTS2'],# MPJE
                                                 'v0.68': ['walkingTS2'],# MPJE
                                                 'v0.69': ['walkingTS2'],# MPJE
-                                                'v0.70': ['walkingTS2']}},# MPJE
+                                                'v0.70': ['walkingTS2'],# MPJE
+                                                'v1.0': ['walkingTS2']}},# MPJE
                  },
     # Subject 9
     'subject9': {'mmpose_0.8': {'5-cameras': {'v0.45': ['STS1'],# algo 
