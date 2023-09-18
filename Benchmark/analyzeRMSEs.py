@@ -36,7 +36,7 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 # poseDetectors = ['OpenPose_1x736', 'OpenPose_1x1008_4scales']
 
 # poseDetectors = ['OpenPose_default', 'OpenPose_1x736', 'OpenPose_1x1008_4scales']
-poseDetectors = ['OpenPose_1x1008_4scales']
+poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
     # 'v0.1': {'run': False},
@@ -48,7 +48,7 @@ augmenterTypes = {
     
     # 'v0.55': {'run': False},
     'v0.63': {'run': False},
-    'v0.70': {'run': False},
+    # 'v0.70': {'run': False},
     # 'v0.68': {'run': True},
     # 'v0.62': {'run': False},
     # 'v0.63': {'run': False},
@@ -56,7 +56,7 @@ augmenterTypes = {
 }
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Uhlrich et al. 2022', 'Latest']
+setups_t = ['Latest']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -1151,6 +1151,7 @@ with open(os.path.join(outputDir,'RMSEs{}_means_paper.csv'.format(suffixRMSE)), 
         if 'all' in motion:
             continue        
         c_bp = means_RMSEs[motion]
+        c_bp_std = stds_RMSEs[motion]
         for idxSetup, setup in enumerate(setups):            
             activity_name = activity_names[motion]
             pose_name = getPoseName(setup)
@@ -1166,10 +1167,18 @@ with open(os.path.join(outputDir,'RMSEs{}_means_paper.csv'.format(suffixRMSE)), 
             c_tr = 0
             for coordinate in coordinates_lr:
                 c_coord = c_bp[coordinate]
-                if coordinate in coordinates_lr_tr:
-                    MAErow.extend(['%.1f' %(c_coord[idxSetup]*1000)])
+                c_coord_std = c_bp_std[coordinate]
+                if coordinate in coordinates_lr_tr:                    
+                    value1 = '%.1f' % (c_coord[idxSetup] * 1000)
+                    value2 = '%.1f' % (c_coord_std[idxSetup] * 1000)
+                    result_string = f"{value1} +/- {value2}"                    
+                    MAErow.extend([result_string])
                 else:
-                    MAErow.extend(['%.1f' %c_coord[idxSetup]])
+                    value1 = '%.1f' % (c_coord[idxSetup])
+                    value2 = '%.1f' % (c_coord_std[idxSetup])
+                    result_string = f"{value1} +/- {value2}"                    
+                    MAErow.extend([result_string])
+                    # MAErow.extend(['%.1f' %c_coord[idxSetup]])
                 if coordinate in coordinates_lr_rot:
                     # We want to include twice the bilateral coordinates and
                     # once the unilateral coordinates such as to make sure the
