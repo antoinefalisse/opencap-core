@@ -1422,11 +1422,18 @@ for coordinate in means_RMSEs_copy[motions[0]]:
         means_RMSEs_copy['mean'][coordinate].append(np.mean([means_RMSEs_copy[motion][coordinate][i] for motion in motions], axis=0))
         stds_RMSEs_copy['mean'][coordinate].append(np.std([means_RMSEs_copy[motion][coordinate][i] for motion in motions], axis=0))
 motions.append('mean')
+
 # Exclude coordinates_tr from means_RMSEs_copy
+means_RMSEs_copy_tr = copy.deepcopy(means_RMSEs_copy)
+stds_RMSEs_copy_tr = copy.deepcopy(stds_RMSEs_copy)
 for motion in means_RMSEs_copy:
     for coordinate in coordinates_tr:
         means_RMSEs_copy[motion].pop(coordinate)
         stds_RMSEs_copy[motion].pop(coordinate)
+for motion in means_RMSEs_copy_tr:
+    for coordinate in coordinates_lr_rot:
+        means_RMSEs_copy_tr[motion].pop(coordinate)
+        stds_RMSEs_copy_tr[motion].pop(coordinate)
 # Compute mean, this should match means_RMSE_summary_rot. There is still a mismatch
 # between means_RMSE_summary_rot, where the mean is across the mean of each motion,
 # whereas here the mean is across the mean coordinates. The means should match, but
@@ -1445,6 +1452,17 @@ for motion in means_RMSEs_copy:
             count += 1
     means_RMSEs_copy[motion]['mean'] = list(np.mean(c_stack, axis=0))
     stds_RMSEs_copy[motion]['mean'] = list(np.std(c_stack, axis=0))
+    
+for motion in means_RMSEs_copy_tr:
+    # Add field mean that contains the mean of the RMSEs for all coordinates.
+    # Stack lists from all fiedls of means_RMSEs_copy[motion] in one numpy array.
+    c_stack = np.zeros((len(coordinates_tr), len(setups)))
+    count = 0
+    for i, coordinate in enumerate(coordinates_tr):
+        c_stack[count, :] = means_RMSEs_copy_tr[motion][coordinate]
+        count += 1
+    means_RMSEs_copy_tr[motion]['mean'] = list(np.mean(c_stack, axis=0))
+    stds_RMSEs_copy_tr[motion]['mean'] = list(np.std(c_stack, axis=0))
     
 # Create the x-tick labels for all subplots.
 xtick_labels = list(means_RMSEs[motions[0]].keys())
@@ -1508,16 +1526,18 @@ for cameraSetup in cameraSetups:
     # plt.tight_layout()
 
     # %% Plots only means
+    
+    # Settings
     barWidth = 0.15
     fontsize_labels = 20
     fontsize_title = 20
     colors = sns.color_palette('colorblind', len(setups))
-    
     num_bars = len(setups)
     positions = [np.arange(len(motions)) + i * barWidth for i in range(num_bars)]    
-    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]    
-    stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]
     
+    # Rotations
+    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]    
     # Make the plot
     plt.figure(figsize=(10, 5))
     for i in range(num_bars):
@@ -1540,7 +1560,91 @@ for cameraSetup in cameraSetups:
     # Remove box around legend
     plt.gca().get_legend().get_frame().set_linewidth(0.0)
     plt.tight_layout()
+    plt.show()    
+    
+    # Translations in cm
+    values = [[means_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions] for i in range(num_bars)]    
+    # Make the plot
+    plt.figure(figsize=(10, 5))
+    for i in range(num_bars):
+        plt.bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', label=setups_t[i], align='center', alpha=0.5, ecolor='black', capsize=10)
+    # Add xticks on the middle of the group bars
+    plt.xticks(np.arange(len(motions)) + (barWidth * (num_bars - 1)) / 2, motions, fontweight='bold') 
+    # Add ylabel
+    plt.ylabel('Root Mean Squared Error (cm)', fontweight='bold', fontsize=fontsize_labels)
+    # Increase fontsize of labels
+    plt.tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    plt.ylim([0, 5])
+    plt.yticks(np.arange(0, 6, 1))
+    # Add title
+    plt.title('Pelvis translation errors (mean +/- std; 3 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
+    # Create legend
+    plt.legend(loc='upper left', fontsize=fontsize_labels)
+    # Remove top and right borders
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    # Remove box around legend
+    plt.gca().get_legend().get_frame().set_linewidth(0.0)
+    plt.tight_layout()
     plt.show()
+    
+    # %% Merging both plots
+
+    # Your data and parameters here
+    barWidth = 0.15
+    fontsize_labels = 16
+    fontsize_title = 18
+    fontsize_legend = 16
+    colors = sns.color_palette('colorblind', len(setups))
+    num_bars = len(setups)
+    positions = [np.arange(len(motions)) + i * barWidth for i in range(num_bars)]
+    
+    fig, axs = plt.subplots(1, 2, figsize=(16, 8))  # Create a 1x2 grid of subplots (one row, two columns)
+    
+    # Rotations subplot
+    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]  
+    for i in range(num_bars):
+        axs[0].bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', label=setups_t[i], align='center', alpha=0.5, ecolor='black', capsize=5)
+    
+    axs[0].set_xticks(np.arange(len(motions)) + (barWidth * (num_bars - 1)) / 2)
+    axs[0].set_xticklabels(motions, fontweight='bold')
+    axs[0].set_ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
+    axs[0].tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    axs[0].set_ylim([0, 25])
+    axs[0].set_yticks(np.arange(0, 30, 5))
+    axs[0].set_title('Joint rotations (18 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
+    # axs[0].legend(loc='upper left', fontsize=fontsize_labels)
+    axs[0].spines['top'].set_visible(False)
+    axs[0].spines['right'].set_visible(False)
+    # axs[0].get_legend().get_frame().set_linewidth(0.0)
+    
+    # Translations subplot
+    values = [[means_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions] for i in range(num_bars)]   
+    for i in range(num_bars):
+        axs[1].bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', align='center', alpha=0.5, ecolor='black', capsize=5)
+    
+    axs[1].set_xticks(np.arange(len(motions)) + (barWidth * (num_bars - 1)) / 2)
+    axs[1].set_xticklabels(motions, fontweight='bold')
+    axs[1].set_ylabel('Root Mean Squared Error (cm)', fontweight='bold', fontsize=fontsize_labels)
+    axs[1].tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    axs[1].set_ylim([0, 5])
+    axs[1].set_yticks(np.arange(0, 6, 1))
+    axs[1].set_title('Pelvis translations (3 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
+    # axs[1].legend(loc='upper left', fontsize=fontsize_labels)
+    axs[1].spines['top'].set_visible(False)
+    axs[1].spines['right'].set_visible(False)
+    # axs[1].get_legend().get_frame().set_linewidth(0.0)
+    
+    legend = fig.legend(loc='lower center', fontsize=fontsize_legend, ncol=num_bars)
+    legend.set_frame_on(False)
+    # plt.subplots_adjust(bottom=2)
+    
+    # plt.tight_layout()
+    plt.show()
+
 
 
 # # %% Further analysis
