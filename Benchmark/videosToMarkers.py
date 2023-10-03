@@ -62,7 +62,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(11,12)]
+subjects_to_process = ['subject' + str(i) for i in range(6,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
@@ -84,8 +84,8 @@ cameraSetups = ['2-cameras']
 # augmenter_models = ['v0.61', 'v0.62', 'v0.63']
 
 poseDetectors = ['mmpose'] #, 'mmpose']
-augmenter_models = ['v1.0']
-augmenterModelName = 'Transformer'
+augmenter_models = ['v2.0']
+augmenterModelName = 'Linear'
 
 dataDir = getDataDirectory()
 
