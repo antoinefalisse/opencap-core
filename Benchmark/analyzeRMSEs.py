@@ -39,7 +39,7 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
-    'pose': {'run': True},
+    'pose': {'run': False},
     'v0.1': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.45': {'run': False},
@@ -58,7 +58,7 @@ augmenterTypes = {
 }
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Uhlrich et al. 2023', 'LSTM', 'Transformer', 'Linear regression']
+setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'LSTM', 'Transformer', 'Linear regression']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -481,13 +481,17 @@ for subjectName in subjects:
                                 genericModel4ScalingName[:-5])                            
                             
                         # Used to use same augmenter for all for offset, not sure why
-                        cameraSetupMarkerDir = os.path.join(
-                            poseDetectorMarkerDir, cameraSetup, augmenterType)
+                        if augmenterType == 'pose':
+                            cameraSetupMarkerDir = os.path.join(
+                                poseDetectorMarkerDir, cameraSetup, 'v0.1')
+                        else:
+                            cameraSetupMarkerDir = os.path.join(
+                                poseDetectorMarkerDir, cameraSetup, augmenterType)
                         
                         trial_video = trial[:-4] + '_videoAndMocap.mot'
                         trial_marker = trial[:-4] + '_videoAndMocap.trc'
                         pathTrial_video = os.path.join(cameraSetupDir, trial_video)
-                        pathTrial_marker = os.path.join(cameraSetupMarkerDir, trial_marker)
+                        pathTrial_marker = os.path.join(cameraSetupMarkerDir, trial_marker)                        
                         
                         if not os.path.exists(pathTrial_video):
                             continue
@@ -1504,63 +1508,30 @@ for cameraSetup in cameraSetups:
     # plt.tight_layout()
 
     # %% Plots only means
-    # plt.figure(figsize=(10, 5))
     barWidth = 0.15
     fontsize_labels = 20
     fontsize_title = 20
     colors = sns.color_palette('colorblind', len(setups))
     
     num_bars = len(setups)
-    positions = [np.arange(len(motions)) + i * barWidth for i in range(num_bars)]
-    
-    # r1 = np.arange(len(motions))
-    # r2 = [x + barWidth for x in r1]
-    # r3 = [x + barWidth for x in r2]
-    
-    # r1_values = [means_RMSEs_copy[motion]['mean'][0] for motion in motions]
-    # r2_values = [means_RMSEs_copy[motion]['mean'][1] for motion in motions]
-    # r3_values = [means_RMSEs_copy[motion]['mean'][2] for motion in motions]
-    
-    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]
-    
-    # r1_std = [stds_RMSEs_copy[motion]['mean'][0] for motion in motions]
-    # r2_std = [stds_RMSEs_copy[motion]['mean'][1] for motion in motions]
-    # r3_std = [stds_RMSEs_copy[motion]['mean'][2] for motion in motions] 
-    
+    positions = [np.arange(len(motions)) + i * barWidth for i in range(num_bars)]    
+    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]    
     stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions] for i in range(num_bars)]
     
     # Make the plot
     plt.figure(figsize=(10, 5))
     for i in range(num_bars):
         plt.bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', label=setups_t[i], align='center', alpha=0.5, ecolor='black', capsize=10)
-    
-    # plt.bar(r1, r1_values, yerr=r1_std, color=colors[0], width=barWidth, edgecolor='white', label=setups_t[0], align='center', alpha=0.5, ecolor='black', capsize=10)
-    # plt.bar(r2, r2_values, yerr=r2_std, color=colors[1], width=barWidth, edgecolor='white', label=setups_t[1], align='center', alpha=0.5, ecolor='black', capsize=10)
-    # plt.bar(r3, r3_values, yerr=r3_std, color=colors[2], width=barWidth, edgecolor='white', label=setups_t[2], align='center', alpha=0.5, ecolor='black', capsize=10)
-    
     # Add xticks on the middle of the group bars
-    plt.xticks(np.arange(len(motions)) + (barWidth * (num_bars - 1)) / 2, motions, fontweight='bold')
-    
-    # plt.xticks([r + barWidth/2 for r in range(len(motions))], motions, fontweight='bold')
-    
+    plt.xticks(np.arange(len(motions)) + (barWidth * (num_bars - 1)) / 2, motions, fontweight='bold') 
     # Add ylabel
     plt.ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
-    
     # Increase fontsize of labels
     plt.tick_params(axis='both', which='major', labelsize=fontsize_labels)
-    
-    plt.ylim([0, 10])
-    plt.yticks(np.arange(0, 15, 5))
-    
+    plt.ylim([0, 25])
+    plt.yticks(np.arange(0, 30, 5))
     # Add title
     plt.title('Joint kinematic errors (mean +/- std; 18 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
-    
-    # Add values on top of bars
-    # for i in range(len(motions)):
-    #     plt.text(x=r1[i]-0.1, y=r1_values[i]+0.1, s=str(int(round(r1_values[i], 0))), size=fontsize_labels)
-    #     plt.text(x=r2[i]-0.1, y=r2_values[i]+0.1, s=str(int(round(r2_values[i], 0))), size=fontsize_labels)
-        # plt.text(x=r3[i]-0.1, y=r3_values[i]+0.1, s=str(int(round(r3_values[i], 0))), size=fontsize_labels)
-    
     # Create legend
     plt.legend(loc='upper left', fontsize=fontsize_labels)
     # Remove top and right borders
