@@ -47,9 +47,9 @@ def get_subject(subjects_to_process):
             'Session20210903_0002': {}},        
         'subject11': {
             'Session20210910_0001': {},
-            'Session20210910_0002': {}},
-        'subject12': {
-            'Session20210813_0001_240': {}}}
+            'Session20210910_0002': {}}}
+        # 'subject12': {
+        #     'Session20210813_0001_240': {}}}
             # 'Session20210813_0002_240': {}}}
     sessionDetails_out = {}
     sessionNames_out = []
@@ -62,12 +62,12 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(6,12)]
+subjects_to_process = ['subject' + str(i) for i in range(10,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
-syncMocapVideo = True
-gatherData = True
+syncMocapVideo = False
+gatherData = False
 runOpenSim = True
 
 # sessionNames = ['Session20210813_0001', 'Session20210813_0002']
@@ -84,8 +84,8 @@ cameraSetups = ['2-cameras']
 # augmenter_models = ['v0.61', 'v0.62', 'v0.63']
 
 poseDetectors = ['mmpose'] #, 'mmpose']
-augmenter_models = ['v2.0']
-augmenterModelName = 'Linear'
+augmenter_models = ['v0.63']
+augmenterModelName = 'LSTM'
 
 dataDir = getDataDirectory()
 
@@ -228,7 +228,7 @@ if syncMocapVideo:
         c_sessions = sessionDetails[subjectName]
         MPJEs[subjectName] = main_sync(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models, videoParameters, saveProcessedMocapData=False,
         overwriteMarkerDataProcessed=False, overwriteForceDataProcessed=False,
-        overwritevideoAndMocap=False, writeMPJE_condition=True, writeMPJE_session=True,
+        overwritevideoAndMocap=False, overwritevideo=False, writeMPJE_condition=False, writeMPJE_session=False,
         csv_name='MPJE_fullSession_do_not_trust', augmenterModelName=augmenterModelName)
 
     print("DONE: syncing to mocap")
@@ -238,7 +238,8 @@ if syncMocapVideo:
 if gatherData:
     for subjectName in sessionDetails:
         c_sessions = sessionDetails[subjectName]
-        main_gather(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models)
+        # Set allVideoOnly to True to gather only the video data (ie, not mocap and video, but only non-trimed video data)
+        main_gather(dataDir, subjectName, c_sessions, [poseDetector_name], cameraSetups, augmenter_models, allVideoOnly=True)
 
     print("DONE: gathering data")
 
@@ -249,7 +250,7 @@ if runOpenSim:
     opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 
     for subjectName in sessionDetails:
-        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers)
+        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=True)
 
     print("DONE: OpenSim pipeline")
         

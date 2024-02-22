@@ -49,6 +49,7 @@ augmenterTypes = {
     
     # 'v0.55': {'run': False},
     'v0.63': {'run': False},
+    # 'v0.71': {'run': True},
     # 'v0.70': {'run': False},
     'v1.0': {'run': False},
     'v2.0': {'run': False},
@@ -190,6 +191,7 @@ cases_to_exclude_algo = {
                                                 'v0.68': ['walkingTS2'],# MPJE
                                                 'v0.69': ['walkingTS2'],# MPJE
                                                 'v0.70': ['walkingTS2'],# MPJE
+                                                'v0.71': ['walkingTS2'],# MPJE
                                                 'v1.0': ['walkingTS2']}},# MPJE
                  },
     # Subject 9

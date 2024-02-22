@@ -26,7 +26,7 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
     mocapFiltFreq, R_video_opensim, R_opensim_xForward, 
     saveProcessedMocapData=False, overwriteMarkerDataProcessed=False, 
     overwriteForceDataProcessed=False, overwritevideoAndMocap=False,
-    augmenterModelName='LSTM'):
+    overwritevideo=False, augmenterModelName='LSTM'):
     print(trialName)
 
     # Dict with frequencies for loading appropriate force data.
@@ -147,6 +147,9 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
         syncTimeVec = outputMPJE_markerError_abs['syncTimeVec']
         mocapData = outputMPJE_markerError_abs['mocapData']
         videoData = outputMPJE_markerError_abs['videoData']
+        videoDataAllOffsetRemoved = outputMPJE_markerError_abs['videoDataAllOffsetRemoved']
+        timeVecVideoAll = outputMPJE_markerError_abs['timeVecVideoAll']
+        videoDataAll = outputMPJE_markerError_abs['videoDataAll']
     elif idx_min == 1:
         MPJE_mean = outputMPJE_markerError_norm['MPJE_mean']
         MPJE_std = outputMPJE_markerError_norm['MPJE_std']
@@ -158,6 +161,9 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
         syncTimeVec = outputMPJE_markerError_norm['syncTimeVec']
         mocapData = outputMPJE_markerError_norm['mocapData']
         videoData = outputMPJE_markerError_norm['videoData']
+        videoDataAllOffsetRemoved = outputMPJE_markerError_norm['videoDataAllOffsetRemoved']
+        timeVecVideoAll = outputMPJE_markerError_norm['timeVecVideoAll']
+        videoDataAll = outputMPJE_markerError_abs['videoDataAll']
     elif idx_min == 2:
         MPJE_mean = outputMPJE_verticalVelocity['MPJE_mean']
         MPJE_std = outputMPJE_verticalVelocity['MPJE_std']
@@ -169,13 +175,20 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
         syncTimeVec = outputMPJE_verticalVelocity['syncTimeVec']
         mocapData = outputMPJE_verticalVelocity['mocapData']
         videoData = outputMPJE_verticalVelocity['videoData']
+        videoDataAllOffsetRemoved = outputMPJE_verticalVelocity['videoDataAllOffsetRemoved']
+        timeVecVideoAll = outputMPJE_verticalVelocity['timeVecVideoAll']
+        videoDataAll = outputMPJE_verticalVelocity['videoDataAll']
         
     # write TRC with combined data
-    outData = np.concatenate((mocapData,videoData,videoDataOffsetRemoved),axis=1) 
+    outData = np.concatenate((mocapData,videoData,videoDataOffsetRemoved),axis=1)
+    outVideoDataAll = np.concatenate((videoDataAll,videoDataAllOffsetRemoved),axis=1) 
     
     # rotate so x is always forward
     for iMkr in range(int(outData.shape[1]/3)):
         outData[:,iMkr*3:iMkr*3+3] = R_opensim_xForward.apply(outData[:,iMkr*3:iMkr*3+3])
+        
+    for iMkr in range(int(outVideoDataAll.shape[1]/3)):
+        outVideoDataAll[:,iMkr*3:iMkr*3+3] = R_opensim_xForward.apply(outVideoDataAll[:,iMkr*3:iMkr*3+3])  
         
     # rotate original mocap data
     for iMkr in range(int(mocapData_all.shape[1]/3)):
@@ -196,9 +209,15 @@ def computeMarkerDifferences(trialName,mocapDir,videoTrcDir,markersMPJE,
     pathOutputFile = os.path.join(outputDir,trialName + '_videoAndMocap.trc')
     
     if not os.path.exists(pathOutputFile) or overwritevideoAndMocap:
-        print("In there")
         with open(pathOutputFile,"w") as f:
             ut.numpy2TRC(f, outData, outMkrNames, fc=mocapTRC.camera_rate, units="mm",t_start=syncTimeVec[0])
+
+    # This is exporting the full synced video data, including the offset removed data. This is useful to
+    # have a buffer when generating dynamics simulations.
+    pathOutputFileVideoAll = os.path.join(outputDir,trialName + '_video.trc')
+    if not os.path.exists(pathOutputFileVideoAll) or overwritevideo:
+        with open(pathOutputFileVideoAll,"w") as f:
+            ut.numpy2TRC(f, outVideoDataAll, videoMkrNames + videoMkrNamesNoOffset, fc=mocapTRC.camera_rate, units="mm",t_start=timeVecVideoAll[0])
       
     if saveProcessedMocapData and overwriteMarkerDataProcessed:
         outputDirMocap = os.path.join(os.path.dirname(mocapDir), 'MarkerDataProcessed')
@@ -341,12 +360,17 @@ def getMPJEs(lag, trialName, videoTime, mocapTime, mocapTRC, mocapData,
     endTime = np.min([videoTime[-1],mocapTime[-1]])
     
     N = int(np.round(np.round((endTime - startTime),2) * mocapTRC.camera_rate))
+    NVideoAll = int(np.round(np.round((videoTime[-1] - videoTime[0]),2) * mocapTRC.camera_rate))
     syncTimeVec = np.linspace(startTime, endTime, N+1)
+    timeVecVideoAll = np.linspace(videoTime[0], videoTime[-1], NVideoAll+1)
     
     print('t_start = ' + str(syncTimeVec[0]) + 's')
     
     mocapInds = np.arange(len(syncTimeVec)) + np.argmin(np.abs(mocapTime-startTime))
     videoInds = np.arange(len(syncTimeVec)) + np.argmin(np.abs(videoTime-startTime))
+
+    # Copy videoData before offset removal
+    videoDataAll = copy.deepcopy(videoData)    
     
     mocapData = mocapData[mocapInds,:]
     videoData = videoData[videoInds,:]
@@ -359,6 +383,7 @@ def getMPJEs(lag, trialName, videoTime, mocapTime, mocapTRC, mocapData,
         offsetVals[iMkr,:] = np.mean(videoData[:,idxV*3:idxV*3+3] - mocapData[:,idxM*3:idxM*3+3],axis=0)
     offsetMean = np.mean(offsetVals,axis=0)    
     videoDataOffsetRemoved = videoData - np.tile(offsetMean,(1,videoTRC.num_markers))
+    videoDataAllOffsetRemoved = videoDataAll - np.tile(offsetMean,(1,videoTRC.num_markers))
     
     # compute per joint errors
     MPJEvec = np.empty(len(markersMPJE))
@@ -385,6 +410,9 @@ def getMPJEs(lag, trialName, videoTime, mocapTime, mocapTRC, mocapData,
     outputMPJE['syncTimeVec'] = syncTimeVec
     outputMPJE['mocapData'] = mocapData
     outputMPJE['videoData'] = videoData
+    outputMPJE['videoDataAllOffsetRemoved'] = videoDataAllOffsetRemoved
+    outputMPJE['timeVecVideoAll'] = timeVecVideoAll
+    outputMPJE['videoDataAll'] = videoDataAll
     
     return outputMPJE
 
@@ -435,7 +463,7 @@ def getMPJEs(lag, trialName, videoTime, mocapTime, mocapTRC, mocapData,
 
 def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, augmenters, videoParameters, saveProcessedMocapData=False,
     overwriteMarkerDataProcessed=False, overwriteForceDataProcessed=False,
-    overwritevideoAndMocap=False, writeMPJE_condition=False, writeMPJE_session=False,
+    overwritevideoAndMocap=False, overwritevideo=False, writeMPJE_condition=False, writeMPJE_session=False,
     csv_name='MPJE_fullSession_new', augmenterModelName='LSTM'):
     MPJEs = {}
     print('\n\nProcessing {}'.format(subjectName))
@@ -592,7 +620,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                     poseDetector = os.path.basename(os.path.normpath(markerDataFolder))
                     nCams = os.path.basename(os.path.normpath(camComboFolder))
                     analysisNames.append(poseDetector + '__' + nCams + '__' +
-                                         postAugmentationType)
+                                          postAugmentationType)
                     MPJE_session.append(MPJE_mean)
                     MPJE_offsetRemoved_session.append(MPJE_offsetRemoved_mean)
                     trial_names.append(trialNames)
@@ -601,8 +629,8 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
         markerDataDir = os.path.join(subjectVideoDir, 'MarkerData')
         if writeMPJE_session:
             writeMPJE_perSession(trialNames, markerDataDir, MPJE_session,
-                                 MPJE_offsetRemoved_session, analysisNames,
-                                 csv_name)
+                                  MPJE_offsetRemoved_session, analysisNames,
+                                  csv_name)
             
             # Check if npy file MPJE_all in markerDataDir
             if os.path.exists(os.path.join(markerDataDir, 'MPJE_all.npy')):

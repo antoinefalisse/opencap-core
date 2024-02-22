@@ -8,6 +8,7 @@ import sys
 sys.path.append("..") # utilities in child directory
 sys.path.append("../opensimPipeline") # utilities in opensimPipeline directory
 import numpy as np
+import shutil
 
 from utils import importMetadata, getDataDirectory, storage2df, storage2numpy
 from utilsOpenSim import runScaleTool, runIKTool, getScaleTimeRange, runIDTool
@@ -29,7 +30,7 @@ from utilsOpenSim import runScaleTool, runIKTool, getScaleTimeRange, runIDTool
 # opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 # for subjectName in subjects:
 
-def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True):
+def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True, allVideoOnly=False):
 
     # Filter frequencies for ID.
     filterFrequencies = {'walking': 12, 'default':30}
@@ -196,94 +197,158 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)
                 
                 for augmenterType in augmenterTypes:
-                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType)
+                    
                 
-                    # Scaling
-                    pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
-                                                        'static1_videoAndMocap.trc')
-                    if not os.path.exists(pathTRCFile4Scaling):
-                        raise ValueError("no scaling file")
-                        
-                    scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
-                    outputScaledModelDir = os.path.join(
-                        osDir, 'Video', poseDetector, cameraSetup, augmenterType,
-                        'Model', genericModel4ScalingName[:-5])
-                    pathScaledModel = os.path.join(outputScaledModelDir,
-                                                    scaledModelName + '.osim')
-                    pathGenericModel4Scaling = os.path.join(
-                        opensimPipelineDir, 'Models', genericModel4ScalingName)
-                    pathGenericSetupFile4Scaling = os.path.join(
-                        opensimPipelineDir, 'Scaling',
-                        genericSetupFile4ScalingNameVideo)
-                    os.makedirs(outputScaledModelDir, exist_ok=True) 
                     
-                    if poseDetector == 'OpenPose_default' and cameraSetup == '5-cameras' and augmenterType == 'v0.45':
-                        thresholdPosition = 0.008
-                    else:
-                        thresholdPosition = 0.007
-                    thresholdTime = 0.1
-                    timeRange4Scaling = getScaleTimeRange(
-                        pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
-                        thresholdTime=thresholdTime, isMocap=False)
+                    if allVideoOnly:
+                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_allVideoOnly')
                         
-                    if timeRange4Scaling:
-                        print("Scaling model")
-                        runScaleTool(pathGenericSetupFile4Scaling,
-                                      pathGenericModel4Scaling, sessionMetadata['mass_kg'],
-                                      pathTRCFile4Scaling, timeRange4Scaling, 
-                                      outputScaledModelDir,
-                                      subjectHeight=sessionMetadata['height_m'],
-                                      fixed_markers=fixed_markers,
-                                      withTrackingMarkers=withTrackingMarkers)                    
-                    
-                    # IK
-                    for TRCFile4IKName in os.listdir(augmenterTypeDir):
-                        pathTRCFile4IK = os.path.join(augmenterTypeDir,
-                                                      TRCFile4IKName)
-                        print("Processing: {}".format(pathTRCFile4IK))
-                        
-                        if 'static1' in pathTRCFile4IK:
-                            continue
-                        
-                        if not TRCFile4IKName[-3:] == 'trc':
-                            continue
-                        
-                        # For the DJs, the time interval for IK is based on the GRFs.
-                        # Load force data
-                        if 'DJ' in TRCFile4IKName:
-                            pathForceFile = os.path.join(forceDir, TRCFile4IKName[:-18] + 
-                                                          '_forces.mot')
-                            forceData = storage2df(pathForceFile, headers_force)
-                            # Select all vertical force vectors.
-                            verticalForces = np.concatenate(( 
-                                np.expand_dims(forceData['R_ground_force_vy'].to_numpy(), axis=1),
-                                np.expand_dims(forceData['L_ground_force_vy'].to_numpy(), axis=1)), axis=1)
-                            sumVerticalForces = np.sum(verticalForces, axis=1)
-                            diffForces = np.diff(sumVerticalForces)
-                            startIdx = np.argwhere(diffForces)[0][0] + 1
-                            endIdx = np.argwhere(diffForces[startIdx-1:] == 0)[0][0] + startIdx - 2
-                            startTime = np.round(forceData.iloc[startIdx]['time'], 2)
-                            endTime = np.round(forceData.iloc[endIdx]['time'], 2)                        
-                            startTime_adj = startTime - 0.3
-                            endTime_adj = endTime + 0.03                        
-                            timeRange4IK = [startTime_adj, endTime_adj]                        
-                        else:
-                            timeRange4IK = [] # leave empty to select entire trial
-                        
-                        pathOutputFolder4IK = os.path.join(
+                        # Scaling
+                        # We do not want to re-run scaling here, but copy the
+                        # model from allVideoOnly=False. The rationale is that
+                        # we are just interested in generating the full video motion
+                        # and not just the part synced with mocap, that way we
+                        # can generate simualtions with start and end buffers,
+                        # which should provide better results in the part of interest.
+                        # We want to use the same model as the one we use for
+                        # other analyses (RMSE on joint angles) and therefore
+                        # here copy the scaled model from the other directory.
+                        refScaledModelDir = os.path.join(
                             osDir, 'Video', poseDetector, cameraSetup, augmenterType,
-                            'IK', genericModel4ScalingName[:-5])
+                            'Model', genericModel4ScalingName[:-5])
+                        pathGenericModel4Scaling = os.path.join(
+                            opensimPipelineDir, 'Models', genericModel4ScalingName)
+                        _, scaledModelNameA = os.path.split(pathGenericModel4Scaling)
+                        scaledModelName = scaledModelNameA[:-5] + "_scaled"
+                        pathScaledModel = os.path.join(refScaledModelDir,
+                                                        scaledModelName + '.osim')
+                        scaledModelDir = os.path.join(
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_allVideoOnly',
+                            'Model', genericModel4ScalingName[:-5])
+                        os.makedirs(scaledModelDir, exist_ok=True)
+                        pathScaledModelEnd = os.path.join(scaledModelDir,
+                                                        scaledModelName + '.osim')
+                        shutil.copy2(pathScaledModel, pathScaledModelEnd)
+                            
+                        # IK
+                        for TRCFile4IKName in os.listdir(augmenterTypeDir):
+                            pathTRCFile4IK = os.path.join(augmenterTypeDir,
+                                                          TRCFile4IKName)
+                            print("Processing: {}".format(pathTRCFile4IK))
+                            
+                            if 'static1' in pathTRCFile4IK:
+                                continue
+                            
+                            if not TRCFile4IKName[-3:] == 'trc':
+                                continue
+                            
+                            timeRange4IK = [] # leave empty to select entire trial
+                            
+                            pathOutputFolder4IK = os.path.join(
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_allVideoOnly',
+                                'IK', genericModel4ScalingName[:-5])
+                            
+                            os.makedirs(pathOutputFolder4IK, exist_ok=True)          
+                            pathGenericSetupFile4IK = os.path.join(
+                                opensimPipelineDir, 'IK', genericSetupFile4IKNameVideo)
+                            
+                            if os.path.exists(pathScaledModelEnd):
+                                runIKTool(pathGenericSetupFile4IK, pathScaledModelEnd, 
+                                          pathTRCFile4IK, pathOutputFolder4IK,
+                                          timeRange=timeRange4IK)
+                            else:
+                                continue                            
+                            
+                    else:
                         
-                        os.makedirs(pathOutputFolder4IK, exist_ok=True)          
-                        pathGenericSetupFile4IK = os.path.join(
-                            opensimPipelineDir, 'IK', genericSetupFile4IKNameVideo)
+                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType)
                         
-                        if os.path.exists(pathScaledModel):
-                            runIKTool(pathGenericSetupFile4IK, pathScaledModel, 
-                                      pathTRCFile4IK, pathOutputFolder4IK,
-                                      timeRange=timeRange4IK)
+                        # Scaling
+                        pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
+                                                            'static1_videoAndMocap.trc')
+                        if not os.path.exists(pathTRCFile4Scaling):
+                            raise ValueError("no scaling file")
+                            
+                        scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
+                        outputScaledModelDir = os.path.join(
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType,
+                            'Model', genericModel4ScalingName[:-5])
+                        pathScaledModel = os.path.join(outputScaledModelDir,
+                                                        scaledModelName + '.osim')
+                        pathGenericModel4Scaling = os.path.join(
+                            opensimPipelineDir, 'Models', genericModel4ScalingName)
+                        pathGenericSetupFile4Scaling = os.path.join(
+                            opensimPipelineDir, 'Scaling',
+                            genericSetupFile4ScalingNameVideo)
+                        os.makedirs(outputScaledModelDir, exist_ok=True) 
+                        
+                        if poseDetector == 'OpenPose_default' and cameraSetup == '5-cameras' and augmenterType == 'v0.45':
+                            thresholdPosition = 0.008
                         else:
-                            continue
+                            thresholdPosition = 0.007
+                        thresholdTime = 0.1
+                        timeRange4Scaling = getScaleTimeRange(
+                            pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
+                            thresholdTime=thresholdTime, isMocap=False)
+                            
+                        if timeRange4Scaling:
+                            print("Scaling model")
+                            runScaleTool(pathGenericSetupFile4Scaling,
+                                        pathGenericModel4Scaling, sessionMetadata['mass_kg'],
+                                        pathTRCFile4Scaling, timeRange4Scaling, 
+                                        outputScaledModelDir,
+                                        subjectHeight=sessionMetadata['height_m'],
+                                        fixed_markers=fixed_markers,
+                                        withTrackingMarkers=withTrackingMarkers)                    
+                    
+                        # IK
+                        for TRCFile4IKName in os.listdir(augmenterTypeDir):
+                            pathTRCFile4IK = os.path.join(augmenterTypeDir,
+                                                          TRCFile4IKName)
+                            print("Processing: {}".format(pathTRCFile4IK))
+                            
+                            if 'static1' in pathTRCFile4IK:
+                                continue
+                            
+                            if not TRCFile4IKName[-3:] == 'trc':
+                                continue
+                            
+                            # For the DJs, the time interval for IK is based on the GRFs.
+                            # Load force data
+                            if 'DJ' in TRCFile4IKName:
+                                pathForceFile = os.path.join(forceDir, TRCFile4IKName[:-18] + 
+                                                              '_forces.mot')
+                                forceData = storage2df(pathForceFile, headers_force)
+                                # Select all vertical force vectors.
+                                verticalForces = np.concatenate(( 
+                                    np.expand_dims(forceData['R_ground_force_vy'].to_numpy(), axis=1),
+                                    np.expand_dims(forceData['L_ground_force_vy'].to_numpy(), axis=1)), axis=1)
+                                sumVerticalForces = np.sum(verticalForces, axis=1)
+                                diffForces = np.diff(sumVerticalForces)
+                                startIdx = np.argwhere(diffForces)[0][0] + 1
+                                endIdx = np.argwhere(diffForces[startIdx-1:] == 0)[0][0] + startIdx - 2
+                                startTime = np.round(forceData.iloc[startIdx]['time'], 2)
+                                endTime = np.round(forceData.iloc[endIdx]['time'], 2)                        
+                                startTime_adj = startTime - 0.3
+                                endTime_adj = endTime + 0.03                        
+                                timeRange4IK = [startTime_adj, endTime_adj]                        
+                            else:
+                                timeRange4IK = [] # leave empty to select entire trial
+                            
+                            pathOutputFolder4IK = os.path.join(
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType,
+                                'IK', genericModel4ScalingName[:-5])
+                            
+                            os.makedirs(pathOutputFolder4IK, exist_ok=True)          
+                            pathGenericSetupFile4IK = os.path.join(
+                                opensimPipelineDir, 'IK', genericSetupFile4IKNameVideo)
+                            
+                            if os.path.exists(pathScaledModel):
+                                runIKTool(pathGenericSetupFile4IK, pathScaledModel, 
+                                          pathTRCFile4IK, pathOutputFolder4IK,
+                                          timeRange=timeRange4IK)
+                            else:
+                                continue
                         
     # %% Video - pose markers directly
     if runVideoPose:    

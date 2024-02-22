@@ -9,31 +9,52 @@ import sys
 sys.path.append("..") # utilities in child directory
 import shutil
 
-def main_gather(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, augmenterTypes):
+def main_gather(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, augmenterTypes, allVideoOnly=False):
 
-    subjectDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData', 'Video')
-    for poseDetector in poseDetectors:
-        poseDetectorDir = os.path.join(subjectDir, poseDetector)
-        for cameraSetup in cameraSetups:
-            cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)            
-            for augmenterType in augmenterTypes:
-                augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType)
-                os.makedirs(augmenterTypeDir, exist_ok=True)
-                for sessionName in c_sessions:
-                    postDir = 'PostAugmentation_' + augmenterType
-                    trcDir = os.path.join(dataDir, 'Data', sessionName, 'MarkerData', 
-                                            poseDetector, cameraSetup, 
-                                            postDir, 'videoAndMocap')
-                    for file in os.listdir(trcDir):
-                        if file[-3:] == 'trc':
-                            pathFile = os.path.join(trcDir, file)
-                            pathFileEnd = os.path.join(augmenterTypeDir, file)
-                            shutil.copy2(pathFile, pathFileEnd)
-                            
-                            # pathFileEndOld = os.path.join(cameraSetupDir, file)
-                            # if os.path.exists(pathFileEndOld):
-                            #     print('In 2')
-                                # os.remove(pathFileEndOld)
+
+    if allVideoOnly:
+        subjectDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData', 'Video')
+        for poseDetector in poseDetectors:
+            poseDetectorDir = os.path.join(subjectDir, poseDetector)
+            for cameraSetup in cameraSetups:
+                cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)            
+                for augmenterType in augmenterTypes:
+                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_allVideoOnly')
+                    os.makedirs(augmenterTypeDir, exist_ok=True)
+                    for sessionName in c_sessions:
+                        postDir = 'PostAugmentation_' + augmenterType
+                        trcDir = os.path.join(dataDir, 'Data', sessionName, 'MarkerData', 
+                                                poseDetector, cameraSetup, 
+                                                postDir, 'videoAndMocap')
+                        for file in os.listdir(trcDir):
+                            if file.endswith('_video.trc'):
+                                pathFile = os.path.join(trcDir, file)
+                                pathFileEnd = os.path.join(augmenterTypeDir, file)
+                                shutil.copy2(pathFile, pathFileEnd)
+    else:
+        subjectDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData', 'Video')
+        for poseDetector in poseDetectors:
+            poseDetectorDir = os.path.join(subjectDir, poseDetector)
+            for cameraSetup in cameraSetups:
+                cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)            
+                for augmenterType in augmenterTypes:
+                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType)
+                    os.makedirs(augmenterTypeDir, exist_ok=True)
+                    for sessionName in c_sessions:
+                        postDir = 'PostAugmentation_' + augmenterType
+                        trcDir = os.path.join(dataDir, 'Data', sessionName, 'MarkerData', 
+                                                poseDetector, cameraSetup, 
+                                                postDir, 'videoAndMocap')
+                        for file in os.listdir(trcDir):
+                            if file.endswith('_videoAndMocap.trc'):
+                                pathFile = os.path.join(trcDir, file)
+                                pathFileEnd = os.path.join(augmenterTypeDir, file)
+                                shutil.copy2(pathFile, pathFileEnd)
+                                
+                                # pathFileEndOld = os.path.join(cameraSetupDir, file)
+                                # if os.path.exists(pathFileEndOld):
+                                #     print('In 2')
+                                    # os.remove(pathFileEndOld)
 
 # # Mocap data
 # for subjectName in sessionDetails:
