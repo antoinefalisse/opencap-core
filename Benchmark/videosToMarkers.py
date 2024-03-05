@@ -22,8 +22,8 @@ def get_subject(subjects_to_process):
             'Session20210813_0001': {},
             'Session20210813_0002': {}},        
         'subject3': {
-            'Session20210816_0001': {},
-            'Session20210816_0002': {}},        
+            'Session20210816_0001': {}},
+            # 'Session20210816_0002': {}},        
         'subject4': {
             'Session20210819_0001': {},
             'Session20210819_0002': {}},        
@@ -62,13 +62,13 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(10,12)]
+subjects_to_process = ['subject' + str(i) for i in range(3,4)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
-videoToMarkers = False
+videoToMarkers = True
 syncMocapVideo = False
 gatherData = False
-runOpenSim = True
+runOpenSim = False
 
 # sessionNames = ['Session20210813_0001', 'Session20210813_0002']
 # sessionDetails = {    

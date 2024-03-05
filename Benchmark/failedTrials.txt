@@ -263,3 +263,4 @@ Failed trial: Session20210813_0002 4dc52094-3462-40a6-a785-26875ededed1 mmpose 1
 Failed trial: Session20210813_0002 5ed94c2e-d860-4ec1-991b-59bc5ce31ece mmpose 1x1008_4scales 2-cameras v2.0 
 Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v2.0 
 Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.71 
+Failed trial: Session20210816_0001 43a6c17b-39b4-4de6-ac55-dd65839dc2db mmpose 1x1008_4scales 2-cameras v0.63 
