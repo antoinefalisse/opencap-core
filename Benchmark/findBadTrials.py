@@ -49,8 +49,8 @@ def get_subject(subjects_to_process):
 # cases_to_exclude_missing = {'Session20210816_0001': '43a6c17b-39b4-4de6-ac55-dd65839dc2db'}
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
 cases_to_exclude_trials = {'Session20210813_0002': ['walkingTS3']}
-pose_detectors_to_exclude = ['OpenPose_default']
-expected_nSensitivities = 79
+pose_detectors_to_exclude = []
+expected_nSensitivities = 5
 for i in pose_detectors_to_exclude:
     if 'openpose' in i.lower():
         expected_nSensitivities -= 12
@@ -70,7 +70,7 @@ for count, sessionName in enumerate(sessionNames):
     # print('Processing session: ' + sessionName)
     nTrials[sessionName] = {}    
     markerDataDir = dataDir + '/Data/' + sessionName + '/MarkerData/'
-    MPJE_all = np.load(os.path.join(markerDataDir, 'MPJE_all.npy'), allow_pickle=True).item()
+    MPJE_all = np.load(os.path.join(markerDataDir, 'MPJE_all_updated.npy'), allow_pickle=True).item()
     countTests = 0
     for pose_detector in list(MPJE_all.keys()):
         

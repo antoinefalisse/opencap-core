@@ -25,7 +25,8 @@ scriptDir = os.getcwd()
 repoDir = os.path.dirname(scriptDir)
 mainDir = getDataDirectory(False)
 dataDir = os.path.join(mainDir)
-outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2')
+outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2-updated')
+os.makedirs(outputDir, exist_ok=True)
 
 # %% User inputs.
 subjects = ['subject' + str(i) for i in range(2, 12)]
@@ -39,8 +40,9 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
-    'pose': {'run': False},
-    'v0.1': {'run': False},
+    'pose_updated': {'run': False},
+    'v0.1_updated': {'run': False},
+    'v0.2_updated': {'run': True},
     # 'v0.63': {'run': False},
     # 'v0.45': {'run': False},
     # 'v0.54': {'run': False},
@@ -48,18 +50,18 @@ augmenterTypes = {
     # 'v0.58': {'run': True},
     
     # 'v0.55': {'run': False},
-    'v0.63': {'run': False},
+    'v0.63_updated': {'run': False},
     # 'v0.71': {'run': True},
     # 'v0.70': {'run': False},
-    'v1.0': {'run': False},
-    'v2.0': {'run': False},
+    'v1.0_updated': {'run': False},
+    'v2.0_updated': {'run': False},
     # 'v0.62': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.63': {'run': True},
 }
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'LSTM', 'Transformer', 'Linear regression']
+setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'OpenCap 1', 'LSTM', 'Transformer', 'Linear regression']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -87,136 +89,137 @@ cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingt
 cases_to_exclude_trials = {'subject2': ['walkingTS3']}
 # Cases to exclude because of failing syncing / algo.
 cases_to_exclude_syncing = {}
-cases_to_exclude_algo = {
+cases_to_exclude_algo = {}
+# cases_to_exclude_algo = {
 
-    # 'subject8': {'mmpose_0.8': {'2-cameras': ['walkingTS2']}},
-    # 'subject3': {'OpenPose_default': {'2-cameras': ['walking1', 'walkingTS3']},
-    #              'OpenPose_1x736': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
-    #              'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
-    #              'mmpose_0.8': {'2-cameras': ['STSweakLegs1']},
+#     # 'subject8': {'mmpose_0.8': {'2-cameras': ['walkingTS2']}},
+#     # 'subject3': {'OpenPose_default': {'2-cameras': ['walking1', 'walkingTS3']},
+#     #              'OpenPose_1x736': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
+#     #              'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
+#     #              'mmpose_0.8': {'2-cameras': ['STSweakLegs1']},
 
-    # Subject 2
-    'subject2': {'OpenPose_1x1008_4scales': {'5-cameras': {'v0.45': ['walkingTS4'],
-                                                           'v0.54': ['walkingTS4']}},   # MPJE
-                 'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo  
-                                               'v0.54': ['walking1', 'walkingTS2'],   # algo 
-                                               'v0.55': ['walking1', 'walkingTS2'],   # algo 
-                                               'v0.56': ['walking1', 'walkingTS2']},   # algo 
-                                 '5-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo 
-                                               'v0.54': ['walking1', 'walkingTS2'],   # algo 
-                                               'v0.55': ['walking1', 'walkingTS2'],   # algo 
-                                               'v0.56': ['walking1', 'walkingTS2']}},  # algo 
-                 },
-    # Subject 3
-    'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.61': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.63': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.66': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.67': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.68': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.69': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                            'v0.70': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
-                  'OpenPose_1x736': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                   'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                   'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                   'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                   'v0.57': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-                                                   'v0.58': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
-                  'mmpose_0.8': {'2-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-                                               'v0.54': ['STSweakLegs1'],# algo 
-                                               'v0.55': ['STSweakLegs1'],# algo 
-                                               'v0.56': ['STSweakLegs1'],# algo
-                                               'v0.57': ['STSweakLegs1'],# algo
-                                               'v0.58': ['STSweakLegs1'],# algo
-                                               'v0.59': ['STSweakLegs1'],# algo,
-                                               'v0.60': ['STSweakLegs1']},# algo},
-                                '3-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-                                                'v0.54': ['STSweakLegs1'],# algo 
-                                                'v0.55': ['STSweakLegs1'],# algo 
-                                                'v0.56': ['STSweakLegs1']},# algo 
-                                '5-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-                                                'v0.54': ['STSweakLegs1'],# algo 
-                                                'v0.55': ['STSweakLegs1'],# algo 
-                                                'v0.56': ['STSweakLegs1']}},# algo 
-                  },
-    # Subject 4
-    'subject4': {'OpenPose_1x736': {'3-cameras': {'v0.1': ['walkingTS2'],# MPJE
-                                                  'v0.2': ['walkingTS2'],# MPJE
-                                                  'v0.45': ['walkingTS2'],# MPJE
-                                                  'v0.54': ['walkingTS2']}},# MPJE 
-                 'mmpose_0.8': {'5-cameras': {'v0.45': ['squats1'],# algo 
-                                              'v0.54': ['squats1'],# algo 
-                                              'v0.55': ['squats1'],# algo 
-                                              'v0.56': ['squats1']}},# algo
-                 },
-    # Subject 5
-    'subject5': {'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                              'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                              'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                              'v0.56': ['walking1', 'walking2', 'walkingTS3']},
-                                '5-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                                'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                                'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
-                                                'v0.56': ['walking1', 'walking2', 'walkingTS3']}},# algo
-                 },
-    # Subject 7
-    'subject7': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walking1'],# algo 
-                                              'v0.54': ['walking1'],# algo 
-                                              'v0.55': ['walking1'],# algo 
-                                              'v0.56': ['walking1']}},# algo
-                 },
-    # Subject 8
-    'subject8': {'mmpose_0.8': {'5-cameras': {'v0.45': ['DJAsym3'],# algo 
-                                              'v0.54': ['DJAsym3'],# algo 
-                                              'v0.55': ['DJAsym3'],# algo 
-                                              'v0.56': ['DJAsym3']},
-                                '2-cameras': {'v0.45': ['walkingTS2'],# MPJE 
-                                                'v0.54': ['walkingTS2'],# MPJE 
-                                                'v0.55': ['walkingTS2'],# MPJE 
-                                                'v0.56': ['walkingTS2'],# MPJE
-                                                'v0.57': ['walkingTS2'],# MPJE
-                                                'v0.58': ['walkingTS2'],# MPJE
-                                                'v0.59': ['walkingTS2'],# MPJE
-                                                'v0.60': ['walkingTS2'],# MPJE
-                                                'v0.63': ['walkingTS2'],# MPJE
-                                                'v0.64': ['walkingTS2'],# MPJE
-                                                'v0.65': ['walkingTS2'],# MPJE
-                                                'v0.66': ['walkingTS2'],# MPJE
-                                                'v0.67': ['walkingTS2'],# MPJE
-                                                'v0.68': ['walkingTS2'],# MPJE
-                                                'v0.69': ['walkingTS2'],# MPJE
-                                                'v0.70': ['walkingTS2'],# MPJE
-                                                'v0.71': ['walkingTS2'],# MPJE
-                                                'v1.0': ['walkingTS2']}},# MPJE
-                 },
-    # Subject 9
-    'subject9': {'mmpose_0.8': {'5-cameras': {'v0.45': ['STS1'],# algo 
-                                              'v0.54': ['STS1'],# algo 
-                                              'v0.55': ['STS1'],# algo 
-                                              'v0.56': ['STS1']}},# algo
-                 },
-    # Subject 10
-    'subject10': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS1'],# MPJE 
-                                              'v0.54': ['walkingTS1'],# MPJE 
-                                              'v0.55': ['walkingTS1'],# MPJE 
-                                              'v0.56': ['walkingTS1']}},# MPJE
-                 },
-    # Subject 11
-    'subject11': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS3'],# algo 
-                                              'v0.54': ['walkingTS3'],# algo 
-                                              'v0.55': ['walkingTS3'],# algo 
-                                              'v0.56': ['walkingTS3']},
-                                 '3-cameras': {'v0.45': ['walkingTS3'],# algo 
-                                                'v0.54': ['walkingTS3'],# algo 
-                                                'v0.55': ['walkingTS3'],# algo 
-                                                'v0.56': ['walkingTS3']}},# algo
-                 },
-    }
+#     # Subject 2
+#     'subject2': {'OpenPose_1x1008_4scales': {'5-cameras': {'v0.45': ['walkingTS4'],
+#                                                            'v0.54': ['walkingTS4']}},   # MPJE
+#                  'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo  
+#                                                'v0.54': ['walking1', 'walkingTS2'],   # algo 
+#                                                'v0.55': ['walking1', 'walkingTS2'],   # algo 
+#                                                'v0.56': ['walking1', 'walkingTS2']},   # algo 
+#                                  '5-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo 
+#                                                'v0.54': ['walking1', 'walkingTS2'],   # algo 
+#                                                'v0.55': ['walking1', 'walkingTS2'],   # algo 
+#                                                'v0.56': ['walking1', 'walkingTS2']}},  # algo 
+#                  },
+#     # Subject 3
+#     'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.61': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.63': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.66': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.67': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.68': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.69': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                             'v0.70': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
+#                   'OpenPose_1x736': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                    'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                    'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                    'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                    'v0.57': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
+#                                                    'v0.58': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
+#                   'mmpose_0.8': {'2-cameras': {'v0.45': ['STSweakLegs1'],# algo 
+#                                                'v0.54': ['STSweakLegs1'],# algo 
+#                                                'v0.55': ['STSweakLegs1'],# algo 
+#                                                'v0.56': ['STSweakLegs1'],# algo
+#                                                'v0.57': ['STSweakLegs1'],# algo
+#                                                'v0.58': ['STSweakLegs1'],# algo
+#                                                'v0.59': ['STSweakLegs1'],# algo,
+#                                                'v0.60': ['STSweakLegs1']},# algo},
+#                                 '3-cameras': {'v0.45': ['STSweakLegs1'],# algo 
+#                                                 'v0.54': ['STSweakLegs1'],# algo 
+#                                                 'v0.55': ['STSweakLegs1'],# algo 
+#                                                 'v0.56': ['STSweakLegs1']},# algo 
+#                                 '5-cameras': {'v0.45': ['STSweakLegs1'],# algo 
+#                                                 'v0.54': ['STSweakLegs1'],# algo 
+#                                                 'v0.55': ['STSweakLegs1'],# algo 
+#                                                 'v0.56': ['STSweakLegs1']}},# algo 
+#                   },
+#     # Subject 4
+#     'subject4': {'OpenPose_1x736': {'3-cameras': {'v0.1': ['walkingTS2'],# MPJE
+#                                                   'v0.2': ['walkingTS2'],# MPJE
+#                                                   'v0.45': ['walkingTS2'],# MPJE
+#                                                   'v0.54': ['walkingTS2']}},# MPJE 
+#                  'mmpose_0.8': {'5-cameras': {'v0.45': ['squats1'],# algo 
+#                                               'v0.54': ['squats1'],# algo 
+#                                               'v0.55': ['squats1'],# algo 
+#                                               'v0.56': ['squats1']}},# algo
+#                  },
+#     # Subject 5
+#     'subject5': {'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                               'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                               'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                               'v0.56': ['walking1', 'walking2', 'walkingTS3']},
+#                                 '5-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                                 'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                                 'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
+#                                                 'v0.56': ['walking1', 'walking2', 'walkingTS3']}},# algo
+#                  },
+#     # Subject 7
+#     'subject7': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walking1'],# algo 
+#                                               'v0.54': ['walking1'],# algo 
+#                                               'v0.55': ['walking1'],# algo 
+#                                               'v0.56': ['walking1']}},# algo
+#                  },
+#     # Subject 8
+#     'subject8': {'mmpose_0.8': {'5-cameras': {'v0.45': ['DJAsym3'],# algo 
+#                                               'v0.54': ['DJAsym3'],# algo 
+#                                               'v0.55': ['DJAsym3'],# algo 
+#                                               'v0.56': ['DJAsym3']},
+#                                 '2-cameras': {'v0.45': ['walkingTS2'],# MPJE 
+#                                                 'v0.54': ['walkingTS2'],# MPJE 
+#                                                 'v0.55': ['walkingTS2'],# MPJE 
+#                                                 'v0.56': ['walkingTS2'],# MPJE
+#                                                 'v0.57': ['walkingTS2'],# MPJE
+#                                                 'v0.58': ['walkingTS2'],# MPJE
+#                                                 'v0.59': ['walkingTS2'],# MPJE
+#                                                 'v0.60': ['walkingTS2'],# MPJE
+#                                                 'v0.63': ['walkingTS2'],# MPJE
+#                                                 'v0.64': ['walkingTS2'],# MPJE
+#                                                 'v0.65': ['walkingTS2'],# MPJE
+#                                                 'v0.66': ['walkingTS2'],# MPJE
+#                                                 'v0.67': ['walkingTS2'],# MPJE
+#                                                 'v0.68': ['walkingTS2'],# MPJE
+#                                                 'v0.69': ['walkingTS2'],# MPJE
+#                                                 'v0.70': ['walkingTS2'],# MPJE
+#                                                 'v0.71': ['walkingTS2'],# MPJE
+#                                                 'v1.0': ['walkingTS2']}},# MPJE
+#                  },
+#     # Subject 9
+#     'subject9': {'mmpose_0.8': {'5-cameras': {'v0.45': ['STS1'],# algo 
+#                                               'v0.54': ['STS1'],# algo 
+#                                               'v0.55': ['STS1'],# algo 
+#                                               'v0.56': ['STS1']}},# algo
+#                  },
+#     # Subject 10
+#     'subject10': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS1'],# MPJE 
+#                                               'v0.54': ['walkingTS1'],# MPJE 
+#                                               'v0.55': ['walkingTS1'],# MPJE 
+#                                               'v0.56': ['walkingTS1']}},# MPJE
+#                  },
+#     # Subject 11
+#     'subject11': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS3'],# algo 
+#                                               'v0.54': ['walkingTS3'],# algo 
+#                                               'v0.55': ['walkingTS3'],# algo 
+#                                               'v0.56': ['walkingTS3']},
+#                                  '3-cameras': {'v0.45': ['walkingTS3'],# algo 
+#                                                 'v0.54': ['walkingTS3'],# algo 
+#                                                 'v0.55': ['walkingTS3'],# algo 
+#                                                 'v0.56': ['walkingTS3']}},# algo
+#                  },
+#     }
 
 # %%
 genericModel4ScalingName = 'LaiArnoldModified2017_poly_withArms_weldHand.osim'
@@ -483,9 +486,9 @@ for subjectName in subjects:
                                 genericModel4ScalingName[:-5])                            
                             
                         # Used to use same augmenter for all for offset, not sure why
-                        if augmenterType == 'pose':
+                        if augmenterType == 'pose_updated':
                             cameraSetupMarkerDir = os.path.join(
-                                poseDetectorMarkerDir, cameraSetup, 'v0.1')
+                                poseDetectorMarkerDir, cameraSetup, 'v0.1_updated')
                         else:
                             cameraSetupMarkerDir = os.path.join(
                                 poseDetectorMarkerDir, cameraSetup, augmenterType)

@@ -539,7 +539,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                 
                 augmenterComboFolders = []
                 for augmenter in augmenters:
-                    augmenterComboFolders.append(os.path.join(camComboFolder,'PostAugmentation_' + augmenter))
+                    augmenterComboFolders.append(os.path.join(camComboFolder,'PostAugmentation_updated_' + augmenter))
                 
                 for postDir in augmenterComboFolders:
                     
@@ -563,7 +563,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                                 
                     # Get trialnames - hard code, or get all in video directory, as long as in mocap directory
                     trialNames = [os.path.split(tName.replace('_{}'.format(augmenterModelName),''))[1][0:-4] for tName in glob.glob(videoTrcDir + '/*.trc')]
-                    trialsToRemove = [] ;
+                    trialsToRemove = []
                     for tName in trialNames: # check if in mocap directory, if not, delete trial
                         if not os.path.exists(os.path.join(mocapDir,tName + '.trc')):
                             trialsToRemove.append(tName)
@@ -633,8 +633,8 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                                   csv_name)
             
             # Check if npy file MPJE_all in markerDataDir
-            if os.path.exists(os.path.join(markerDataDir, 'MPJE_all.npy')):
-                MPJE_all = np.load(os.path.join(markerDataDir, 'MPJE_all.npy'), allow_pickle=True).item()
+            if os.path.exists(os.path.join(markerDataDir, 'MPJE_all_updated.npy')):
+                MPJE_all = np.load(os.path.join(markerDataDir, 'MPJE_all_updated.npy'), allow_pickle=True).item()
                 # MPJE_all = {}
             else:
                 MPJE_all = {}
@@ -650,7 +650,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                 MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['MPJE'] = MPJE
                 MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['MPJE_offsetRemoved'] = MPJE_offsetRemoved
                 MPJE_all[analysisName[0]][analysisName[1]][analysisName[2]]['trials'] = trial_name
-            np.save(os.path.join(markerDataDir, 'MPJE_all.npy'), MPJE_all)
+            np.save(os.path.join(markerDataDir, 'MPJE_all_updated.npy'), MPJE_all)
             
     return MPJEs
 

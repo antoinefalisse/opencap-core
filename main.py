@@ -37,6 +37,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
          scaleModel=False, bbox_thr=0.8, augmenter_model='v0.7',
          genericFolderNames=False, offset=True, benchmark=False,
          dataDir=None, augmenterModelName='LSTM'):
+         
 
     # %% High-level settings.
     # Camera calibration.
@@ -79,13 +80,14 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
         sessionDir = os.path.join(dataDir, 'Data', sessionName)
     sessionMetadata = importMetadata(os.path.join(sessionDir,
                                                   'sessionMetadata.yaml'))
+    
     # If pose model defined through web app.
     if 'posemodel' in sessionMetadata:
         if sessionMetadata['posemodel'] == 'hrnet':
             poseDetector = 'mmpose'
         else:
             poseDetector = 'OpenPose'
-
+    
     # %% Paths to pose detector folder for local testing.
     if poseDetector == 'OpenPose':
         poseDetectorDirectory = getOpenPoseDirectory(isDocker)
@@ -213,7 +215,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
                                                 markerDataFolderNameSuffix)
     # Temporary folder for 3D reconstruction.
     preAugmentationDir = os.path.join(sessionDir, markerDataFolderName,
-                                      'PreAugmentation_benchmark')
+                                      'PreAugmentation_updated_benchmark')
     os.makedirs(preAugmentationDir, exist_ok=True)
     
     # Set output file name.
@@ -308,8 +310,11 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
                 trialName=trialName,startEndFrames=startEndFrames,trialID=trial_id)
         except Exception as e:
             if len(e.args) == 2: # specific exception
+                print("case 1" +  e.args[0])
                 raise Exception(e.args[0], e.args[1])
+                
             elif len(e.args) == 1: # generic exception
+                print("case 1" +  traceback.format_exc())
                 exception = "Triangulation failed. Verify your setup and try again. Visit https://www.opencap.ai/best-pratices to learn more about data collection and https://www.opencap.ai/troubleshooting for potential causes for a failed trial."
                 raise Exception(exception, traceback.format_exc())
         
@@ -331,7 +336,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
     else:
         postAugmentationDir = os.path.join(
             sessionDir, markerDataFolderName, 
-            'PostAugmentation_{}'.format(augmenter_model))
+            'PostAugmentation_updated_{}'.format(augmenter_model))
     
     # Get augmenter model.
     # augmenterModel = (

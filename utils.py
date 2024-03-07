@@ -992,8 +992,9 @@ def rewriteVideos(inputPath,startFrame,nFrames,frameRate,outputDir=None,
     ffmpegCmd = "ffmpeg -loglevel error -y -ss {:.3f} -i {} {} -vframes {:.0f} {} {}".format(
                 startTime, inputPath, maintainQualityArg, 
                 nFrames, imageScaleArg, outputFullPath).rstrip().replace("  ", " ")
-
-    subprocess.run(ffmpegCmd.split(" "))
+    print(ffmpegCmd)
+    # subprocess.run(ffmpegCmd.split(" "))
+    os.system(ffmpegCmd)
     
     return
 

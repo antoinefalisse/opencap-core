@@ -2456,7 +2456,6 @@ def triangulateMultiviewVideo(CameraParamDict,keypointDict,imageScaleFactor=1,
         points3D[:,:,iFrame], confidence3D[:,:,iFrame] = triangulateMultiview(CameraParamList_selectedCams, points2d, 
                           imageScaleFactor=1, useRotationEuler=False,
                           ignoreMissingMarkers=ignoreMissingMarkers, keypoints2D=keypoints2D,confidence=thisConfidence)
-        
     if trimTrial:
         # Delete confidence and 3D keypoints if markers, except for face 
         # markers, have 0 confidence (they're garbage b/c <2 cameras saw them).
