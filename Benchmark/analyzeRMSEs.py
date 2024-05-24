@@ -42,7 +42,7 @@ cameraSetups = ['2-cameras']
 augmenterTypes = {
     'pose_updated': {'run': False},
     'v0.1_updated': {'run': False},
-    'v0.2_updated': {'run': True},
+    'v0.2_updated': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.45': {'run': False},
     # 'v0.54': {'run': False},
@@ -61,7 +61,7 @@ augmenterTypes = {
 }
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'OpenCap 1', 'LSTM', 'Transformer', 'Linear regression']
+setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'OpenCap 1.0', 'LSTM', 'Transformer', 'Linear regression']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -307,7 +307,7 @@ for subjectName in subjects:
     markerDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData')
         
     # Hack
-    mocapDirAll = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])    
+    mocapDirAll = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])    
     trials = []
     for trial in os.listdir(mocapDirAll):
         if not trial[-3:] == 'mot':
@@ -469,9 +469,9 @@ for subjectName in subjects:
                         
                         
                         if addBiomechanicsMocap:
-                            mocapDir = os.path.join(osDir, 'Mocap', 'AddBiomechanics', 'IK', addBiomechanicsMocapModel)                              
+                            mocapDir = os.path.join(osDir, 'Mocap_updated', 'AddBiomechanics', 'IK', addBiomechanicsMocapModel)                              
                         else:
-                            mocapDir = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])                              
+                            mocapDir = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])                              
                             
                         pathTrial = os.path.join(mocapDir, trial)
                         trial_mocap_df = storage2df(pathTrial, coordinates)
@@ -522,7 +522,7 @@ for subjectName in subjects:
                         # For DJ trials, we trimmed the OpenSim IK ones, but not the addb ones
                         # Let's load a reference OpenSim IK one to get the same time vector
                         if addBiomechanicsMocap and addBiomechanicsVideo and 'DJ' in trial:
-                            mocapDir_temp = os.path.join(osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])
+                            mocapDir_temp = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])
                             pathTrial_temp = os.path.join(mocapDir_temp, trial)
                             trial_mocap_df_temp = storage2df(pathTrial_temp, coordinates)
                             trial_mocap_np_temp = trial_mocap_df_temp.to_numpy()
@@ -750,13 +750,17 @@ with open(os.path.join(outputDir,'RMSEs{}_means.csv'.format(suffixRMSE)), 'w', n
     secondRow.extend(["min-rot","max-rot","mean-rot","std-rot","","min-tr","max-tr","mean-tr","std-tr"])
     _ = csvWriter.writerow(secondRow)
     means_RMSE_summary, mins_RMSE_summary, maxs_RMSE_summary = {}, {}, {}
+    mins_RMSE_summary_labels, maxs_RMSE_summary_labels = {}, {}
     for idxMotion, motion in enumerate(all_motions):
         means_RMSE_summary[motion], mins_RMSE_summary[motion], maxs_RMSE_summary[motion] = {}, {}, {}
+        mins_RMSE_summary_labels[motion], maxs_RMSE_summary_labels[motion] = {}, {}
         c_bp = means_RMSEs[motion]
         for idxSetup, setup in enumerate(setups):
             means_RMSE_summary[motion][setup] = {}
             mins_RMSE_summary[motion][setup] = {}
             maxs_RMSE_summary[motion][setup] = {}
+            mins_RMSE_summary_labels[motion][setup] = {}
+            maxs_RMSE_summary_labels[motion][setup] = {}
             if idxSetup == 0:
                 RMSErow = [motion, '', setup]
             else:
@@ -765,6 +769,7 @@ with open(os.path.join(outputDir,'RMSEs{}_means.csv'.format(suffixRMSE)), 'w', n
             temp_med_tr = np.zeros(len(coordinates_lr_tr),)
             c_rot = 0
             c_tr = 0
+            coordinates_temp_rot = []
             for coordinate in coordinates_lr:
                 c_coord = c_bp[coordinate]              
                 RMSErow.extend(['%.2f' %c_coord[idxSetup], ''])
@@ -777,12 +782,15 @@ with open(os.path.join(outputDir,'RMSEs{}_means.csv'.format(suffixRMSE)), 'w', n
                         temp_med_rot[c_rot,] = c_coord[idxSetup]
                         temp_med_rot[c_rot+1,] = c_coord[idxSetup]
                         c_rot += 2
+                        coordinates_temp_rot.append(coordinate)
+                        coordinates_temp_rot.append(coordinate)
                     else:
                         temp_med_rot[c_rot,] = c_coord[idxSetup]
                         c_rot += 1
+                        coordinates_temp_rot.append(coordinate)
                 elif coordinate in coordinates_lr_tr:
                     temp_med_tr[c_tr,] = c_coord[idxSetup]
-                    c_tr += 1                    
+                    c_tr += 1      
             # Add min, max, mean
             RMSErow.extend(['%.2f' %np.round(np.min(temp_med_rot),1)])
             RMSErow.extend(['%.2f' %np.round(np.max(temp_med_rot),1)])
@@ -798,9 +806,13 @@ with open(os.path.join(outputDir,'RMSEs{}_means.csv'.format(suffixRMSE)), 'w', n
             
             mins_RMSE_summary[motion][setup]['rotation'] = np.round(np.min(temp_med_rot),1)
             mins_RMSE_summary[motion][setup]['translation'] = np.round(np.min(temp_med_tr*1000),1)
+            mins_RMSE_summary_labels[motion][setup]['rotation'] = coordinates_temp_rot[np.argmin(temp_med_rot)]
+            mins_RMSE_summary_labels[motion][setup]['translation'] = coordinates_lr_tr[np.argmin(temp_med_tr)]
             
             maxs_RMSE_summary[motion][setup]['rotation'] = np.round(np.max(temp_med_rot),1)
             maxs_RMSE_summary[motion][setup]['translation'] = np.round(np.max(temp_med_tr*1000),1)
+            maxs_RMSE_summary_labels[motion][setup]['rotation'] = coordinates_temp_rot[np.argmax(temp_med_rot)]
+            maxs_RMSE_summary_labels[motion][setup]['translation'] = coordinates_lr_tr[np.argmax(temp_med_tr)]
 
 # %% Plots per coordinate: MAEs
 all_motions = ['all'] + motions
@@ -1238,10 +1250,15 @@ for setup in setups:
 means_RMSE_summary_rot, means_RMSE_summary_tr = {}, {}
 mins_RMSE_summary_rot, mins_RMSE_summary_tr = {}, {}
 maxs_RMSE_summary_rot, maxs_RMSE_summary_tr = {}, {}
+mins_RMSE_summary_label_rot, mins_RMSE_summary_label_tr = {}, {}
+maxs_RMSE_summary_label_rot, maxs_RMSE_summary_label_tr = {}, {}
+
 for setup in setups:
     means_RMSE_summary_rot[setup], means_RMSE_summary_tr[setup] = [], []
     mins_RMSE_summary_rot[setup], mins_RMSE_summary_tr[setup] = [], []
     maxs_RMSE_summary_rot[setup], maxs_RMSE_summary_tr[setup] = [], []
+    mins_RMSE_summary_label_rot[setup], mins_RMSE_summary_label_tr[setup] = [], []
+    maxs_RMSE_summary_label_rot[setup], maxs_RMSE_summary_label_tr[setup] = [], []
     for motion in motions:
         means_RMSE_summary_rot[setup].append(means_RMSE_summary[motion][setup]['rotation'])
         means_RMSE_summary_tr[setup].append(means_RMSE_summary[motion][setup]['translation'])
@@ -1249,6 +1266,11 @@ for setup in setups:
         mins_RMSE_summary_tr[setup].append(mins_RMSE_summary[motion][setup]['translation'])
         maxs_RMSE_summary_rot[setup].append(maxs_RMSE_summary[motion][setup]['rotation'])
         maxs_RMSE_summary_tr[setup].append(maxs_RMSE_summary[motion][setup]['translation'])
+        
+        mins_RMSE_summary_label_rot[setup].append(mins_RMSE_summary_labels[motion][setup]['rotation'])
+        mins_RMSE_summary_label_tr[setup].append(mins_RMSE_summary_labels[motion][setup]['translation'])
+        maxs_RMSE_summary_label_rot[setup].append(maxs_RMSE_summary_labels[motion][setup]['rotation'])
+        maxs_RMSE_summary_label_tr[setup].append(maxs_RMSE_summary_labels[motion][setup]['translation'])
     
 print("Rotations - MAEs")           
 c_mean_rot_all = np.zeros((len(setups),))
@@ -1301,12 +1323,18 @@ c_mean_rot_all_RMSE = np.zeros((len(setups),))
 c_std_rot_all_RMSE = np.zeros((len(setups),))
 c_min_rot_all_RMSE = np.zeros((len(setups),))
 c_max_rot_all_RMSE = np.zeros((len(setups),))
+c_min_rot_all_RMSE_lables, c_max_rot_all_RMSE_lables = [], []
 for c_s, setup in enumerate(setups):
     c_mean_rot_all_RMSE[c_s] = np.round(np.mean(np.asarray( means_RMSE_summary_rot[setup])),1)
     c_std_rot_all_RMSE[c_s] = np.round(np.std(np.asarray( means_RMSE_summary_rot[setup])),1)  
     c_min_rot_all_RMSE[c_s] = np.round(np.min(np.asarray( mins_RMSE_summary_rot[setup])),1)
-    c_max_rot_all_RMSE[c_s] = np.round(np.max(np.asarray( maxs_RMSE_summary_rot[setup])),1)
-    print("{}: {} +/- {} [{} {}]".format(setup, c_mean_rot_all_RMSE[c_s], c_std_rot_all_RMSE[c_s], c_min_rot_all_RMSE[c_s], c_max_rot_all_RMSE[c_s]))
+    c_max_rot_all_RMSE[c_s] = np.round(np.max(np.asarray( maxs_RMSE_summary_rot[setup])),1)    
+    c_min_label = mins_RMSE_summary_label_rot[setup][np.argmin(np.asarray( mins_RMSE_summary_rot[setup]))]
+    c_max_label = maxs_RMSE_summary_label_rot[setup][np.argmax(np.asarray( maxs_RMSE_summary_rot[setup]))]
+    c_min_rot_all_RMSE_lables.append(c_min_label)
+    c_max_rot_all_RMSE_lables.append(c_max_label)
+    
+    print("{}: {} +/- {} [{} {}] [{} {}]".format(setup, c_mean_rot_all_RMSE[c_s], c_std_rot_all_RMSE[c_s], c_min_rot_all_RMSE[c_s], c_max_rot_all_RMSE[c_s], c_min_label, c_max_label))
 # c_mean_rot_diff_RMSE = c_mean_rot_all_RMSE[9:] - c_mean_rot_all_RMSE[:9] 
 # print('Max decrease with no augmenter - rotation - mmpose: {}'.format(np.round(np.max(c_mean_rot_diff_RMSE[:3]),1)))
 # print('Max decrease with no augmenter - rotation - openpose high res: {}'.format(np.round(np.max(c_mean_rot_diff_RMSE[3:6]),1)))
@@ -1324,12 +1352,17 @@ c_mean_tr_all_RMSE = np.zeros((len(setups),))
 c_std_tr_all_RMSE = np.zeros((len(setups),))
 c_min_tr_all_RMSE = np.zeros((len(setups),))
 c_max_tr_all_RMSE = np.zeros((len(setups),))
+c_min_tr_all_RMSE_lables, c_max_tr_all_RMSE_lables = [], []
 for c_s, setup in enumerate(setups):
     c_mean_tr_all_RMSE[c_s] = np.round(np.mean(np.asarray( means_RMSE_summary_tr[setup])),1)
     c_std_tr_all_RMSE[c_s] = np.round(np.std(np.asarray( means_RMSE_summary_tr[setup])),1)
     c_min_tr_all_RMSE[c_s] = np.round(np.min(np.asarray( mins_RMSE_summary_tr[setup])),1)
     c_max_tr_all_RMSE[c_s] = np.round(np.max(np.asarray( maxs_RMSE_summary_tr[setup])),1)
-    print("{}: {} +/- {} [{} {}]".format(setup, c_mean_tr_all_RMSE[c_s], c_std_tr_all_RMSE[c_s], c_min_tr_all_RMSE[c_s], c_max_tr_all_RMSE[c_s]))
+    c_min_label = mins_RMSE_summary_label_tr[setup][np.argmin(np.asarray( mins_RMSE_summary_tr[setup]))]
+    c_max_label = maxs_RMSE_summary_label_tr[setup][np.argmax(np.asarray( maxs_RMSE_summary_tr[setup]))]
+    c_min_tr_all_RMSE_lables.append(c_min_label)
+    c_max_tr_all_RMSE_lables.append(c_max_label)
+    print("{}: {} +/- {} [{} {}] [{} {}]".format(setup, c_mean_tr_all_RMSE[c_s], c_std_tr_all_RMSE[c_s], c_min_tr_all_RMSE[c_s], c_max_tr_all_RMSE[c_s], c_min_label, c_max_label))
 # c_mean_tr_diff_RMSE = c_mean_tr_all_RMSE[9:] - c_mean_tr_all_RMSE[:9]
 # print('Max decrease with no augmenter - translation - mmpose: {}'.format(np.round(np.max(c_mean_tr_diff_RMSE[:3]),1)))
 # print('Max decrease with no augmenter - translation - openpose high res: {}'.format(np.round(np.max(c_mean_tr_diff_RMSE[3:6]),1)))
@@ -1617,8 +1650,8 @@ for cameraSetup in cameraSetups:
     axs[0].set_xticklabels(motions, fontweight='bold')
     axs[0].set_ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
     axs[0].tick_params(axis='both', which='major', labelsize=fontsize_labels)
-    axs[0].set_ylim([0, 25])
-    axs[0].set_yticks(np.arange(0, 30, 5))
+    axs[0].set_ylim([0, 12])
+    axs[0].set_yticks(np.arange(0, 16, 4))
     axs[0].set_title('Joint rotations (18 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
     # axs[0].legend(loc='upper left', fontsize=fontsize_labels)
     axs[0].spines['top'].set_visible(False)
@@ -1635,8 +1668,8 @@ for cameraSetup in cameraSetups:
     axs[1].set_xticklabels(motions, fontweight='bold')
     axs[1].set_ylabel('Root Mean Squared Error (cm)', fontweight='bold', fontsize=fontsize_labels)
     axs[1].tick_params(axis='both', which='major', labelsize=fontsize_labels)
-    axs[1].set_ylim([0, 5])
-    axs[1].set_yticks(np.arange(0, 6, 1))
+    axs[1].set_ylim([0, 3])
+    axs[1].set_yticks(np.arange(0, 4, 1))
     axs[1].set_title('Pelvis translations (3 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
     # axs[1].legend(loc='upper left', fontsize=fontsize_labels)
     axs[1].spines['top'].set_visible(False)
@@ -1649,6 +1682,108 @@ for cameraSetup in cameraSetups:
     
     # plt.tight_layout()
     plt.show()
+    
+    # %% Means only
+
+    # Your data and parameters here
+    barWidth = 0.15
+    fontsize_labels = 16
+    fontsize_title = 18
+    fontsize_legend = 16
+    colors = sns.color_palette('colorblind', len(setups))
+    num_bars = len(setups)
+    positions = [np.arange(1) + i * barWidth for i in range(num_bars)]
+    
+    fig, axs = plt.subplots(1, 2, figsize=(16, 8))  # Create a 1x2 grid of subplots (one row, two columns)
+    
+    # Rotations subplot
+    motions_mean = ['mean']
+    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions_mean] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions_mean] for i in range(num_bars)]  
+    for i in range(num_bars):
+        axs[0].bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', label=setups_t[i], align='center', alpha=0.5, ecolor='black', capsize=5)
+    
+    axs[0].set_xticks([])
+    axs[0].set_xticklabels([])
+    axs[0].set_ylabel('Root Mean Squared Error (deg)', fontweight='bold', fontsize=fontsize_labels)
+    axs[0].tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    axs[0].set_ylim([0, 12])
+    axs[0].set_yticks(np.arange(0, 16, 4))
+    axs[0].set_title('Joint rotations (18 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
+    # axs[0].legend(loc='upper left', fontsize=fontsize_labels)
+    axs[0].spines['top'].set_visible(False)
+    axs[0].spines['right'].set_visible(False)
+    # axs[0].get_legend().get_frame().set_linewidth(0.0)
+    
+    # Translations subplot
+    values = [[means_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions_mean] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy_tr[motion]['mean'][i]*100 for motion in motions_mean] for i in range(num_bars)]   
+    for i in range(num_bars):
+        axs[1].bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', align='center', alpha=0.5, ecolor='black', capsize=5)
+    
+    axs[1].set_xticks([])
+    axs[1].set_xticklabels([])
+    axs[1].set_ylabel('Root Mean Squared Error (cm)', fontweight='bold', fontsize=fontsize_labels)
+    axs[1].tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    axs[1].set_ylim([0, 3])
+    axs[1].set_yticks(np.arange(0, 4, 1))
+    axs[1].set_title('Pelvis translations (3 degrees of freedom)', fontweight='bold', fontsize=fontsize_title)
+    # axs[1].legend(loc='upper left', fontsize=fontsize_labels)
+    axs[1].spines['top'].set_visible(False)
+    axs[1].spines['right'].set_visible(False)
+    # axs[1].get_legend().get_frame().set_linewidth(0.0)
+    
+    legend = fig.legend(loc='lower center', fontsize=fontsize_legend, ncol=num_bars)
+    legend.set_frame_on(False)
+    # plt.subplots_adjust(bottom=2)
+    
+    # plt.tight_layout()
+    plt.show()
+    
+    # %% Rotations Means only
+
+    # Your data and parameters here
+    barWidth = 0.01
+    fontsize_labels = 10
+    fontsize_title = 10
+    fontsize_legend = 8
+    colors = sns.color_palette('colorblind', len(setups))
+    num_bars = len(setups)
+    positions = [np.arange(1) + i * 1.25*barWidth for i in range(num_bars)]
+    
+    fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [8, 1]}, figsize=(3.5, 3.5))    
+    
+    # Rotations subplot
+    motions_mean = ['mean']
+    values = [[means_RMSEs_copy[motion]['mean'][i] for motion in motions_mean] for i in range(num_bars)]    
+    stds = [[stds_RMSEs_copy[motion]['mean'][i] for motion in motions_mean] for i in range(num_bars)]  
+    for i in range(num_bars):
+        axs[0].bar(positions[i], values[i], yerr=stds[i], color=colors[i], width=barWidth, edgecolor='white', label=setups_t[i], align='center', alpha=0.5, ecolor='black', capsize=5)
+    
+    axs[0].set_xticks([])
+    axs[0].set_xticklabels([])
+    axs[0].set_ylabel('RMSE (deg)', fontweight='bold', fontsize=fontsize_labels)
+    axs[0].tick_params(axis='both', which='major', labelsize=fontsize_labels)
+    axs[0].set_ylim([0, 12])
+    axs[0].set_yticks(np.arange(0, 16, 4))
+    axs[0].set_title('Accuracy task', fontweight='bold', fontsize=fontsize_title)    
+    axs[0].spines['top'].set_visible(False)
+    axs[0].spines['right'].set_visible(False)
+    
+    legend = fig.legend(loc='upper center', fontsize=fontsize_legend, ncol=2, bbox_to_anchor=(0.5, 1.5), bbox_transform=axs[1].transAxes)
+    legend.set_frame_on(False)
+    
+    axs[1].axis('off')
+    
+    # plt.subplots_adjust(bottom=1) 
+    # legend = fig.legend(loc='lower center', fontsize=fontsize_legend, ncol=2)
+    # legend.set_frame_on(False)
+    plt.tight_layout()
+    plt.show()
+    
+    if saveAndOverwriteResults:
+        np.save(os.path.join(outputDir, 'means_RMSEs.npy'), means_RMSEs_copy) 
+        np.save(os.path.join(outputDir, 'stds_RMSEs.npy'), stds_RMSEs_copy) 
 
 
 

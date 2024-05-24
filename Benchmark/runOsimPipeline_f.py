@@ -33,8 +33,8 @@ from utilsOpenSim import runScaleTool, runIKTool, getScaleTimeRange, runIDTool
 def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True, allVideoOnly=False):
 
     # Filter frequencies for ID.
-    filterFrequencies = {'walking': 12, 'default':30}
-
+    # filterFrequencies = {'walking': 12, 'default':30}
+    filterFrequencies = {'walking': 6, 'sts': 4, 'squats': 4, 'dj': 30, 'default': 30}
     # Should be False. True was for a sensitivity analysis.
     fixed_markers = False # False should be default (better results) 
 
@@ -86,7 +86,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
             
         scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
         outputScaledModelDir = os.path.join(
-            osDir, 'Mocap', 'Model', genericModel4ScalingName[:-5])
+            osDir, 'Mocap_updated', 'Model', genericModel4ScalingName[:-5])
         pathScaledModel = os.path.join(outputScaledModelDir,
                                         scaledModelName + '.osim')
         pathGenericModel4Scaling = os.path.join(
@@ -116,7 +116,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 continue
             
             pathOutputFolder4IK = os.path.join(
-                osDir, 'Mocap', 'IK', genericModel4ScalingName[:-5])
+                osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])
             
             # For the DJs, the time interval for IK is based on the GRFs.
             # Load force data
@@ -152,7 +152,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
         # ID
         for MOTFile4IDName in os.listdir(pathOutputFolder4IK):
             
-            if not MOTFile4IDName[-3:] == 'mot':
+            if not MOTFile4IDName[-3:] == 'mot' or 'baseline' in MOTFile4IDName:
                 continue
         
             timeRange4ID = [] # leave empty to select time range from IK
@@ -162,13 +162,14 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 val for key,val in filterFrequencies.items() 
                 if key.lower() in trialName.lower()]
             if not lowpassCutoffFrequency:
+                print("{}".format(MOTFile4IDName))
                 lowpassCutoffFrequency = filterFrequencies['default']
             else:
                 lowpassCutoffFrequency = lowpassCutoffFrequency[0]
             print('Lowpass cutoff frequency = {}'.format(
                 lowpassCutoffFrequency))
         
-            pathOutputFolder4ID = os.path.join(osDir, 'Mocap', 'ID',
+            pathOutputFolder4ID = os.path.join(osDir, 'Mocap_updated', 'ID',
                                            genericModel4ScalingName[:-5]) 
             os.makedirs(pathOutputFolder4ID, exist_ok=True)            
             pathIKFile = os.path.join(pathOutputFolder4IK, trialName + '.mot')            
