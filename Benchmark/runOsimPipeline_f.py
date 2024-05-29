@@ -202,7 +202,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 
                     
                     if allVideoOnly:
-                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_allVideoOnly')
+                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection_allVideoOnly') 
                         
                         # Scaling
                         # We do not want to re-run scaling here, but copy the
@@ -215,7 +215,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         # other analyses (RMSE on joint angles) and therefore
                         # here copy the scaled model from the other directory.
                         refScaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
                             'Model', genericModel4ScalingName[:-5])
                         pathGenericModel4Scaling = os.path.join(
                             opensimPipelineDir, 'Models', genericModel4ScalingName)
@@ -224,7 +224,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         pathScaledModel = os.path.join(refScaledModelDir,
                                                         scaledModelName + '.osim')
                         scaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_allVideoOnly',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_allVideoOnly',
                             'Model', genericModel4ScalingName[:-5])
                         os.makedirs(scaledModelDir, exist_ok=True)
                         pathScaledModelEnd = os.path.join(scaledModelDir,
@@ -246,7 +246,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             timeRange4IK = [] # leave empty to select entire trial
                             
                             pathOutputFolder4IK = os.path.join(
-                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_allVideoOnly',
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_allVideoOnly',
                                 'IK', genericModel4ScalingName[:-5])
                             
                             os.makedirs(pathOutputFolder4IK, exist_ok=True)          
@@ -262,7 +262,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             
                     else:
                         
-                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated')
+                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection')
                         
                         # Scaling
                         pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
@@ -272,7 +272,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             
                         scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
                         outputScaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
                             'Model', genericModel4ScalingName[:-5])
                         pathScaledModel = os.path.join(outputScaledModelDir,
                                                         scaledModelName + '.osim')
@@ -337,7 +337,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                                 timeRange4IK = [] # leave empty to select entire trial
                             
                             pathOutputFolder4IK = os.path.join(
-                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated',
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
                                 'IK', genericModel4ScalingName[:-5])
                             
                             os.makedirs(pathOutputFolder4IK, exist_ok=True)          
@@ -359,7 +359,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)      
                 # No need for augmented markers, they are w/ pose markers. 
                 augmenterType = augmenterTypes[0]
-                augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated')        
+                augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection')        
                 # Scaling
                 pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
                                                    'static1_videoAndMocap.trc')
@@ -368,7 +368,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                     
                 scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
                 outputScaledModelDir = os.path.join(
-                    osDir, 'Video', poseDetector, cameraSetup, 'pose_updated',
+                    osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection',
                     'Model', genericModel4ScalingName[:-5])
                 pathScaledModel = os.path.join(outputScaledModelDir,
                                                 scaledModelName + '.osim')
@@ -464,7 +464,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         timeRange4IK = [] # leave empty to select entire trial
                     
                     pathOutputFolder4IK = os.path.join(
-                        osDir, 'Video', poseDetector, cameraSetup, 'pose_updated',
+                        osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection',
                         'IK', genericModel4ScalingName[:-5])
                     
                     os.makedirs(pathOutputFolder4IK, exist_ok=True)

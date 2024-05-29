@@ -1,6 +1,10 @@
 """
     This script computes and analyses the RMSEs between mocap-based on video-
     based kinematics.
+
+    TOREAD: Paper results are using updated instead of updated_benchmark_reprojection
+    Since it didn't change much to add the reprojection, we will stick to the updated ones
+    to have consistency between IK and IK used for dynamic simulations
 """
 
 import os
@@ -25,7 +29,7 @@ scriptDir = os.getcwd()
 repoDir = os.path.dirname(scriptDir)
 mainDir = getDataDirectory(False)
 dataDir = os.path.join(mainDir)
-outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2-updated')
+outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2-updated-benchmark-reprojection')
 os.makedirs(outputDir, exist_ok=True)
 
 # %% User inputs.
@@ -40,9 +44,9 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
 augmenterTypes = {
-    'pose_updated': {'run': False},
-    'v0.1_updated': {'run': False},
-    'v0.2_updated': {'run': False},
+    'pose_updated_benchmark_reprojection': {'run': True},
+    'v0.1_updated_benchmark_reprojection': {'run': True},
+    'v0.2_updated_benchmark_reprojection': {'run': True},
     # 'v0.63': {'run': False},
     # 'v0.45': {'run': False},
     # 'v0.54': {'run': False},
@@ -50,11 +54,11 @@ augmenterTypes = {
     # 'v0.58': {'run': True},
     
     # 'v0.55': {'run': False},
-    'v0.63_updated': {'run': False},
+    'v0.63_updated_benchmark_reprojection': {'run': True},
     # 'v0.71': {'run': True},
     # 'v0.70': {'run': False},
-    'v1.0_updated': {'run': False},
-    'v2.0_updated': {'run': False},
+    'v1.0_updated_benchmark_reprojection': {'run': True},
+    'v2.0_updated_benchmark_reprojection': {'run': True},
     # 'v0.62': {'run': False},
     # 'v0.63': {'run': False},
     # 'v0.63': {'run': True},
@@ -486,9 +490,9 @@ for subjectName in subjects:
                                 genericModel4ScalingName[:-5])                            
                             
                         # Used to use same augmenter for all for offset, not sure why
-                        if augmenterType == 'pose_updated':
+                        if augmenterType == 'pose_updated_benchmark_reprojection':
                             cameraSetupMarkerDir = os.path.join(
-                                poseDetectorMarkerDir, cameraSetup, 'v0.1_updated')
+                                poseDetectorMarkerDir, cameraSetup, 'v0.63_updated_benchmark_reprojection')
                         else:
                             cameraSetupMarkerDir = os.path.join(
                                 poseDetectorMarkerDir, cameraSetup, augmenterType)

@@ -2,8 +2,10 @@ import sys
 sys.path.append("./..")
 import os
 import shutil
+from videoIDs import getData
 
 part1 = False
+cameraSetup = '2-cameras'
 part2 = False
 part3 = True
 
@@ -53,7 +55,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(12,13)]
+subjects_to_process = ['subject' + str(i) for i in range(4,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 pathDrive = 'C:/MyDriveSym/Projects/mobilecap/Data/'
@@ -63,6 +65,12 @@ pathLocal = 'C:/Users/antoi/Documents/MyRepositories/mobilecap_data/Data/'
 if part1:
     for count, sessionName in enumerate(sessionNames):
         print('Processing session: ' + sessionName)
+
+        data = getData(sessionName)
+        if 'camera_setup' in data:
+            cam2Uses = data['camera_setup'][cameraSetup]
+        else:
+            cam2Uses = ['all']
 
         pathSessionDrive = pathDrive + sessionName + '/'
         pathSessionLocal = pathLocal + sessionName + '/'
@@ -77,11 +85,13 @@ if part1:
         pathVideosDrive = pathSessionDrive + 'Videos/'
         pathVideosLocal = pathSessionLocal + 'Videos/'
         os.makedirs(pathVideosLocal, exist_ok=True)
-        for i in range(5):
-            pathCamDrive  = pathVideosDrive + 'Cam' + str(i) + '/'
-            pathCamLocal  = pathVideosLocal + 'Cam' + str(i) + '/'
+        for cam2Use in cam2Uses:
+            pathCamDrive  = pathVideosDrive + cam2Use + '/'
+            pathCamLocal  = pathVideosLocal + cam2Use + '/'
             pathInputMediaDrive = pathCamDrive + 'InputMedia/'
             pathInputMediaLocal = pathCamLocal + 'InputMedia/'
+            pathOutputPklDrive = pathCamDrive + 'OutputPkl_mmpose_0.8/'
+            pathOutputPklLocal = pathCamLocal + 'OutputPkl_mmpose_0.8/'
             for folder in os.listdir(pathInputMediaDrive):
                 # check if folder is a folder
                 if not os.path.isdir(pathInputMediaDrive + folder):
@@ -91,6 +101,16 @@ if part1:
                 os.makedirs(pathFolderLocal, exist_ok=True)
                 for file in os.listdir(pathFolderDrive):
                     if file.endswith('.avi') or file.endswith('.mov'):
+                        pathFileDrive = pathFolderDrive + file
+                        pathFileLocal = pathFolderLocal + file
+                        shutil.copy2(pathFileDrive, pathFileLocal)
+                if not os.path.isdir(pathOutputPklDrive + folder):
+                    continue
+                pathFolderDrive = pathOutputPklDrive + folder + '/'
+                pathFolderLocal = pathOutputPklLocal + folder + '/'
+                os.makedirs(pathFolderLocal, exist_ok=True)
+                for file in os.listdir(pathFolderDrive):
+                    if file.endswith('.pkl'):
                         pathFileDrive = pathFolderDrive + file
                         pathFileLocal = pathFolderLocal + file
                         shutil.copy2(pathFileDrive, pathFileLocal)
@@ -125,76 +145,81 @@ if part2:
             shutil.rmtree(pathMarkerDataDrive)
 
 # Copy data back to drive
-camera_setups = ['2-cameras']
 if part3:
     for count, sessionName in enumerate(sessionNames):
         print('Processing session: ' + sessionName)
 
         pathSessionDrive = pathDrive + sessionName + '/'
         pathSessionLocal = pathLocal + sessionName + '/'
-        os.makedirs(pathSessionLocal, exist_ok=True)
+        # os.makedirs(pathSessionLocal, exist_ok=True)
 
-        # Copy video-related content
-        pathVideosDrive = pathSessionDrive + 'Videos/'
-        pathVideosLocal = pathSessionLocal + 'Videos/'
-        for i in range(1):
-            pathCamDrive  = pathVideosDrive + 'Cam' + str(i) + '/'
-            pathCamLocal  = pathVideosLocal + 'Cam' + str(i) + '/'
+        # # Copy video-related content
+        # pathVideosDrive = pathSessionDrive + 'Videos/'
+        # pathVideosLocal = pathSessionLocal + 'Videos/'
+        # for i in range(1):
+        #     pathCamDrive  = pathVideosDrive + 'Cam' + str(i) + '/'
+        #     pathCamLocal  = pathVideosLocal + 'Cam' + str(i) + '/'
 
-            # pathJsonsDrive = pathCamDrive + 'OutputJsons_1x736/'
-            pathOutputMediaDrive = pathCamDrive + 'OutputMedia_1x736/'
-            pathPklDrive = pathCamDrive + 'OutputPkl_1x736/'
+        #     # pathJsonsDrive = pathCamDrive + 'OutputJsons_1x736/'
+        #     pathOutputMediaDrive = pathCamDrive + 'OutputMedia_1x736/'
+        #     pathPklDrive = pathCamDrive + 'OutputPkl_1x736/'
 
-            # pathJsonsLocal = pathCamLocal + 'OutputJsons_1x736/'
-            pathOutputMediaLocal = pathCamLocal + 'OutputMedia_1x736/'
-            pathPklLocal = pathCamLocal + 'OutputPkl_1x736/'
+        #     # pathJsonsLocal = pathCamLocal + 'OutputJsons_1x736/'
+        #     pathOutputMediaLocal = pathCamLocal + 'OutputMedia_1x736/'
+        #     pathPklLocal = pathCamLocal + 'OutputPkl_1x736/'
 
-            for folder in os.listdir(pathOutputMediaLocal):
-                # check if folder is a folder
-                if not os.path.isdir(pathOutputMediaLocal + folder):
-                    continue
-                pathFolderDrive = pathOutputMediaDrive + folder + '/'
-                pathFolderLocal = pathOutputMediaLocal + folder + '/'
-                os.makedirs(pathFolderDrive, exist_ok=True)
-                for file in os.listdir(pathFolderLocal):
-                    if file.endswith('.avi') or file.endswith('.mov'):
-                        pathFileDrive = pathFolderDrive + file
-                        pathFileLocal = pathFolderLocal + file
-                        shutil.copy2(pathFileLocal, pathFileDrive)
+        #     for folder in os.listdir(pathOutputMediaLocal):
+        #         # check if folder is a folder
+        #         if not os.path.isdir(pathOutputMediaLocal + folder):
+        #             continue
+        #         pathFolderDrive = pathOutputMediaDrive + folder + '/'
+        #         pathFolderLocal = pathOutputMediaLocal + folder + '/'
+        #         os.makedirs(pathFolderDrive, exist_ok=True)
+        #         for file in os.listdir(pathFolderLocal):
+        #             if file.endswith('.avi') or file.endswith('.mov'):
+        #                 pathFileDrive = pathFolderDrive + file
+        #                 pathFileLocal = pathFolderLocal + file
+        #                 shutil.copy2(pathFileLocal, pathFileDrive)
 
-            for folder in os.listdir(pathPklLocal):
-                # check if folder is a folder
-                if not os.path.isdir(pathPklLocal + folder):
-                    continue
-                pathFolderDrive = pathPklDrive + folder + '/'
-                pathFolderLocal = pathPklLocal + folder + '/'
-                os.makedirs(pathFolderDrive, exist_ok=True)
-                for file in os.listdir(pathFolderLocal):
-                    if file.endswith('.pkl') or file.endswith('.txt'):
-                        pathFileDrive = pathFolderDrive + file
-                        pathFileLocal = pathFolderLocal + file
-                        shutil.copy2(pathFileLocal, pathFileDrive)
+        #     for folder in os.listdir(pathPklLocal):
+        #         # check if folder is a folder
+        #         if not os.path.isdir(pathPklLocal + folder):
+        #             continue
+        #         pathFolderDrive = pathPklDrive + folder + '/'
+        #         pathFolderLocal = pathPklLocal + folder + '/'
+        #         os.makedirs(pathFolderDrive, exist_ok=True)
+        #         for file in os.listdir(pathFolderLocal):
+        #             if file.endswith('.pkl') or file.endswith('.txt'):
+        #                 pathFileDrive = pathFolderDrive + file
+        #                 pathFileLocal = pathFolderLocal + file
+        #                 shutil.copy2(pathFileLocal, pathFileDrive)
 
         # Copy marker data
-        pathMarkerDataLocal = pathSessionLocal + 'MarkerData/OpenPose_1x736/'
-        pathMarkerDataDrive = pathSessionDrive + 'MarkerData/OpenPose_1x736/'
+        pathMarkerDataLocal = pathSessionLocal + 'MarkerData/mmpose_0.8/2-cameras/PostAugmentation_updated_benchmark_reprojection_v1.0/'
+        pathMarkerDataDrive = pathSessionDrive + 'MarkerData/mmpose_0.8/2-cameras/PostAugmentation_updated_benchmark_reprojection_v1.0/'
+        os.makedirs(pathMarkerDataDrive, exist_ok=True)
+        for file in os.listdir(pathMarkerDataLocal):
+            if file.endswith('.trc') or file.endswith('.yaml'):
+                pathFileDrive = pathMarkerDataDrive + file
+                pathFileLocal = pathMarkerDataLocal + file
+                shutil.copy2(pathFileLocal, pathFileDrive)
 
-        for camera_setup in camera_setups:
-            pathMarkerCamLocal = pathMarkerDataLocal + camera_setup + '/'
-            pathMarkerCamDrive = pathMarkerDataDrive + camera_setup + '/'
+        # for camera_setup in camera_setups:
+        #     pathMarkerCamLocal = pathMarkerDataLocal + camera_setup + '/'
+        #     pathMarkerCamDrive = pathMarkerDataDrive + camera_setup + '/'
 
-            for folder in os.listdir(pathMarkerCamLocal):
-                # check if folder is a folder
-                if not os.path.isdir(pathMarkerCamLocal + folder):
-                    continue    
-                pathFolderDrive = pathMarkerCamDrive + folder + '/'
-                pathFolderLocal = pathMarkerCamLocal + folder + '/'
-                os.makedirs(pathFolderDrive, exist_ok=True)
-                for file in os.listdir(pathFolderLocal):
-                    if file.endswith('.trc') or file.endswith('.yaml'):
-                        pathFileDrive = pathFolderDrive + file
-                        pathFileLocal = pathFolderLocal + file
-                        shutil.copy2(pathFileLocal, pathFileDrive)
+        #     for folder in os.listdir(pathMarkerCamLocal):
+        #         # check if folder is a folder
+        #         if not os.path.isdir(pathMarkerCamLocal + folder):
+        #             continue    
+        #         pathFolderDrive = pathMarkerCamDrive + folder + '/'
+        #         pathFolderLocal = pathMarkerCamLocal + folder + '/'
+        #         os.makedirs(pathFolderDrive, exist_ok=True)
+        #         for file in os.listdir(pathFolderLocal):
+        #             if file.endswith('.trc') or file.endswith('.yaml'):
+        #                 pathFileDrive = pathFolderDrive + file
+        #                 pathFileLocal = pathFolderLocal + file
+        #                 shutil.copy2(pathFileLocal, pathFileDrive)
 
         
 

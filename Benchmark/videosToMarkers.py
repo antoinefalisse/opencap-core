@@ -62,7 +62,7 @@ def get_subject(subjects_to_process):
     return sessionNames_out, sessionDetails_out    
 
 # %% Validation: please keep here, hack to get all trials at once.
-subjects_to_process = ['subject' + str(i) for i in range(5,6)]
+subjects_to_process = ['subject' + str(i) for i in range(5,12)]
 sessionNames, sessionDetails = get_subject(subjects_to_process)
 
 videoToMarkers = False
@@ -86,13 +86,16 @@ cameraSetups = ['2-cameras']
 poseDetectors = ['mmpose'] #, 'mmpose']
 
 # augmenter_models = ['v0.63', 'v0.1', 'v0.2']
-# augmenterModelName = 'LSTM' # LSTM, Transformer, Linear
+augmenterModelName = 'LSTM' # LSTM, Transformer, Linear
+augmenter_models = ['v0.63']
 
+# For transformer, need to use WSL. Had some issues with using gdrive, so had
+# to move data locally first and move then back after, see copyDataLocally.
 # augmenter_models = ['v1.0']
 # augmenterModelName = 'Transformer' # LSTM, Transformer, Linear
 
-augmenter_models = ['v2.0']
-augmenterModelName = 'Linear' # LSTM, Transformer, Linear
+# augmenter_models = ['v2.0']
+# augmenterModelName = 'Linear' # LSTM, Transformer, Linear
 
 
 dataDir = getDataDirectory()
@@ -113,6 +116,8 @@ def process_trial(trial_id, trial_name=None, session_name='', isDocker=False,
                                           trial_name=trial_name,
                                           session_name=session_name,
                                           benchmark=augmenter_model)
+    
+    print('Processing trial: ' + trial_name)
 
     # Run main.
     main(session_name, trial_name, trial_name, camerasToUse=cam2Use, intrinsicsFinalFolder=intrinsicsFinalFolder, 
@@ -259,9 +264,9 @@ if runOpenSim:
     opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 
     for subjectName in sessionDetails:
-        # runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=False)
-        # runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=True) 
-        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=True, runVideoAugmenter=False, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=True)       
+        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=True, withTrackingMarkers=withTrackingMarkers, allVideoOnly=False)
+        runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=True) 
+        # runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, [poseDetector_name], cameraSetups, augmenter_models, runMocap=True, runVideoAugmenter=False, runVideoPose=False, withTrackingMarkers=withTrackingMarkers, allVideoOnly=True)       
 
     print("DONE: OpenSim pipeline")
         

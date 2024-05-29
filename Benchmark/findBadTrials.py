@@ -48,7 +48,8 @@ def get_subject(subjects_to_process):
 
 # cases_to_exclude_missing = {'Session20210816_0001': '43a6c17b-39b4-4de6-ac55-dd65839dc2db'}
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
-cases_to_exclude_trials = {'Session20210813_0002': ['walkingTS3']}
+# cases_to_exclude_trials = {'Session20210813_0002': ['walkingTS3']}
+cases_to_exclude_trials = {}
 pose_detectors_to_exclude = []
 expected_nSensitivities = 5
 for i in pose_detectors_to_exclude:

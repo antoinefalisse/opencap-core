@@ -539,7 +539,7 @@ def main_sync(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, aug
                 
                 augmenterComboFolders = []
                 for augmenter in augmenters:
-                    augmenterComboFolders.append(os.path.join(camComboFolder,'PostAugmentation_updated_' + augmenter))
+                    augmenterComboFolders.append(os.path.join(camComboFolder,'PostAugmentation_updated_benchmark_reprojection_' + augmenter))
                 
                 for postDir in augmenterComboFolders:
                     

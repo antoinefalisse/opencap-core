@@ -19,10 +19,10 @@ def main_gather(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, a
             for cameraSetup in cameraSetups:
                 cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)            
                 for augmenterType in augmenterTypes:
-                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_allVideoOnly')
+                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection_allVideoOnly') 
                     os.makedirs(augmenterTypeDir, exist_ok=True)
                     for sessionName in c_sessions:
-                        postDir = 'PostAugmentation_updated_' + augmenterType
+                        postDir = 'PostAugmentation_updated_benchmark_reprojection_' + augmenterType
                         trcDir = os.path.join(dataDir, 'Data', sessionName, 'MarkerData', 
                                                 poseDetector, cameraSetup, 
                                                 postDir, 'videoAndMocap')
@@ -38,10 +38,10 @@ def main_gather(dataDir, subjectName, c_sessions, poseDetectors, cameraSetups, a
             for cameraSetup in cameraSetups:
                 cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)            
                 for augmenterType in augmenterTypes:
-                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated')
+                    augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection')
                     os.makedirs(augmenterTypeDir, exist_ok=True)
                     for sessionName in c_sessions:
-                        postDir = 'PostAugmentation_updated_' + augmenterType
+                        postDir = 'PostAugmentation_updated_benchmark_reprojection_' + augmenterType
                         trcDir = os.path.join(dataDir, 'Data', sessionName, 'MarkerData', 
                                                 poseDetector, cameraSetup, 
                                                 postDir, 'videoAndMocap')

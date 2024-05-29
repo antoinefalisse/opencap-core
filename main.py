@@ -215,7 +215,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
                                                 markerDataFolderNameSuffix)
     # Temporary folder for 3D reconstruction.
     preAugmentationDir = os.path.join(sessionDir, markerDataFolderName,
-                                      'PreAugmentation_updated_benchmark')
+                                      'PreAugmentation_updated_benchmark_reprojection')
     os.makedirs(preAugmentationDir, exist_ok=True)
     
     # Set output file name.
@@ -336,7 +336,7 @@ def main(sessionName, trialName, trial_id, camerasToUse=['all'],
     else:
         postAugmentationDir = os.path.join(
             sessionDir, markerDataFolderName, 
-            'PostAugmentation_updated_{}'.format(augmenter_model))
+            'PostAugmentation_updated_benchmark_reprojection_{}'.format(augmenter_model))
     
     # Get augmenter model.
     # augmenterModel = (
