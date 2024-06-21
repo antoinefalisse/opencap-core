@@ -30,7 +30,7 @@ from utilsOpenSim import runScaleTool, runIKTool, getScaleTimeRange, runIDTool
 # opensimPipelineDir = os.path.join(repoDir, 'opensimPipeline')
 # for subjectName in subjects:
 
-def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True, allVideoOnly=False):
+def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, cameraSetups, augmenterTypes, withKA=False, taskKA=None, runIK_only=False, runMocap=False, runVideoAugmenter=True, runVideoPose=False, withTrackingMarkers=True, allVideoOnly=False):
 
     # Filter frequencies for ID.
     # filterFrequencies = {'walking': 12, 'default':30}
@@ -39,16 +39,22 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
     fixed_markers = False # False should be default (better results) 
 
     # %% Setup filenames.
-    genericModel4ScalingName = 'LaiArnoldModified2017_poly_withArms_weldHand.osim'
-    genericSetupFile4ScalingNameMocap = 'Setup_scaling_RajagopalModified2016_withArms_KA_Mocap.xml'
-    genericSetupFile4ScalingNameVideo = 'Setup_scaling_RajagopalModified2016_withArms_KA.xml'
-    genericSetupFile4ScalingNameVideoOpenPose = 'Setup_scaling_RajagopalModified2016_withArms_KA_openpose.xml'
-    genericSetupFile4ScalingNameVideoMMpose = 'Setup_scaling_RajagopalModified2016_withArms_KA_mmpose.xml'
+    if withKA:
+        genericModel4ScalingName = 'LaiUhlrich2022_KA.osim'
+    else:
+        genericModel4ScalingName = 'LaiUhlrich2022.osim'
+    genericSetupFile4ScalingNameMocap = 'Setup_scaling_LaiUhlrich2022_mocap.xml'
+    genericSetupFile4ScalingNameVideo = 'Setup_scaling_LaiUhlrich2022.xml'
+    genericSetupFile4ScalingNameVideoOpenPose = 'Setup_scaling_LaiUhlrich2022_openpose.xml'
+    genericSetupFile4ScalingNameVideoMMpose = 'Setup_scaling_LaiUhlrich2022_mmpose.xml'
     genericSetupFile4IKNameMocap = 'Setup_IK_Mocap.xml'
     if withTrackingMarkers:
         genericSetupFile4IKNameVideo = 'Setup_IK.xml'
     else:
         genericSetupFile4IKNameVideo = 'Setup_IK_augmenter_noTracking.xml'
+    if taskKA:
+        genericSetupFile4IKNameMocap = genericSetupFile4IKNameMocap.replace('.xml', '_KAtask_{}.xml'.format(taskKA))
+        genericSetupFile4IKNameVideo = genericSetupFile4IKNameVideo.replace('.xml', '_KAtask_{}.xml'.format(taskKA))
     genericSetupFile4IKNameVideoOpenPose = 'Setup_IK_openpose.xml'
     genericSetupFile4IKNameVideoMMpose = 'Setup_IK_mmpose.xml'
     genericSetupFile4IDName = 'Setup_ID.xml'
@@ -93,18 +99,20 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
             opensimPipelineDir, 'Models', genericModel4ScalingName)
         pathGenericSetupFile4Scaling = os.path.join(
             opensimPipelineDir, 'Scaling', genericSetupFile4ScalingNameMocap)
-        os.makedirs(outputScaledModelDir, exist_ok=True) 
-        
-        timeRange4Scaling = getScaleTimeRange(
-            pathTRCFile4Scaling, thresholdPosition=0.007,
-            thresholdTime=0.1, isMocap=True)
             
-        runScaleTool(pathGenericSetupFile4Scaling,
-                      pathGenericModel4Scaling, sessionMetadata['mass_kg'],
-                      pathTRCFile4Scaling, timeRange4Scaling, 
-                      outputScaledModelDir,
-                      subjectHeight=sessionMetadata['height_m'],
-                      fixed_markers=fixed_markers)
+        if not runIK_only:   
+            os.makedirs(outputScaledModelDir, exist_ok=True) 
+            
+            timeRange4Scaling = getScaleTimeRange(
+                pathTRCFile4Scaling, thresholdPosition=0.007,
+                thresholdTime=0.1, isMocap=True)
+                
+            runScaleTool(pathGenericSetupFile4Scaling,
+                        pathGenericModel4Scaling, sessionMetadata['mass_kg'],
+                        pathTRCFile4Scaling, timeRange4Scaling, 
+                        outputScaledModelDir,
+                        subjectHeight=sessionMetadata['height_m'],
+                        fixed_markers=fixed_markers)
         
         # IK
         for TRCFile4IKName in os.listdir(mocapDir):
@@ -114,9 +122,14 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 continue            
             if not TRCFile4IKName[-3:] == 'trc':
                 continue
+            if 'baseline' in TRCFile4IKName:
+                continue
+            print("Processing: {}".format(pathTRCFile4IK))
             
-            pathOutputFolder4IK = os.path.join(
-                osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])
+            c_Path = genericModel4ScalingName[:-5]
+            if taskKA:
+                c_Path  += '_KAtask_{}'.format(taskKA)
+            pathOutputFolder4IK = os.path.join(osDir, 'Mocap_updated', 'IK', c_Path)
             
             # For the DJs, the time interval for IK is based on the GRFs.
             # Load force data
@@ -146,48 +159,47 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
             
             runIKTool(pathGenericSetupFile4IK, pathScaledModel, 
                       pathTRCFile4IK, pathOutputFolder4IK,
-                      timeRange=timeRange4IK)
+                      timeRange=timeRange4IK)            
             
+        if not runIK_only:
+            # ID
+            for MOTFile4IDName in os.listdir(pathOutputFolder4IK):
+                
+                if not MOTFile4IDName[-3:] == 'mot' or 'baseline' in MOTFile4IDName:
+                    continue
             
-        # ID
-        for MOTFile4IDName in os.listdir(pathOutputFolder4IK):
+                timeRange4ID = [] # leave empty to select time range from IK
+                trialName = MOTFile4IDName[:-4]
+                forcesFileName = trialName + '_forces.mot'
+                lowpassCutoffFrequency = [
+                    val for key,val in filterFrequencies.items() 
+                    if key.lower() in trialName.lower()]
+                if not lowpassCutoffFrequency:
+                    print("{}".format(MOTFile4IDName))
+                    lowpassCutoffFrequency = filterFrequencies['default']
+                else:
+                    lowpassCutoffFrequency = lowpassCutoffFrequency[0]
+                print('Lowpass cutoff frequency = {}'.format(
+                    lowpassCutoffFrequency))
             
-            if not MOTFile4IDName[-3:] == 'mot' or 'baseline' in MOTFile4IDName:
-                continue
-        
-            timeRange4ID = [] # leave empty to select time range from IK
-            trialName = MOTFile4IDName[:-4]
-            forcesFileName = trialName + '_forces.mot'
-            lowpassCutoffFrequency = [
-                val for key,val in filterFrequencies.items() 
-                if key.lower() in trialName.lower()]
-            if not lowpassCutoffFrequency:
-                print("{}".format(MOTFile4IDName))
-                lowpassCutoffFrequency = filterFrequencies['default']
-            else:
-                lowpassCutoffFrequency = lowpassCutoffFrequency[0]
-            print('Lowpass cutoff frequency = {}'.format(
-                lowpassCutoffFrequency))
-        
-            pathOutputFolder4ID = os.path.join(osDir, 'Mocap_updated', 'ID',
-                                           genericModel4ScalingName[:-5]) 
-            os.makedirs(pathOutputFolder4ID, exist_ok=True)            
-            pathIKFile = os.path.join(pathOutputFolder4IK, trialName + '.mot')            
-            pathGRFFile = os.path.join(forceDir, forcesFileName)                      
-            pathGenericSetupFile4ID = os.path.join(opensimPipelineDir, 'ID',
-                                                   genericSetupFile4IDName)
-            pathGenericSetupFile4EL = os.path.join(
-                opensimPipelineDir, 'ID', genericSetupFile4ExternalLoadsName) 
+                pathOutputFolder4ID = os.path.join(osDir, 'Mocap_updated', 'ID', c_Path) 
+                os.makedirs(pathOutputFolder4ID, exist_ok=True)            
+                pathIKFile = os.path.join(pathOutputFolder4IK, trialName + '.mot')            
+                pathGRFFile = os.path.join(forceDir, forcesFileName)                      
+                pathGenericSetupFile4ID = os.path.join(opensimPipelineDir, 'ID',
+                                                    genericSetupFile4IDName)
+                pathGenericSetupFile4EL = os.path.join(
+                    opensimPipelineDir, 'ID', genericSetupFile4ExternalLoadsName) 
 
-            if not timeRange4ID:
-                ik_file = storage2numpy(pathIKFile)
-                time_ik = ik_file['time']
-                timeRange4ID = [time_ik[0], time_ik[-1]]
-            
-            runIDTool(pathGenericSetupFile4ID, pathGenericSetupFile4EL,
-                      pathGRFFile, pathScaledModel, pathIKFile, timeRange4ID,
-                      pathOutputFolder4ID, IKFileName=trialName,
-                      filteringFrequency=lowpassCutoffFrequency)            
+                if not timeRange4ID:
+                    ik_file = storage2numpy(pathIKFile)
+                    time_ik = ik_file['time']
+                    timeRange4ID = [time_ik[0], time_ik[-1]]
+                
+                runIDTool(pathGenericSetupFile4ID, pathGenericSetupFile4EL,
+                        pathGRFFile, pathScaledModel, pathIKFile, timeRange4ID,
+                        pathOutputFolder4ID, IKFileName=trialName,
+                        filteringFrequency=lowpassCutoffFrequency)            
         
     # %% Video - augmenter
     if runVideoAugmenter:
@@ -202,7 +214,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 
                     
                     if allVideoOnly:
-                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection_allVideoOnly') 
+                        augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection_kam_allVideoOnly') 
                         
                         # Scaling
                         # We do not want to re-run scaling here, but copy the
@@ -215,7 +227,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         # other analyses (RMSE on joint angles) and therefore
                         # here copy the scaled model from the other directory.
                         refScaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_kam',
                             'Model', genericModel4ScalingName[:-5])
                         pathGenericModel4Scaling = os.path.join(
                             opensimPipelineDir, 'Models', genericModel4ScalingName)
@@ -224,12 +236,13 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         pathScaledModel = os.path.join(refScaledModelDir,
                                                         scaledModelName + '.osim')
                         scaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_allVideoOnly',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_kam_allVideoOnly',
                             'Model', genericModel4ScalingName[:-5])
-                        os.makedirs(scaledModelDir, exist_ok=True)
-                        pathScaledModelEnd = os.path.join(scaledModelDir,
-                                                        scaledModelName + '.osim')
-                        shutil.copy2(pathScaledModel, pathScaledModelEnd)
+                        if not runIK_only:
+                            os.makedirs(scaledModelDir, exist_ok=True)
+                            pathScaledModelEnd = os.path.join(scaledModelDir,
+                                                            scaledModelName + '.osim')
+                            shutil.copy2(pathScaledModel, pathScaledModelEnd)
                             
                         # IK
                         for TRCFile4IKName in os.listdir(augmenterTypeDir):
@@ -238,16 +251,20 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             print("Processing: {}".format(pathTRCFile4IK))
                             
                             if 'static1' in pathTRCFile4IK:
-                                continue
-                            
+                                continue                            
                             if not TRCFile4IKName[-3:] == 'trc':
+                                continue
+                            if 'baseline' in TRCFile4IKName:
                                 continue
                             
                             timeRange4IK = [] # leave empty to select entire trial
                             
+                            c_Path = genericModel4ScalingName[:-5]
+                            if taskKA:
+                                c_Path  += '_KAtask_{}'.format(taskKA)
                             pathOutputFolder4IK = os.path.join(
-                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_allVideoOnly',
-                                'IK', genericModel4ScalingName[:-5])
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_kam_allVideoOnly',
+                                'IK', c_Path)
                             
                             os.makedirs(pathOutputFolder4IK, exist_ok=True)          
                             pathGenericSetupFile4IK = os.path.join(
@@ -261,9 +278,8 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                                 continue                            
                             
                     else:
-                        
+                        # Same marker data
                         augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection')
-                        
                         # Scaling
                         pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
                                                             'static1_videoAndMocap.trc')
@@ -272,7 +288,7 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             
                         scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
                         outputScaledModelDir = os.path.join(
-                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
+                            osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_kam',
                             'Model', genericModel4ScalingName[:-5])
                         pathScaledModel = os.path.join(outputScaledModelDir,
                                                         scaledModelName + '.osim')
@@ -281,26 +297,27 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         pathGenericSetupFile4Scaling = os.path.join(
                             opensimPipelineDir, 'Scaling',
                             genericSetupFile4ScalingNameVideo)
-                        os.makedirs(outputScaledModelDir, exist_ok=True) 
-                        
-                        if poseDetector == 'OpenPose_default' and cameraSetup == '5-cameras' and augmenterType == 'v0.45':
-                            thresholdPosition = 0.008
-                        else:
-                            thresholdPosition = 0.007
-                        thresholdTime = 0.1
-                        timeRange4Scaling = getScaleTimeRange(
-                            pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
-                            thresholdTime=thresholdTime, isMocap=False)
+                        if not runIK_only:
+                            os.makedirs(outputScaledModelDir, exist_ok=True) 
                             
-                        if timeRange4Scaling:
-                            print("Scaling model")
-                            runScaleTool(pathGenericSetupFile4Scaling,
-                                        pathGenericModel4Scaling, sessionMetadata['mass_kg'],
-                                        pathTRCFile4Scaling, timeRange4Scaling, 
-                                        outputScaledModelDir,
-                                        subjectHeight=sessionMetadata['height_m'],
-                                        fixed_markers=fixed_markers,
-                                        withTrackingMarkers=withTrackingMarkers)                    
+                            if poseDetector == 'OpenPose_default' and cameraSetup == '5-cameras' and augmenterType == 'v0.45':
+                                thresholdPosition = 0.008
+                            else:
+                                thresholdPosition = 0.007
+                            thresholdTime = 0.1
+                            timeRange4Scaling = getScaleTimeRange(
+                                pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
+                                thresholdTime=thresholdTime, isMocap=False)
+                                
+                            if timeRange4Scaling:
+                                print("Scaling model")
+                                runScaleTool(pathGenericSetupFile4Scaling,
+                                            pathGenericModel4Scaling, sessionMetadata['mass_kg'],
+                                            pathTRCFile4Scaling, timeRange4Scaling, 
+                                            outputScaledModelDir,
+                                            subjectHeight=sessionMetadata['height_m'],
+                                            fixed_markers=fixed_markers,
+                                            withTrackingMarkers=withTrackingMarkers)                    
                     
                         # IK
                         for TRCFile4IKName in os.listdir(augmenterTypeDir):
@@ -309,9 +326,10 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             print("Processing: {}".format(pathTRCFile4IK))
                             
                             if 'static1' in pathTRCFile4IK:
-                                continue
-                            
+                                continue                            
                             if not TRCFile4IKName[-3:] == 'trc':
+                                continue
+                            if 'baseline' in TRCFile4IKName:
                                 continue
                             
                             # For the DJs, the time interval for IK is based on the GRFs.
@@ -336,9 +354,12 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                             else:
                                 timeRange4IK = [] # leave empty to select entire trial
                             
+                            c_Path = genericModel4ScalingName[:-5]
+                            if taskKA:
+                                c_Path  += '_KAtask_{}'.format(taskKA)
                             pathOutputFolder4IK = os.path.join(
-                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection',
-                                'IK', genericModel4ScalingName[:-5])
+                                osDir, 'Video', poseDetector, cameraSetup, augmenterType + '_updated_benchmark_reprojection_kam',
+                                'IK', c_Path)
                             
                             os.makedirs(pathOutputFolder4IK, exist_ok=True)          
                             pathGenericSetupFile4IK = os.path.join(
@@ -359,16 +380,16 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                 cameraSetupDir = os.path.join(poseDetectorDir, cameraSetup)      
                 # No need for augmented markers, they are w/ pose markers. 
                 augmenterType = augmenterTypes[0]
-                augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection')        
+                augmenterTypeDir = os.path.join(cameraSetupDir, augmenterType + '_updated_benchmark_reprojection_kam')
                 # Scaling
                 pathTRCFile4Scaling = os.path.join(augmenterTypeDir, 
-                                                   'static1_videoAndMocap.trc')
+                                                'static1_videoAndMocap.trc')
                 if not os.path.exists(pathTRCFile4Scaling):
                     raise ValueError("no scaling file")
                     
                 scaledModelName = genericModel4ScalingName[:-5] + '_scaled'
                 outputScaledModelDir = os.path.join(
-                    osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection',
+                    osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection_kam',
                     'Model', genericModel4ScalingName[:-5])
                 pathScaledModel = os.path.join(outputScaledModelDir,
                                                 scaledModelName + '.osim')
@@ -384,51 +405,52 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                         genericSetupFile4ScalingNameVideoMMpose)
                 else:
                     raise ValueError("pose detector not supported")
-                os.makedirs(outputScaledModelDir, exist_ok=True) 
-                
-                thresholdPosition = 0.007
-                if poseDetector == 'OpenPose' and subjectName == 'subject2':
-                    if cameraSetup == '5-cameras':
-                        thresholdPosition = 0.008                        
-                    elif cameraSetup == '3-cameras':
-                        thresholdPosition = 0.023
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject2':
-                    if cameraSetup == '5-cameras':
-                        thresholdPosition = 0.021
-                    elif cameraSetup == '3-cameras':
-                        thresholdPosition = 0.009
-                    elif cameraSetup == '2-cameras':
-                        thresholdPosition = 0.011
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject3':
-                    if cameraSetup == '3-cameras':
-                        thresholdPosition = 0.009
-                    elif cameraSetup == '2-cameras':
-                        thresholdPosition = 0.010
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject4':
-                    if cameraSetup == '2-cameras':
-                        thresholdPosition = 0.008
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject5':
-                    if cameraSetup == '2-cameras':
-                        thresholdPosition = 0.009
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject6':
-                    if cameraSetup == '5-cameras':
-                        thresholdPosition = 0.008
-                    elif cameraSetup == '2-cameras':
-                        thresholdPosition = 0.011
-                elif poseDetector == 'OpenPose_generic' and subjectName == 'subject7':
-                    if cameraSetup == '2-cameras':
-                        thresholdPosition = 0.008
-                timeRange4Scaling = getScaleTimeRange(
-                    pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
-                    thresholdTime=0.1, withOpenPoseMarkers=True, isMocap=False)
+                if not runIK_only:
+                    os.makedirs(outputScaledModelDir, exist_ok=True) 
                     
-                if timeRange4Scaling:
-                    runScaleTool(
-                        pathGenericSetupFile4Scaling, pathGenericModel4Scaling, 
-                        sessionMetadata['mass_kg'], pathTRCFile4Scaling, 
-                        timeRange4Scaling, outputScaledModelDir,
-                        subjectHeight=sessionMetadata['height_m'],
-                        fixed_markers=fixed_markers)                    
+                    thresholdPosition = 0.007
+                    if poseDetector == 'OpenPose' and subjectName == 'subject2':
+                        if cameraSetup == '5-cameras':
+                            thresholdPosition = 0.008                        
+                        elif cameraSetup == '3-cameras':
+                            thresholdPosition = 0.023
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject2':
+                        if cameraSetup == '5-cameras':
+                            thresholdPosition = 0.021
+                        elif cameraSetup == '3-cameras':
+                            thresholdPosition = 0.009
+                        elif cameraSetup == '2-cameras':
+                            thresholdPosition = 0.011
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject3':
+                        if cameraSetup == '3-cameras':
+                            thresholdPosition = 0.009
+                        elif cameraSetup == '2-cameras':
+                            thresholdPosition = 0.010
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject4':
+                        if cameraSetup == '2-cameras':
+                            thresholdPosition = 0.008
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject5':
+                        if cameraSetup == '2-cameras':
+                            thresholdPosition = 0.009
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject6':
+                        if cameraSetup == '5-cameras':
+                            thresholdPosition = 0.008
+                        elif cameraSetup == '2-cameras':
+                            thresholdPosition = 0.011
+                    elif poseDetector == 'OpenPose_generic' and subjectName == 'subject7':
+                        if cameraSetup == '2-cameras':
+                            thresholdPosition = 0.008
+                    timeRange4Scaling = getScaleTimeRange(
+                        pathTRCFile4Scaling, thresholdPosition=thresholdPosition,
+                        thresholdTime=0.1, withOpenPoseMarkers=True, isMocap=False)
+                        
+                    if timeRange4Scaling:
+                        runScaleTool(
+                            pathGenericSetupFile4Scaling, pathGenericModel4Scaling, 
+                            sessionMetadata['mass_kg'], pathTRCFile4Scaling, 
+                            timeRange4Scaling, outputScaledModelDir,
+                            subjectHeight=sessionMetadata['height_m'],
+                            fixed_markers=fixed_markers)                    
                 
                 # IK
                 for TRCFile4IKName in os.listdir(augmenterTypeDir):
@@ -436,9 +458,10 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                                                   TRCFile4IKName)
                     
                     if 'static1' in pathTRCFile4IK:
-                        continue
-                    
+                        continue                    
                     if not TRCFile4IKName[-3:] == 'trc':
+                        continue
+                    if 'baseline' in TRCFile4IKName:
                         continue
                     
                     # For the DJs, the time interval for IK is based on the GRFs.
@@ -463,9 +486,12 @@ def runOpenSimPipeline(dataDir, opensimPipelineDir, subjectName, poseDetectors, 
                     else:
                         timeRange4IK = [] # leave empty to select entire trial
                     
+                    c_Path = genericModel4ScalingName[:-5]
+                    if taskKA:
+                        c_Path  += '_KAtask_{}'.format(taskKA)
                     pathOutputFolder4IK = os.path.join(
-                        osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection',
-                        'IK', genericModel4ScalingName[:-5])
+                        osDir, 'Video', poseDetector, cameraSetup, 'pose_updated_benchmark_reprojection_kam',
+                        'IK', c_Path)
                     
                     os.makedirs(pathOutputFolder4IK, exist_ok=True)
                     

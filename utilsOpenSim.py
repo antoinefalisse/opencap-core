@@ -30,20 +30,20 @@ def runScaleTool(pathGenericSetupFile, pathGenericModel, subjectMass,
     # Marker set.
     _, setupFileName = os.path.split(pathGenericSetupFile)
     if 'Lai' in scaledModelName or 'Rajagopal' in scaledModelName:        
-        if 'Mocap' in setupFileName:        
-            markerSetFileName = 'RajagopalModified2016_markers_mocap.xml'
+        if 'mocap' in setupFileName:        
+            markerSetFileName = 'LaiUhlrich2022_markers_mocap.xml'
         elif 'openpose' in setupFileName:
-            markerSetFileName = 'RajagopalModified2016_markers_openpose.xml'
+            markerSetFileName = 'LaiUhlrich2022_markers_openpose.xml'
         elif 'mmpose' in setupFileName:
-            markerSetFileName = 'RajagopalModified2016_markers_mmpose.xml'    
+            markerSetFileName = 'LaiUhlrich2022_markers_mmpose.xml'    
         else:
             if fixed_markers:
-                markerSetFileName = 'RajagopalModified2016_markers_augmenter_fixed.xml'
+                markerSetFileName = 'LaiUhlrich2022_markers_augmenter_fixed.xml'
             else:
                 if withTrackingMarkers:
-                    markerSetFileName = 'RajagopalModified2016_markers_augmenter.xml'
+                    markerSetFileName = 'LaiUhlrich2022_markers_augmenter.xml'
                 else:
-                    markerSetFileName = 'RajagopalModified2016_markers_augmenter_noTracking.xml'
+                    markerSetFileName = 'LaiUhlrich2022_markers_augmenter_noTracking.xml'
     elif 'gait2392' in scaledModelName:
          if 'Mocap' in setupFileName:  
              markerSetFileName = 'gait2392_markers_mocap.xml'
@@ -54,7 +54,7 @@ def runScaleTool(pathGenericSetupFile, pathGenericModel, subjectMass,
     pathMarkerSet = os.path.join(dirGenericModel, markerSetFileName)
     
     # Add the marker set to the generic model and save that updated model.
-    opensim.Logger.setLevelString('error')
+    # opensim.Logger.setLevelString('error')
     genericModel = opensim.Model(pathGenericModel)
     markerSet = opensim.MarkerSet(pathMarkerSet)
     genericModel.set_MarkerSet(markerSet)

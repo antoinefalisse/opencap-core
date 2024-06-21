@@ -29,8 +29,7 @@ scriptDir = os.getcwd()
 repoDir = os.path.dirname(scriptDir)
 mainDir = getDataDirectory(False)
 dataDir = os.path.join(mainDir)
-outputDir = os.path.join(dataDir, 'Results-paper-augmenterV2-updated-benchmark-reprojection')
-os.makedirs(outputDir, exist_ok=True)
+
 
 # %% User inputs.
 subjects = ['subject' + str(i) for i in range(2, 12)]
@@ -43,29 +42,15 @@ subjects = ['subject' + str(i) for i in range(2, 12)]
 # poseDetectors = ['OpenPose_default', 'OpenPose_1x736', 'OpenPose_1x1008_4scales']
 poseDetectors = ['mmpose_0.8']
 cameraSetups = ['2-cameras']
-augmenterTypes = {
-    'pose_updated_benchmark_reprojection': {'run': True},
-    'v0.1_updated_benchmark_reprojection': {'run': True},
-    'v0.2_updated_benchmark_reprojection': {'run': True},
-    # 'v0.63': {'run': False},
-    # 'v0.45': {'run': False},
-    # 'v0.54': {'run': False},
-    # 'v0.57': {'run': True},
-    # 'v0.58': {'run': True},
-    
-    # 'v0.55': {'run': False},
-    'v0.63_updated_benchmark_reprojection': {'run': True},
-    # 'v0.71': {'run': True},
-    # 'v0.70': {'run': False},
-    'v1.0_updated_benchmark_reprojection': {'run': True},
-    'v2.0_updated_benchmark_reprojection': {'run': True},
-    # 'v0.62': {'run': False},
-    # 'v0.63': {'run': False},
-    # 'v0.63': {'run': True},
-}
+taskKA = 0.005
+withKAM = True
+if withKAM:
+    augmenterTypes = {'v0.63_updated_benchmark_reprojection_kam': {'run': True}}
+else:
+    augmenterTypes = {'v0.63_updated_benchmark_reprojection': {'run': False}}
 
 # setups_t = list(augmenterTypes.keys())
-setups_t = ['Video keypoints', 'Uhlrich et al. 2023', 'OpenCap 1.0', 'LSTM', 'Transformer', 'Linear regression']
+setups_t = ['LSTM']
 
 # processingTypes = ['IK_IK', 'addB_addB', 'IK_addB', 'addB_IK']
 processingTypes = ['IK_IK']
@@ -73,20 +58,11 @@ processingTypes = ['IK_IK']
 # Cases to exclude for paper
 cases_to_exclude_paper = ['static', 'stsasym', 'stsfast', 'walkingti', 'walkingto']
 
-# Old
-# augmenterTypeOffset = 'v0.7'
-# Cases to exclude to make sure we have the same number of trials per subject
-# cases_to_exclude_trials = {'subject2': ['walkingTS3']}
-# Cases to exclude because of failed syncing (mocap vs opencap)
-# cases_to_exclude_syncing = {}
-# cases_to_exclude_syncing = {
-#     'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTI1', 'walkingTI2', 'walkingTO1', 'walkingTO2', 'walkingTS3', 'walkingTS4']}}}
-# # Cases to exclude because of failed algorithm (opencap)
-# cases_to_exclude_algo = {
-#     'subject2': {'OpenPose_default': {'3-cameras': ['walkingTS1', 'walkingTS2', 'walkingTS4', 'DJ1', 'DJ2', 'DJ3', 'DJAsym1', 'DJAsym4', 'DJAsym5'],
-#                                       '5-cameras': ['walkingTS2']}},
-#     'subject3': {'OpenPose_default': {'2-cameras': ['walkingTS2', 'walkingTS4']},
-#                  'mmpose_0.8': {'2-cameras': ['STSweakLegs1']}}}
+if taskKA:
+    outputDir = os.path.join(dataDir, 'Results-kam_benchmark-{}'.format(taskKA))
+else:
+    outputDir = os.path.join(dataDir, 'Results-kam_benchmark')
+os.makedirs(outputDir, exist_ok=True)
 
 # New
 # Cases to exclude to make sure we have the same number of trials per subject
@@ -94,160 +70,58 @@ cases_to_exclude_trials = {'subject2': ['walkingTS3']}
 # Cases to exclude because of failing syncing / algo.
 cases_to_exclude_syncing = {}
 cases_to_exclude_algo = {}
-# cases_to_exclude_algo = {
-
-#     # 'subject8': {'mmpose_0.8': {'2-cameras': ['walkingTS2']}},
-#     # 'subject3': {'OpenPose_default': {'2-cameras': ['walking1', 'walkingTS3']},
-#     #              'OpenPose_1x736': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
-#     #              'OpenPose_1x1008_4scales': {'2-cameras': ['walking1', 'walkingTS3', 'walkingTS4']},
-#     #              'mmpose_0.8': {'2-cameras': ['STSweakLegs1']},
-
-#     # Subject 2
-#     'subject2': {'OpenPose_1x1008_4scales': {'5-cameras': {'v0.45': ['walkingTS4'],
-#                                                            'v0.54': ['walkingTS4']}},   # MPJE
-#                  'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo  
-#                                                'v0.54': ['walking1', 'walkingTS2'],   # algo 
-#                                                'v0.55': ['walking1', 'walkingTS2'],   # algo 
-#                                                'v0.56': ['walking1', 'walkingTS2']},   # algo 
-#                                  '5-cameras': {'v0.45': ['walking1', 'walkingTS2'],   # algo 
-#                                                'v0.54': ['walking1', 'walkingTS2'],   # algo 
-#                                                'v0.55': ['walking1', 'walkingTS2'],   # algo 
-#                                                'v0.56': ['walking1', 'walkingTS2']}},  # algo 
-#                  },
-#     # Subject 3
-#     'subject3': {'OpenPose_1x1008_4scales': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.61': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.62': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.63': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.66': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.67': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.68': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.69': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                             'v0.70': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
-#                   'OpenPose_1x736': {'2-cameras': {'v0.1': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                    'v0.2': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                    'v0.45': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                    'v0.54': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                    'v0.57': ['walking1', 'walkingTS3', 'walkingTS4'],# MPJE
-#                                                    'v0.58': ['walking1', 'walkingTS3', 'walkingTS4']}},# MPJE
-#                   'mmpose_0.8': {'2-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-#                                                'v0.54': ['STSweakLegs1'],# algo 
-#                                                'v0.55': ['STSweakLegs1'],# algo 
-#                                                'v0.56': ['STSweakLegs1'],# algo
-#                                                'v0.57': ['STSweakLegs1'],# algo
-#                                                'v0.58': ['STSweakLegs1'],# algo
-#                                                'v0.59': ['STSweakLegs1'],# algo,
-#                                                'v0.60': ['STSweakLegs1']},# algo},
-#                                 '3-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-#                                                 'v0.54': ['STSweakLegs1'],# algo 
-#                                                 'v0.55': ['STSweakLegs1'],# algo 
-#                                                 'v0.56': ['STSweakLegs1']},# algo 
-#                                 '5-cameras': {'v0.45': ['STSweakLegs1'],# algo 
-#                                                 'v0.54': ['STSweakLegs1'],# algo 
-#                                                 'v0.55': ['STSweakLegs1'],# algo 
-#                                                 'v0.56': ['STSweakLegs1']}},# algo 
-#                   },
-#     # Subject 4
-#     'subject4': {'OpenPose_1x736': {'3-cameras': {'v0.1': ['walkingTS2'],# MPJE
-#                                                   'v0.2': ['walkingTS2'],# MPJE
-#                                                   'v0.45': ['walkingTS2'],# MPJE
-#                                                   'v0.54': ['walkingTS2']}},# MPJE 
-#                  'mmpose_0.8': {'5-cameras': {'v0.45': ['squats1'],# algo 
-#                                               'v0.54': ['squats1'],# algo 
-#                                               'v0.55': ['squats1'],# algo 
-#                                               'v0.56': ['squats1']}},# algo
-#                  },
-#     # Subject 5
-#     'subject5': {'mmpose_0.8': {'3-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                               'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                               'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                               'v0.56': ['walking1', 'walking2', 'walkingTS3']},
-#                                 '5-cameras': {'v0.45': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                                 'v0.54': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                                 'v0.55': ['walking1', 'walking2', 'walkingTS3'],# algo 
-#                                                 'v0.56': ['walking1', 'walking2', 'walkingTS3']}},# algo
-#                  },
-#     # Subject 7
-#     'subject7': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walking1'],# algo 
-#                                               'v0.54': ['walking1'],# algo 
-#                                               'v0.55': ['walking1'],# algo 
-#                                               'v0.56': ['walking1']}},# algo
-#                  },
-#     # Subject 8
-#     'subject8': {'mmpose_0.8': {'5-cameras': {'v0.45': ['DJAsym3'],# algo 
-#                                               'v0.54': ['DJAsym3'],# algo 
-#                                               'v0.55': ['DJAsym3'],# algo 
-#                                               'v0.56': ['DJAsym3']},
-#                                 '2-cameras': {'v0.45': ['walkingTS2'],# MPJE 
-#                                                 'v0.54': ['walkingTS2'],# MPJE 
-#                                                 'v0.55': ['walkingTS2'],# MPJE 
-#                                                 'v0.56': ['walkingTS2'],# MPJE
-#                                                 'v0.57': ['walkingTS2'],# MPJE
-#                                                 'v0.58': ['walkingTS2'],# MPJE
-#                                                 'v0.59': ['walkingTS2'],# MPJE
-#                                                 'v0.60': ['walkingTS2'],# MPJE
-#                                                 'v0.63': ['walkingTS2'],# MPJE
-#                                                 'v0.64': ['walkingTS2'],# MPJE
-#                                                 'v0.65': ['walkingTS2'],# MPJE
-#                                                 'v0.66': ['walkingTS2'],# MPJE
-#                                                 'v0.67': ['walkingTS2'],# MPJE
-#                                                 'v0.68': ['walkingTS2'],# MPJE
-#                                                 'v0.69': ['walkingTS2'],# MPJE
-#                                                 'v0.70': ['walkingTS2'],# MPJE
-#                                                 'v0.71': ['walkingTS2'],# MPJE
-#                                                 'v1.0': ['walkingTS2']}},# MPJE
-#                  },
-#     # Subject 9
-#     'subject9': {'mmpose_0.8': {'5-cameras': {'v0.45': ['STS1'],# algo 
-#                                               'v0.54': ['STS1'],# algo 
-#                                               'v0.55': ['STS1'],# algo 
-#                                               'v0.56': ['STS1']}},# algo
-#                  },
-#     # Subject 10
-#     'subject10': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS1'],# MPJE 
-#                                               'v0.54': ['walkingTS1'],# MPJE 
-#                                               'v0.55': ['walkingTS1'],# MPJE 
-#                                               'v0.56': ['walkingTS1']}},# MPJE
-#                  },
-#     # Subject 11
-#     'subject11': {'mmpose_0.8': {'5-cameras': {'v0.45': ['walkingTS3'],# algo 
-#                                               'v0.54': ['walkingTS3'],# algo 
-#                                               'v0.55': ['walkingTS3'],# algo 
-#                                               'v0.56': ['walkingTS3']},
-#                                  '3-cameras': {'v0.45': ['walkingTS3'],# algo 
-#                                                 'v0.54': ['walkingTS3'],# algo 
-#                                                 'v0.55': ['walkingTS3'],# algo 
-#                                                 'v0.56': ['walkingTS3']}},# algo
-#                  },
-#     }
 
 # %%
-genericModel4ScalingName = 'LaiArnoldModified2017_poly_withArms_weldHand.osim'
-coordinates = [
-    'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
-    'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
-    'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
-    'hip_flexion_r', 'hip_adduction_r', 'hip_rotation_r',
-    'knee_angle_l', 'knee_angle_r', 'ankle_angle_l', 'ankle_angle_r',
-    'subtalar_angle_l', 'subtalar_angle_r',
-    'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']
+if withKAM:
+    genericModel4ScalingName = 'LaiUhlrich2022_KA.osim'
+    coordinates = [
+        'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
+        'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
+        'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
+        'hip_flexion_r', 'hip_adduction_r', 'hip_rotation_r',
+        'knee_angle_l', 'knee_angle_r', 'knee_adduction_l', 'knee_adduction_r', 'ankle_angle_l', 'ankle_angle_r',
+        'subtalar_angle_l', 'subtalar_angle_r',
+        'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']
+    # Bilateral coordinates
+    coordinates_bil = [
+        'hip_flexion', 'hip_adduction', 'hip_rotation',
+        'knee_angle', 'knee_adduction', 'ankle_angle', 'subtalar_angle']
+    # coordinates without the right side, such that bilateral coordinates are 
+    # combined later. 
+    coordinates_lr = [
+        'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
+        'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
+        'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
+        'knee_angle_l', 'knee_adduction_l', 'ankle_angle_l', 'subtalar_angle_l', 
+        'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']
+else:
+    genericModel4ScalingName = 'LaiArnoldModified2017_poly_withArms_weldHand.osim'
+    coordinates = [
+        'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
+        'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
+        'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
+        'hip_flexion_r', 'hip_adduction_r', 'hip_rotation_r',
+        'knee_angle_l', 'knee_angle_r', 'ankle_angle_l', 'ankle_angle_r',
+        'subtalar_angle_l', 'subtalar_angle_r',
+        'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']    
+    # Bilateral coordinates
+    coordinates_bil = [
+        'hip_flexion', 'hip_adduction', 'hip_rotation',
+        'knee_angle', 'ankle_angle', 'subtalar_angle']
+    # coordinates without the right side, such that bilateral coordinates are 
+    # combined later. 
+    coordinates_lr = [
+        'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
+        'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
+        'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
+        'knee_angle_l', 'ankle_angle_l', 'subtalar_angle_l', 
+        'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']
 nCoordinates = len(coordinates)
-# Bilateral coordinates
-coordinates_bil = [
-    'hip_flexion', 'hip_adduction', 'hip_rotation',
-    'knee_angle', 'ankle_angle', 'subtalar_angle']
-# coordinates without the right side, such that bilateral coordinates are 
-# combined later. 
-coordinates_lr = [
-    'pelvis_tilt', 'pelvis_list', 'pelvis_rotation',
-    'pelvis_tx', 'pelvis_ty', 'pelvis_tz',
-    'hip_flexion_l', 'hip_adduction_l', 'hip_rotation_l',
-    'knee_angle_l', 'ankle_angle_l', 'subtalar_angle_l', 
-    'lumbar_extension', 'lumbar_bending', 'lumbar_rotation']
+
+ik_path = genericModel4ScalingName[:-5]
+if taskKA:
+    ik_path  += '_KAtask_{}'.format(taskKA)    
+    
 coordinates_lr_tr = ['pelvis_tx', 'pelvis_ty', 'pelvis_tz']
 coordinates_lr_rot = coordinates_lr.copy()
 # Translational coordinates.
@@ -311,7 +185,7 @@ for subjectName in subjects:
     markerDir = os.path.join(dataDir, 'Data', subjectName, 'MarkerData')
         
     # Hack
-    mocapDirAll = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])    
+    mocapDirAll = os.path.join(osDir, 'Mocap_updated', 'IK', ik_path)    
     trials = []
     for trial in os.listdir(mocapDirAll):
         if not trial[-3:] == 'mot':
@@ -475,7 +349,7 @@ for subjectName in subjects:
                         if addBiomechanicsMocap:
                             mocapDir = os.path.join(osDir, 'Mocap_updated', 'AddBiomechanics', 'IK', addBiomechanicsMocapModel)                              
                         else:
-                            mocapDir = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])                              
+                            mocapDir = os.path.join(osDir, 'Mocap_updated', 'IK', ik_path)                              
                             
                         pathTrial = os.path.join(mocapDir, trial)
                         trial_mocap_df = storage2df(pathTrial, coordinates)
@@ -487,7 +361,7 @@ for subjectName in subjects:
                         else:
                             cameraSetupDir = os.path.join(
                                 poseDetectorDir, cameraSetup, augmenterType, 'IK', 
-                                genericModel4ScalingName[:-5])                            
+                                ik_path)                            
                             
                         # Used to use same augmenter for all for offset, not sure why
                         if augmenterType == 'pose_updated_benchmark_reprojection':
@@ -526,7 +400,7 @@ for subjectName in subjects:
                         # For DJ trials, we trimmed the OpenSim IK ones, but not the addb ones
                         # Let's load a reference OpenSim IK one to get the same time vector
                         if addBiomechanicsMocap and addBiomechanicsVideo and 'DJ' in trial:
-                            mocapDir_temp = os.path.join(osDir, 'Mocap_updated', 'IK', genericModel4ScalingName[:-5])
+                            mocapDir_temp = os.path.join(osDir, 'Mocap_updated', 'IK', ik_path)
                             pathTrial_temp = os.path.join(mocapDir_temp, trial)
                             trial_mocap_df_temp = storage2df(pathTrial_temp, coordinates)
                             trial_mocap_np_temp = trial_mocap_df_temp.to_numpy()
@@ -557,6 +431,9 @@ for subjectName in subjects:
                         
                         # If translational degree of freedom, adjust for offset
                         # Compute offset from trc file.
+                        
+                        pathTrial_marker = pathTrial_marker.replace('_updated_benchmark_reprojection_kam', '_updated_benchmark_reprojection')
+                        
                         c_trc = dm.TRCFile(pathTrial_marker)
                         c_trc_m1 = c_trc.marker('Neck')
                         c_trc_m1_offsetRemoved = c_trc.marker('Neck_offsetRemoved')
@@ -604,6 +481,14 @@ for subjectName in subjects:
                             value3 = np.mean(y_true_adj - y_pred_adj)
                             MEs[subjectName][poseDetector][cameraSetup][augmenterType][processingType].loc[trials[count], c_coord] = value3
                             c_me.append(value3)
+                            
+                            # ROM
+                            min_y_true_adj = np.min(y_true_adj)
+                            max_y_true_adj = np.max(y_true_adj)
+                            min_y_pred_adj = np.min(y_pred_adj)
+                            max_y_pred_adj = np.max(y_pred_adj)
+                            
+                            # TODO, save ROM
                             
                             if value > 20:
                                 print('{} - {} - {} - {} - {} - {} - {} had RMSE of {}'.format(subjectName, poseDetector, cameraSetup, augmenterType, processingType, trial[:-4], c_coord, value))
