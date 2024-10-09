@@ -25,8 +25,8 @@ dataDir = os.path.join(getDataDirectory(False), 'Data')
 # subjects = ['subject' + str(i) for i in range(2, 12)]
 # tasksKA = [None, 0.001, 0.005, 0.01, 0.1]
 # motion_types = ['walking', 'STS', 'squat', 'DJ']
-subjects = ['subject' + str(i) for i in range(2,3)]
-tasksKA = [0.005]
+subjects = ['subject' + str(i) for i in range(10,11)]
+tasksKA = [None, 0.005, 0.01]
 motion_types = ['walking', 'STS', 'squat', 'DJ']
 outputDir = os.path.join(getDataDirectory(False), 'Results-kam_benchmark')
 
